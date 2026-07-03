@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "profile-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "app/u/sara-karimi", "--listen", "3333", "--no-clipboard"],
+      "port": 3333
+    }
+  ]
+}

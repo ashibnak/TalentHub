@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سارا کریمی — AIGraph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-canvas:          #001825;
+      --bg-surface:         #00314a;
+      --bg-surface-elevated:#0a3f5c;
+      --bg-info-subtle:     rgba(102,155,188,0.12);
+      --bg-info-muted:      rgba(102,155,188,0.18);
+      --border-subtle:      rgba(102,155,188,0.18);
+      --border-default:     rgba(102,155,188,0.35);
+      --text-primary:       #ffffff;
+      --text-secondary:     #669bbc;
+      --text-tertiary:      rgba(255,255,255,0.6);
+      --text-muted:         rgba(255,255,255,0.5);
+      --info:               #669bbc;
+      --action:             #C01221;
+    }
+
+    body {
+      background: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: 'Vazirmatn', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 16px 64px;
+    }
+
+    /* ── Header ── */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--info);
+      color: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .profile-meta { flex: 1; min-width: 0; }
+
+    .name-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-info-muted);
+      color: var(--info);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      line-height: 1;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--info);
+      flex-shrink: 0;
+    }
+
+    .profile-role {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .btn-follow {
+      flex-shrink: 0;
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-follow:hover { background: var(--bg-info-subtle); }
+
+    /* ── Bio ── */
+    .bio {
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 24px;
+    }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 32px;
+    }
+
+    .stat-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 8px;
+      gap: 4px;
+    }
+
+    .stat-cell:not(:last-child) {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--info);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .stat-label svg { flex-shrink: 0; }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── Skills ── */
+    .skills-section { margin-bottom: 32px; }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-info-muted);
+      color: var(--text-primary);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      line-height: 1.6;
+    }
+
+    .tag svg { color: var(--info); flex-shrink: 0; }
+
+    /* ── Skills collapse chip ── */
+    .tag-more {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      line-height: 1.6;
+    }
+
+    /* ── Projects ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .project-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      transition: background 0.15s;
+    }
+    .project-card:hover { background: var(--bg-surface-elevated); }
+
+    .project-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .project-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .stage-building {
+      background: var(--info);
+      color: var(--bg-surface);
+    }
+
+    .stage-shipped {
+      background: var(--action);
+      color: #fff;
+    }
+
+    .project-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .project-upvotes {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--info);
+      font-size: 13px;
+    }
+
+    /* ── SVG icon helper ── */
+    svg { display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<div class="page" dir="rtl">
+
+  <!-- ── Profile header ── -->
+  <div class="profile-header">
+    <div class="avatar">سک</div>
+
+    <div class="profile-meta">
+      <div class="name-row">
+        <h1 class="profile-name">سارا کریمی</h1>
+        <span class="status-pill">
+          <span class="status-dot"></span>
+          Currently building
+        </span>
+      </div>
+      <div class="profile-role">مهندس یادگیری ماشین</div>
+    </div>
+
+    <button class="btn-follow">دنبال کن</button>
+  </div>
+
+  <!-- ── Bio ── -->
+  <p class="bio">
+    پنج سال سابقه در توسعه مدل‌های NLP فارسی و سیستم‌های توصیه‌گر. علاقه‌مند به تقاطع هوش مصنوعی و تجربه کاربری. در حال ساختن ابزارهایی که یادگیری را برای ایرانیان ساده‌تر می‌کنند.
+  </p>
+
+  <!-- ── Stats ── -->
+  <div class="stats-row">
+
+    <div class="stat-cell">
+      <span class="stat-value">۷</span>
+      <span class="stat-label">
+        <!-- folder-kanban -->
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+        پروژه
+      </span>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-value">۱۸</span>
+      <span class="stat-label">
+        <!-- shield-check -->
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        مهارت تأیید شده
+      </span>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-value">۳</span>
+      <span class="stat-label">
+        <!-- award -->
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+        نشان
+      </span>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-value">۱۴۲</span>
+      <span class="stat-label">
+        <!-- thumbs-up -->
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 10v12"/><path d="M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88z"/>
+        </svg>
+        رأی دریافتی
+      </span>
+    </div>
+
+  </div>
+
+  <!-- ── Skills ── -->
+  <section class="skills-section">
+    <h2 class="section-title">مهارت‌ها</h2>
+    <div class="tags">
+
+      <!-- verified -->
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        Python
+      </span>
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        PyTorch
+      </span>
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        Transformers
+      </span>
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        NLP
+      </span>
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        Claude API
+      </span>
+      <span class="tag">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#669bbc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        Hugging Face
+      </span>
+
+      <!-- collapsed: 4 more tags hidden per tag collapse rule (MAX_VISIBLE_TAGS = 6) -->
+      <span class="tag-more">+4</span>
+
+    </div>
+  </section>
+
+  <!-- ── Projects ── -->
+  <section>
+    <h2 class="section-title">پروژه‌ها</h2>
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <div class="project-card-top">
+          <span class="project-title">دستیار نوشتاری فارسی</span>
+          <span class="stage-badge stage-building">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+            Building
+          </span>
+        </div>
+        <p class="project-desc">ابزاری برای بهبود متون فارسی با استفاده از مدل‌های زبانی بزرگ</p>
+        <div class="project-upvotes">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 10v12"/><path d="M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88z"/>
+          </svg>
+          47
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-card-top">
+          <span class="project-title">سیستم توصیه‌گر محتوا</span>
+          <span class="stage-badge stage-shipped">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+            </svg>
+            Shipped
+          </span>
+        </div>
+        <p class="project-desc">موتور پیشنهاد محتوای شخصی‌سازی شده برای پلتفرم‌های آموزشی</p>
+        <div class="project-upvotes">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 10v12"/><path d="M15 5.88L14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88z"/>
+          </svg>
+          83
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>
