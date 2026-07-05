@@ -4,8 +4,8 @@
 
 /* ─────────────────────────────────────────────────────────────
    Design tokens — v3 "monochrome + accent" (Vercel / Linear / Stripe).
-   Black + white + neutral grays, BLACK primary buttons, one electric indigo
-   accent used sparingly, hairline borders, tight type. Fonts unchanged.
+   Black + white + neutral grays, BLACK primary buttons, one teal accent
+   used sparingly, hairline borders, tight type. Fonts unchanged.
    ───────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
@@ -14,17 +14,18 @@
   --color-canvas: #fafafa;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
-  --color-spotlight: #f5f3ff;
+  --color-spotlight: #f0fdfa;
 
   /* Primary action — near-black (Vercel-style buttons) */
   --color-action: #0a0a0a;
   --color-action-hover: #2a2a2a;
   --color-action-subtle: rgba(10, 10, 10, 0.05);
 
-  /* Accent — electric indigo, used sparingly (links, active, highlights) */
-  --color-info: #4f46e5;
-  --color-info-subtle: rgba(79, 70, 229, 0.07);
-  --color-info-muted: rgba(79, 70, 229, 0.12);
+  /* Accent — teal (deep, readable as text/fills; the bright #4CD1D6 pop lives in
+     the logo hub + hero glow). B&W base + one accent. */
+  --color-info: #0f766e;
+  --color-info-subtle: rgba(15, 118, 110, 0.08);
+  --color-info-muted: rgba(15, 118, 110, 0.14);
 
   /* Success — emerald (verified / accepted), minimal */
   --color-success: #059669;
@@ -33,7 +34,7 @@
 
   /* Text — near-black + neutral gray scale */
   --color-fg: #0a0a0a;
-  --color-text-secondary: #4f46e5;
+  --color-text-secondary: #0f766e;
   --color-text-tertiary: #525252;
   --color-text-muted: #737373;
   --color-text-disabled: #a3a3a3;
@@ -90,6 +91,6 @@
     background-color: var(--color-canvas);
   }
   ::selection {
-    background-color: rgba(79, 70, 229, 0.16);
+    background-color: rgba(76, 209, 214, 0.30);
   }
 }

@@ -54,22 +54,14 @@ export default async function Home() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(79,70,229,0.13),transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(76,209,214,0.16),transparent)]"
         />
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 pt-16 pb-16 text-center">
-          <div className="mb-6 flex justify-center">
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 pt-20 pb-16 text-center">
+          <div className="mb-8 flex justify-center">
             <LogoMark size={56} />
           </div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-body-sm text-text-tertiary">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            فاز ۱ · شبکه‌ی داخلی سازمان
-          </div>
           <h1 className="mx-auto mb-5 max-w-3xl text-display font-bold text-fg">
-            جایی که استعدادِ{' '}
-            <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-500 bg-clip-text text-transparent">
-              هوش مصنوعی
-            </span>{' '}
-            دیده می‌شود
+            جایی که استعدادِ <span className="text-info">هوش مصنوعی</span> دیده می‌شود
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-body-lg text-text-tertiary">
             سازنده‌ها پروژه می‌سازند و مهارت‌هایشان از روی مخزن GitHub هوشمندانه تأیید می‌شود.

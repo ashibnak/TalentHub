@@ -7,6 +7,24 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.8.2] — 2026-07-05 — Teal accent + hero polish
+
+### Changed
+- **New accent — teal** (replacing indigo). Deep teal `#0f766e` for links / active /
+  fills (readable as text), with a bright `#4CD1D6` pop in the logo hub, favicon and
+  hero glow. Pure token swap in `globals.css`, so the whole app re-themed at once —
+  black & white base + a single fresh accent (amber `#FFAB00` is a one-line alt).
+- **Cleaner hero** — dropped the "فاز ۱ · شبکه‌ی داخلی سازمان" badge and the
+  gradient-clipped headline word (rendered awkwardly in Persian); the accent word is
+  now a solid, high-contrast teal.
+
+### Fixed
+- **Avatar initials** — Persian names rendered as two disjoint, wrong-joining-form
+  letters (e.g. "اص"); avatars now use a single clean monogram letter, on a dark
+  monochrome + teal palette (all dark enough for white text).
+
+---
+
 ## [0.8.1] — 2026-07-05 — More data + sponsor profiles
 
 ### Added

@@ -3,7 +3,7 @@ import { FlaskConical, Zap, Wrench, Rocket, ShieldCheck, type LucideIcon } from 
 // The 5 project stages (schema `project_stage`). Labels stay English (§7.5).
 export type ProjectStage = 'experiment' | 'weekend_hack' | 'building' | 'shipped' | 'maintained';
 
-// Energy ladder: neutral → light indigo → indigo → emerald (shipped) → outline.
+// Energy ladder: neutral → light teal → teal → emerald (shipped) → outline.
 const STAGE_CONFIG: Record<ProjectStage, { label: string; className: string; Icon: LucideIcon }> = {
   experiment: { label: 'Experiment', className: 'bg-fg/5 text-text-tertiary', Icon: FlaskConical },
   weekend_hack: { label: 'Weekend Hack', className: 'bg-info-subtle text-info', Icon: Zap },
