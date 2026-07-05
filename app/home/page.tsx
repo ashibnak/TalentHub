@@ -93,6 +93,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   // ── Talent home ──
   const [apps, openOpps] = await Promise.all([getMyApplications(user.id), getOpportunities()]);
+  const statusByOpp = new Map(apps.map((a) => [a.opportunityId, a.status]));
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
       <div className="mb-8 flex items-center justify-between gap-3">
@@ -151,7 +152,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {openOpps.slice(0, 4).map((o) => (
-              <OpportunityCard key={o.id} opportunity={o} />
+              <OpportunityCard key={o.id} opportunity={o} myStatus={statusByOpp.get(o.id) ?? null} applyHint />
             ))}
           </div>
         </>

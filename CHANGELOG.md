@@ -7,6 +7,24 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.9.1] — 2026-07-05 — Make "apply" unmissable
+
+Feedback: a seeker logged in and couldn't find where to apply. The flow existed
+(opportunity detail page) but was buried below the description, cards gave no
+hint, and the seeded demo talent had already applied to the featured opportunity
+(so it showed a status pill instead of a form).
+
+### Changed
+- **Opportunity detail** — the action zone (apply form / your-application status
+  / login prompt) now sits **above** the description, right under the title;
+  the description moved into its own «درباره‌ی این فرصت» section.
+- **Opportunity cards** (directory + home) — for a signed-in seeker each card
+  now shows **their application status pill**, or an explicit teal
+  **«اقدام کن ←»** call-to-action (also shown when logged out); sponsors/admins
+  just browse. Directory subtitle now explains the flow.
+
+---
+
 ## [0.9.0] — 2026-07-05 — Self-service editing + the v4 dark redesign
 
 ### Added — own your profile (no more admin-only content)

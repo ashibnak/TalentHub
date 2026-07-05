@@ -69,8 +69,6 @@ export default async function OpportunityDetailPage({
         <Users size={14} strokeWidth={1.5} />
         {toFaDigits(opp.applicantCount)} متقاضی
       </p>
-      <p className="mb-8 whitespace-pre-line text-body-lg leading-relaxed text-fg/90">{opp.description}</p>
-
       {sp.error && ERROR_MESSAGES[sp.error] && (
         <p className="mb-6 text-body-sm text-red-400">{ERROR_MESSAGES[sp.error]}</p>
       )}
@@ -144,9 +142,15 @@ export default async function OpportunityDetailPage({
         </form>
       )}
 
+      {/* ── Description ── */}
+      <section className="mt-8">
+        <h2 className="text-h3 mb-3">درباره‌ی این فرصت</h2>
+        <p className="whitespace-pre-line text-body-lg leading-relaxed text-fg/90">{opp.description}</p>
+      </section>
+
       {/* ── Sponsor/admin: review applicants ── */}
       {canManage && (
-        <section className="mt-4">
+        <section className="mt-8">
           <h2 className="text-h2 mb-4">متقاضی‌ها · {toFaDigits(applicants.length)}</h2>
           {applicants.length > 0 ? (
             <div className="flex flex-col gap-3">
