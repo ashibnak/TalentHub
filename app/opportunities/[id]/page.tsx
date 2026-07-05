@@ -9,9 +9,12 @@ import {
   getProjectOptions,
 } from '@/lib/db/queries/opportunities';
 import { applyAction, updateApplicationStatusAction, setOpportunityStatusAction } from '@/lib/actions/opportunities';
+import { getOpportunitySkills, getUserSkillSlugs, getMatchForUsers, getTopCandidates } from '@/lib/db/queries/matching';
 import { Avatar } from '@/components/atoms/Avatar';
 import { ApplicationStatusPill } from '@/components/atoms/ApplicationStatusPill';
 import { EmptyState } from '@/components/atoms/EmptyState';
+import { MatchBadge } from '@/components/atoms/MatchBadge';
+import { RequirementTag } from '@/components/atoms/RequirementTag';
 import { Users } from 'lucide-react';
 import { toFaDigits } from '@/lib/format';
 
@@ -46,9 +49,21 @@ export default async function OpportunityDetailPage({
   const user = await getCurrentUser();
   const isOwner = !!user && user.id === opp.sponsorId;
   const canManage = isOwner || !!user?.isAdmin;
-  const myApp = user && !isOwner ? await getMyApplication(user.id, id) : null;
-  const applicants = canManage ? await getApplicants(id) : [];
-  const projectOptions = user && !isOwner && !myApp && opp.status === 'open' ? await getProjectOptions(user.id) : [];
+  const isSeeker = !!user && !isOwner && user.accountType === 'talent' && !user.isAdmin;
+  const [myApp, applicants, projectOptions, requirements, mySkillSlugs, topCandidates] = await Promise.all([
+    user && !isOwner ? getMyApplication(user.id, id) : null,
+    canManage ? getApplicants(id) : [],
+    user && !isOwner ? getProjectOptions(user.id) : [],
+    getOpportunitySkills(id),
+    isSeeker ? getUserSkillSlugs(user.id) : new Set<string>(),
+    canManage ? getTopCandidates(id) : [],
+  ]);
+
+  // Rank applicants by match score (best-fitting first, ties by recency).
+  const applicantMatch = canManage ? await getMatchForUsers(applicants.map((a) => a.userId), id) : new Map();
+  const rankedApplicants = [...applicants].sort(
+    (a, b) => (applicantMatch.get(b.userId)?.pct ?? -1) - (applicantMatch.get(a.userId)?.pct ?? -1),
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -59,7 +74,7 @@ export default async function OpportunityDetailPage({
         )}
       </div>
       {opp.sponsorUsername ? (
-        <Link href={`/u/${opp.sponsorUsername}`} className="text-body text-info hover:text-action transition-colors">
+        <Link href={`/u/${opp.sponsorUsername}`} className="text-body text-info hover:text-fg transition-colors">
           {opp.sponsorName}
         </Link>
       ) : (
@@ -142,6 +157,24 @@ export default async function OpportunityDetailPage({
         </form>
       )}
 
+      {/* ── Required skills (matching basis) ── */}
+      {requirements.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-h3 mb-3">مهارت‌های موردنیاز</h2>
+          <div className="flex flex-wrap gap-2">
+            {requirements.map((r) => (
+              <RequirementTag key={r.slug} label={r.name} met={isSeeker ? mySkillSlugs.has(r.slug) : undefined} />
+            ))}
+          </div>
+          {isSeeker && (
+            <p className="mt-2 text-body-sm text-text-muted">
+              {toFaDigits(requirements.filter((r) => mySkillSlugs.has(r.slug)).length)} از {toFaDigits(requirements.length)} مهارت را داری —
+              مهارت‌هایت را در <Link href="/settings" className="text-info hover:text-fg transition-colors">تنظیمات</Link> کامل کن.
+            </p>
+          )}
+        </section>
+      )}
+
       {/* ── Description ── */}
       <section className="mt-8">
         <h2 className="text-h3 mb-3">درباره‌ی این فرصت</h2>
@@ -154,7 +187,7 @@ export default async function OpportunityDetailPage({
           <h2 className="text-h2 mb-4">متقاضی‌ها · {toFaDigits(applicants.length)}</h2>
           {applicants.length > 0 ? (
             <div className="flex flex-col gap-3">
-              {applicants.map((a) => (
+              {rankedApplicants.map((a) => (
                 <div key={a.applicationId} className="rounded-xl border border-border-subtle bg-surface p-4 shadow-sm">
                   <div className="mb-2 flex items-center gap-3">
                     <Avatar name={a.name} size={36} />
@@ -168,11 +201,12 @@ export default async function OpportunityDetailPage({
                       )}
                       {a.roleTitle && <div className="truncate text-body-sm text-text-tertiary">{a.roleTitle}</div>}
                     </div>
+                    {applicantMatch.has(a.userId) && <MatchBadge pct={applicantMatch.get(a.userId)!.pct} />}
                     <ApplicationStatusPill status={a.status} />
                   </div>
                   {a.coverNote && <p className="mb-2 text-body-sm text-text-tertiary leading-relaxed">{a.coverNote}</p>}
                   {a.projectId && a.projectTitle && (
-                    <Link href={`/projects/${a.projectId}`} className="mb-3 inline-block text-body-sm text-info hover:text-action transition-colors">
+                    <Link href={`/projects/${a.projectId}`} className="mb-3 inline-block text-body-sm text-info hover:text-fg transition-colors">
                       پروژه‌ی پیوست: {a.projectTitle}
                     </Link>
                   )}
@@ -198,6 +232,32 @@ export default async function OpportunityDetailPage({
           ) : (
             <EmptyState icon={Users} title="هنوز کسی اقدام نکرده" />
           )}
+        </section>
+      )}
+
+      {/* ── Sponsor/admin: best-matching members who haven't applied ── */}
+      {canManage && topCandidates.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-h3 mb-1">بهترین‌های گراف برای این فرصت</h2>
+          <p className="mb-4 text-body-sm text-text-muted">اعضایی که مهارت‌های موردنیاز را دارند ولی هنوز اقدام نکرده‌اند</p>
+          <div className="flex flex-col gap-2">
+            {topCandidates.map((c) => (
+              <div key={c.userId} className="flex items-center gap-3 rounded-lg border border-border-subtle bg-surface p-4">
+                <Avatar name={c.name} size={36} />
+                <div className="min-w-0 flex-1">
+                  {c.username ? (
+                    <Link href={`/u/${c.username}`} className="text-body font-medium text-fg hover:text-info transition-colors">
+                      {c.name}
+                    </Link>
+                  ) : (
+                    <span className="text-body font-medium text-fg">{c.name}</span>
+                  )}
+                  {c.roleTitle && <div className="truncate text-body-sm text-text-tertiary">{c.roleTitle}</div>}
+                </div>
+                <MatchBadge pct={c.match.pct} />
+              </div>
+            ))}
+          </div>
         </section>
       )}
     </main>

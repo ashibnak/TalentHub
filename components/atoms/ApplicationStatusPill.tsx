@@ -11,5 +11,5 @@ const CONFIG: Record<ApplicationStatus, { label: string; className: string }> = 
 
 export function ApplicationStatusPill({ status }: { status: ApplicationStatus }) {
   const { label, className } = CONFIG[status];
-  return <span className={`inline-block ${className} text-micro px-2 py-0.5 rounded-full`}>{label}</span>;
+  return <span className={`inline-block whitespace-nowrap ${className} text-micro px-2 py-0.5 rounded-full`}>{label}</span>;
 }

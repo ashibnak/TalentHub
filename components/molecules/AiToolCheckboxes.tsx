@@ -5,10 +5,18 @@ import { AI_TOOL_LABELS } from '@/lib/ai-tools';
 // map, NOT a DB table). Same JS-free peer-checked pattern as SkillCheckboxes.
 const TOOLS = Object.entries(AI_TOOL_LABELS);
 
-export function AiToolCheckboxes({ name, selected }: { name: string; selected: string[] }) {
+export function AiToolCheckboxes({
+  name,
+  selected,
+  label = 'انتخاب ابزارهای AI',
+}: {
+  name: string;
+  selected: string[];
+  label?: string;
+}) {
   const chosen = new Set(selected);
   return (
-    <div className="flex flex-wrap gap-2">
+    <div role="group" aria-label={label} className="flex flex-wrap gap-2">
       {TOOLS.map(([slug, label]) => (
         <label key={slug} className="cursor-pointer">
           <input type="checkbox" name={name} value={slug} defaultChecked={chosen.has(slug)} className="peer sr-only" />

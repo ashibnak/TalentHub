@@ -12,7 +12,7 @@ config();
 
 import { eq, inArray } from 'drizzle-orm';
 import { getDb } from '../lib/db';
-import { orgs, users, opportunities, applications } from '../lib/db/schema';
+import { orgs, users, opportunities, applications, opportunitySkills, skills } from '../lib/db/schema';
 import { hashPassword } from '../lib/auth/password';
 
 const db = getDb();
@@ -36,6 +36,13 @@ const OPPS = [
   { key: 'fs', title: 'توسعه‌دهنده‌ی فول‌استک محصول', description: 'برای تیم محصول، توسعه‌دهنده‌ای که با Next.js و TypeScript سریع بسازد و با ابزارهای AI پروتوتایپ بزند.' },
   { key: 'data', title: 'تحلیل‌گر داده و مالی', description: 'تحلیل‌گر داده با پس‌زمینه‌ی مالی برای پروژه‌های پیش‌بینی بودجه و مدل‌سازی.' },
 ];
+
+// Required skills per opportunity — the matching basis (mirrors migration 0004's backfill).
+const OPP_SKILLS: Record<string, string[]> = {
+  ai: ['python', 'rag', 'nlp', 'machine-learning', 'prompt-engineering'],
+  fs: ['typescript', 'nextjs', 'react', 'tailwind-css'],
+  data: ['python', 'sql', 'machine-learning', 'deep-learning'],
+};
 
 type Stage = 'applied' | 'shortlisted' | 'next_call' | 'accepted' | 'rejected';
 const APPS: { username: string; opp: string; status: Stage; note: string }[] = [
@@ -89,6 +96,17 @@ async function main() {
     }
     console.log('[opps] opportunities already exist, reusing');
   }
+
+  // 3b. Required skills (idempotent)
+  for (const [key, slugs] of Object.entries(OPP_SKILLS)) {
+    const opportunityId = oppIdByKey.get(key);
+    if (!opportunityId) continue;
+    const skillRows = await db.select({ id: skills.id }).from(skills).where(inArray(skills.slug, slugs));
+    if (skillRows.length) {
+      await db.insert(opportunitySkills).values(skillRows.map((s) => ({ opportunityId, skillId: s.id }))).onConflictDoNothing();
+    }
+  }
+  console.log('[opps] required skills synced');
 
   // 4. Applications (only if none exist yet)
   const anyApp = await db.select({ id: applications.id }).from(applications).limit(1);

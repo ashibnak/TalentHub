@@ -381,3 +381,36 @@ export const applications = pgTable(
     index('applications_applicant_idx').on(t.applicantId),
   ],
 );
+
+/* Required skills for an Opportunity (taxonomy refs) — the basis of matching:
+ * a member's match score = |their skills ∩ required| / |required|. */
+export const opportunitySkills = pgTable(
+  'opportunity_skills',
+  {
+    opportunityId: uuid('opportunity_id').notNull().references(() => opportunities.id, { onDelete: 'cascade' }),
+    skillId: uuid('skill_id').notNull().references(() => skills.id, { onDelete: 'cascade' }),
+  },
+  (t) => [primaryKey({ columns: [t.opportunityId, t.skillId] })],
+);
+
+export const notificationType = pgEnum('notification_type', [
+  'application_status', // your application moved through the funnel (→ applicant)
+  'new_applicant', // someone applied to your opportunity (→ sponsor)
+  'new_opportunity', // an opportunity matching your skills was posted (→ talent)
+]);
+
+/* In-app notifications (no SMTP in phase 1 — the bell in the nav). */
+export const notifications = pgTable(
+  'notifications',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    type: notificationType('type').notNull(),
+    title: text('title').notNull(),
+    body: text('body'),
+    href: text('href'),
+    readAt: timestamp('read_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index('notifications_user_created_idx').on(t.userId, t.createdAt)],
+);

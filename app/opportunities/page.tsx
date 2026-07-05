@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Briefcase } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/session';
 import { getOpportunities, getMyApplications, type ApplicationStatus } from '@/lib/db/queries/opportunities';
+import { getMatchScores, type MatchScore } from '@/lib/db/queries/matching';
 import { OpportunityCard } from '@/components/molecules/OpportunityCard';
 import { EmptyState } from '@/components/atoms/EmptyState';
 import { toFaDigits } from '@/lib/format';
@@ -16,8 +17,14 @@ export default async function OpportunitiesPage() {
   // or an explicit apply CTA. Sponsors/admins just browse.
   const isSeeker = !!user && user.accountType === 'talent' && !user.isAdmin;
   const statusByOpp = new Map<string, ApplicationStatus>();
+  let matchByOpp = new Map<string, MatchScore>();
   if (isSeeker) {
-    for (const a of await getMyApplications(user.id)) statusByOpp.set(a.opportunityId, a.status);
+    const [apps, scores] = await Promise.all([
+      getMyApplications(user.id),
+      getMatchScores(user.id, opportunities.map((o) => o.id)),
+    ]);
+    for (const a of apps) statusByOpp.set(a.opportunityId, a.status);
+    matchByOpp = scores;
   }
 
   return (
@@ -34,6 +41,7 @@ export default async function OpportunitiesPage() {
               opportunity={o}
               myStatus={statusByOpp.get(o.id) ?? null}
               applyHint={!user || (isSeeker && o.sponsorUsername !== user.username)}
+              matchPct={matchByOpp.get(o.id)?.pct ?? null}
             />
           ))}
         </div>

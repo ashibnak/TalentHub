@@ -161,6 +161,7 @@ export async function getProjectOptions(userId: string): Promise<{ id: string; t
 
 export type Applicant = {
   applicationId: string;
+  userId: string;
   status: ApplicationStatus;
   coverNote: string | null;
   projectId: string | null;
@@ -176,6 +177,7 @@ export const getApplicants = cache(async (opportunityId: string): Promise<Applic
   return db
     .select({
       applicationId: applications.id,
+      userId: applications.applicantId,
       status: applications.status,
       coverNote: applications.coverNote,
       projectId: applications.projectId,

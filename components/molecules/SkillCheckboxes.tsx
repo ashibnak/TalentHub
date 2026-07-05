@@ -17,10 +17,13 @@ export function SkillCheckboxes({
   name,
   skills,
   selected,
+  label = 'انتخاب مهارت‌ها',
 }: {
   name: string;
   skills: TaxonomySkill[];
   selected: string[];
+  /** Accessible name for the checkbox group (the visible caption is a plain div). */
+  label?: string;
 }) {
   const chosen = new Set(selected);
   const byCategory = CATEGORY_ORDER.map((category) => ({
@@ -29,7 +32,7 @@ export function SkillCheckboxes({
   })).filter((g) => g.items.length > 0);
 
   return (
-    <div className="max-h-64 overflow-y-auto rounded-md border border-border bg-surface p-3">
+    <div role="group" aria-label={label} className="max-h-64 overflow-y-auto rounded-md border border-border bg-surface p-3">
       <div className="flex flex-col gap-4">
         {byCategory.map((group) => (
           <div key={group.category}>

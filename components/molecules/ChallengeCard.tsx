@@ -14,7 +14,7 @@ export function ChallengeCard({ challenge }: { challenge: DirectoryChallenge }) 
       <p className="text-body-sm text-text-tertiary leading-relaxed mb-4 line-clamp-2">{challenge.description}</p>
       <div className="flex items-center gap-4 text-body-sm text-text-tertiary">
         <span className="flex items-center gap-1">
-          <Target size={14} strokeWidth={1.5} />
+          <Target size={14} strokeWidth={1.5} className="text-highlight" />
           {toFaDigits(challenge.problemCount)} مسئله
         </span>
         <span className="flex items-center gap-1">

@@ -88,12 +88,12 @@ export function ProjectForm({
 
       <div>
         <div className={`mb-2 ${labelClass}`}>مهارت‌های به‌کاررفته</div>
-        <SkillCheckboxes name="skills" skills={skills} selected={defaults?.skillSlugs ?? []} />
+        <SkillCheckboxes name="skills" skills={skills} selected={defaults?.skillSlugs ?? []} label="مهارت‌های به‌کاررفته در پروژه" />
       </div>
 
       <div>
         <div className={`mb-2 ${labelClass}`}>ابزارهای AI</div>
-        <AiToolCheckboxes name="tools" selected={defaults?.toolSlugs ?? []} />
+        <AiToolCheckboxes name="tools" selected={defaults?.toolSlugs ?? []} label="ابزارهای AI به‌کاررفته" />
       </div>
 
       <label className="flex items-start gap-2 text-body-sm text-text-tertiary">

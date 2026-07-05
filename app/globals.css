@@ -17,11 +17,12 @@
   --color-surface-elevated: #333232;
   --color-spotlight: rgba(76, 209, 214, 0.08);
 
-  /* Primary action — near-white (dark-mode primary buttons) */
-  --color-action: #fafcfc;
-  --color-action-hover: #e5e4e3;
-  --color-action-subtle: rgba(250, 252, 252, 0.07);
-  /* Text/icon color to sit ON action / info / success fills (all bright) */
+  /* Primary action — the bright teal itself (Amir: the accent must be SEEN).
+     Every primary button/CTA/active chip is teal with near-black text. */
+  --color-action: #4cd1d6;
+  --color-action-hover: #6fdbdf;
+  --color-action-subtle: rgba(76, 209, 214, 0.08);
+  /* Text/icon color to sit ON action / info / success / highlight fills */
   --color-on-action: #1a1a1a;
 
   /* Accent — bright teal. High contrast on charcoal; used for links, active,
@@ -38,8 +39,10 @@
   --color-success-subtle: rgba(52, 211, 153, 0.12);
   --color-success-muted: rgba(52, 211, 153, 0.20);
 
-  /* Micro-accent — amber, reserved for Spotlight moments */
+  /* Second accent — amber (Amir's palette #FFAB00): Spotlight, challenges,
+     step numbers, stat icons, and the CTA button on inverted cards. */
   --color-highlight: #ffab00;
+  --color-highlight-subtle: rgba(255, 171, 0, 0.12);
 
   /* Text — near-white + neutral gray-on-dark scale */
   --color-fg: #fafcfc;

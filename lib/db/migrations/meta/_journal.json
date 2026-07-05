@@ -29,6 +29,13 @@
       "when": 1783268936846,
       "tag": "0003_sticky_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783280107069,
+      "tag": "0004_redundant_xorn",
+      "breakpoints": true
     }
   ]
 }

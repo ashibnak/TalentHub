@@ -37,15 +37,15 @@ export default async function Home() {
     { label: 'مهارت تأیید‌شده', value: stats.verifiedSkills, icon: ShieldCheck },
   ];
   const features = [
-    { icon: ShieldCheck, title: 'تأیید هوشمند مهارت', desc: 'مهارت‌ها با تحلیل مخزن GitHub تأیید می‌شوند — اعتماد از راه شواهد، نه ادعا.' },
-    { icon: Activity, title: 'گرافِ زنده', desc: 'پروفایل‌ها با فعالیت واقعیِ ساختن به‌روز می‌مانند؛ پورتفولیوی مرده نیست.' },
-    { icon: Target, title: 'تطبیق واقعی', desc: 'کارفرما می‌بیند کی واقعاً مشکلی مشابه را حل کرده، نه فقط کلیدواژه‌ی رزومه.' },
-    { icon: Users, title: 'دو نوع استعداد', desc: 'سازنده‌ها و متخصص‌های حوزه‌ای که با AI کار می‌کنند، کنار هم دیده می‌شوند.' },
+    { icon: ShieldCheck, title: 'تأیید از روی کد، نه ادعا', desc: 'مهارت‌ها با تحلیل هوشمند مخزن GitHub تأیید می‌شوند. هر تیکِ سبز یعنی شواهد واقعی — نه یک خط رزومه.' },
+    { icon: Target, title: 'امتیاز تطابق شفاف', desc: 'هر فرصت مهارت‌های موردنیازش را اعلام می‌کند و درصد تطابق تو همان‌جا محاسبه می‌شود. نه حدس، نه کلیدواژه.' },
+    { icon: Activity, title: 'گرافِ زنده', desc: 'پروفایل‌ها با فعالیت واقعیِ ساختن نفس می‌کشند — پروژه‌ی تازه، مهارت تازه، فرصت تازه. پورتفولیوی مرده نداریم.' },
+    { icon: Users, title: 'هر دو نوع استعداد', desc: 'هم سازنده‌ها، هم متخصص‌های حوزه‌ای که با ابزارهای AI می‌سازند — کنار هم، در یک گراف.' },
   ];
   const steps = [
-    { icon: Wrench, title: 'بساز', desc: 'با Cursor، Claude Code و ابزارهای AI پروژه بساز و در پروفایلت منتشر کن.' },
-    { icon: ShieldCheck, title: 'تأیید کن', desc: 'مهارت‌هایت از روی مخزن GitHub به‌صورت هوشمند و شفاف تأیید می‌شود.' },
-    { icon: Briefcase, title: 'وصل شو', desc: 'به فرصت‌های واقعی اقدام کن و در گراف استعدادها پیدا شو.' },
+    { icon: Wrench, title: 'بساز', desc: 'با Cursor، Claude Code و ابزارهای AI پروژه بساز، مهارت‌هایت را ثبت کن و پروفایلت را منتشر کن.' },
+    { icon: ShieldCheck, title: 'تأیید شو', desc: 'مهارت‌هایت از روی مخزن GitHub هوشمندانه تأیید می‌شود — شفاف و قابل استناد.' },
+    { icon: Briefcase, title: 'وصل شو', desc: 'فرصت‌های پیشنهادی با درصد تطابق برایت می‌آیند؛ اقدام کن و مسیر استخدام را قدم‌به‌قدم دنبال کن.' },
   ];
 
   return (
@@ -54,7 +54,11 @@ export default async function Home() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(76,209,214,0.16),transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(76,209,214,0.18),transparent)]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(35%_40%_at_88%_12%,rgba(255,171,0,0.10),transparent)]"
         />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 pt-20 pb-16 text-center">
           <div className="mb-8 flex justify-center">
@@ -64,8 +68,9 @@ export default async function Home() {
             جایی که استعدادِ <span className="text-info">هوش مصنوعی</span> دیده می‌شود
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-body-lg text-text-tertiary">
-            سازنده‌ها پروژه می‌سازند و مهارت‌هایشان از روی مخزن GitHub هوشمندانه تأیید می‌شود.
-            کارفرماها فرصت می‌گذارند و استعداد واقعی را — نه فقط رزومه — پیدا می‌کنند.
+            این‌جا رزومه معیار نیست — <span className="text-fg">ساختن</span> معیار است.
+            سازنده‌ها با پروژه‌های واقعی پروفایل می‌سازند و مهارت‌هایشان از روی مخزن GitHub تأیید می‌شود؛
+            کارفرماها با <span className="text-info">امتیاز تطابق شفاف</span> دقیقاً کسی را پیدا می‌کنند که کار را ساخته است.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
@@ -101,7 +106,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-border-subtle md:grid-cols-4">
           {statItems.map(({ label, value, icon: Icon }) => (
             <div key={label} className="bg-surface px-4 py-8 text-center">
-              <Icon size={16} strokeWidth={1.5} className="mx-auto mb-2 text-text-muted" />
+              <Icon size={16} strokeWidth={1.5} className="mx-auto mb-2 text-highlight" />
               <div className="text-h1 font-bold text-fg">{toFaDigits(value)}</div>
               <div className="mt-1 text-body-sm text-text-tertiary">{label}</div>
             </div>
@@ -116,10 +121,10 @@ export default async function Home() {
           اعتماد از راه تأیید، نه ادعا. کشف از راه گراف، نه رزومه.
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((f) => (
+          {features.map((f, i) => (
             <div key={f.title} className="rounded-xl border border-border-subtle bg-surface p-6">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-info-subtle">
-                <f.icon size={20} strokeWidth={1.5} className="text-info" />
+              <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg ${i % 2 === 0 ? 'bg-info-subtle' : 'bg-highlight-subtle'}`}>
+                <f.icon size={20} strokeWidth={1.5} className={i % 2 === 0 ? 'text-info' : 'text-highlight'} />
               </div>
               <h3 className="mb-1 text-h3">{f.title}</h3>
               <p className="text-body-sm leading-relaxed text-text-tertiary">{f.desc}</p>
@@ -135,7 +140,7 @@ export default async function Home() {
           {steps.map((s, i) => (
             <div key={s.title} className="rounded-xl border border-border-subtle bg-surface p-6">
               <div className="mb-3 flex items-center gap-3">
-                <span className="text-h2 font-bold text-border">{toFaDigits(i + 1)}</span>
+                <span className="text-h2 font-bold text-highlight">{toFaDigits(i + 1)}</span>
                 <s.icon size={20} strokeWidth={1.5} className="text-fg" />
               </div>
               <h3 className="mb-1 text-h3">{s.title}</h3>
@@ -152,14 +157,14 @@ export default async function Home() {
             <h2 className="mb-2 text-h2">برای سازنده‌ها</h2>
             <p className="mb-6 text-body text-text-tertiary">پروفایلی که مهارت‌های واقعی‌ات را ثابت می‌کند.</p>
             <ul className="mb-6 flex flex-col gap-3">
-              {['پروفایل و پروژه‌های خودت را بساز', 'مهارت‌ها از روی GitHub تأیید می‌شوند', 'به فرصت‌های واقعی اقدام کن', 'در گراف استعدادها دیده شو'].map((t) => (
+              {['پروفایل و پروژه‌های خودت را بساز', 'مهارت‌ها از روی GitHub تأیید می‌شوند', 'فرصت‌های پیشنهادی با درصد تطابق بگیر', 'درخواست‌هایت را قدم‌به‌قدم دنبال کن'].map((t) => (
                 <li key={t} className="flex items-center gap-2 text-body text-fg">
                   <Check size={16} strokeWidth={2} className="text-success shrink-0" />
                   {t}
                 </li>
               ))}
             </ul>
-            <Link href="/people" className="inline-flex items-center gap-1 text-body font-medium text-info transition-colors hover:text-action">
+            <Link href="/people" className="inline-flex items-center gap-1 text-body font-medium text-info transition-colors hover:text-fg">
               کاوش استعدادها
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
@@ -168,7 +173,7 @@ export default async function Home() {
             <h2 className="mb-2 text-h2 text-on-action">برای کارفرماها</h2>
             <p className="mb-6 text-body text-on-action/70">استعداد واقعی را پیدا کن، نه رزومه‌ی خوش‌آب‌ورنگ.</p>
             <ul className="mb-6 flex flex-col gap-3">
-              {['فرصت و نیازت را منتشر کن', 'متقاضی‌های واقعی با پروژه‌ی اثبات‌شده', 'در قیف استخدام بررسی و انتخاب کن', 'به کل گراف استعدادها دسترسی داشته باش'].map((t) => (
+              {['فرصت را با مهارت‌های موردنیازش منتشر کن', 'متقاضی‌ها مرتب‌شده بر اساس درصد تطابق', 'بهترین‌های گراف را حتی پیش از اقدام ببین', 'در قیف استخدام بررسی و انتخاب کن'].map((t) => (
                 <li key={t} className="flex items-center gap-2 text-body text-on-action">
                   <Check size={16} strokeWidth={2} className="text-info-inverted shrink-0" />
                   {t}
@@ -188,7 +193,7 @@ export default async function Home() {
         <section className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-h2">فرصت‌های تازه</h2>
-            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body-sm text-info transition-colors hover:text-action">
+            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body-sm text-info transition-colors hover:text-fg">
               همه
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
@@ -206,7 +211,7 @@ export default async function Home() {
         <section className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-h2">چالش‌های فعال</h2>
-            <Link href="/challenges" className="inline-flex items-center gap-1 text-body-sm text-info transition-colors hover:text-action">
+            <Link href="/challenges" className="inline-flex items-center gap-1 text-body-sm text-info transition-colors hover:text-fg">
               همه
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
@@ -224,11 +229,11 @@ export default async function Home() {
         <div className="rounded-2xl bg-fg px-8 py-16 text-center">
           <h2 className="mb-3 text-h1 text-on-action">استعدادت را به گراف اضافه کن</h2>
           <p className="mx-auto mb-8 max-w-lg text-body-lg text-on-action/70">
-            پروفایل بساز، پروژه‌هایت را نشان بده، و به فرصت‌های واقعی وصل شو.
+            پروفایل بساز، پروژه‌هایت را نشان بده، امتیاز تطابقت را ببین و به فرصت واقعی وصل شو.
           </p>
           <Link
             href="/login"
-            className="inline-block rounded-full bg-canvas px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-surface"
+            className="inline-block rounded-full bg-highlight px-6 py-3 text-body-lg font-medium text-on-action transition-colors hover:bg-highlight/85"
           >
             ورود به حساب
           </Link>

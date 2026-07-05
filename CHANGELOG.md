@@ -7,6 +7,56 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.10.0] — 2026-07-05 — The Matching release 🎯🔔
+
+The graph starts working for both sides: structured requirements, transparent
+match scores, recommendations, outbound candidate discovery, and an in-app
+notification bell. (Migrations now run automatically at deploy: the Railway
+start command is `drizzle-kit migrate && next start`.)
+
+### Added — matching
+- **Required skills on opportunities** (`opportunity_skills`) — sponsors pick
+  them from the taxonomy when posting; shown on the detail page as tags. A
+  signed-in seeker sees which they have (✓) and which they're missing, with a
+  nudge to complete their skills in settings.
+- **Match score** (v1, transparent): |your skills ∩ required| / |required|.
+  Seekers see a «٪ تطابق» badge on opportunity cards (directory + home).
+- **«پیشنهاد برای تو»** on the talent home — open opportunities you haven't
+  applied to, ranked by match.
+- **Applicants ranked by match** for sponsors, each with a match badge.
+- **«بهترین‌های گراف»** on the opportunity page (sponsor/admin) — the
+  best-matching members who *haven't* applied: outbound discovery.
+- Demo backfill: the three seeded opportunities got real requirements
+  (migration 0004 + seed sync), so matching is visible on live data.
+
+### Added — notifications
+- **In-app notifications** (`notifications` table) + a **bell in the nav**
+  with an unread badge, and a `/notifications` page (mark-all-read, Jalali
+  timestamps). No SMTP — everything in-app. Emitted on: your application
+  changed status (→ seeker), new applicant (→ sponsor), and new opportunity
+  matching your skills (→ up to 100 matching members).
+
+### Changed — the palette, finally VISIBLE (v4.1 accent pass)
+- Feedback: "I said to use these… I cannot see blue and yellow on this!" The
+  teal/amber existed but only in whispers. Now: **primary buttons are teal
+  `#4CD1D6`** everywhere (`--color-action` token swap — nav login, hero CTA,
+  every form submit, active filter chips, dashboard bars), and **amber
+  `#FFAB00` has real presence**: stat-strip icons, how-it-works step numbers,
+  alternating feature-icon chips, the challenges identity, a warm second hero
+  glow, and the big CTA-band button.
+- **Landing copy rewritten** — sharper hero subtitle («این‌جا رزومه معیار
+  نیست — ساختن معیار است»), features recast around the live matching story
+  (transparent match score), how-it-works and both persona lists updated to
+  what the product actually does now.
+
+### Changed
+- **Migrations self-apply on deploy** — `drizzle-kit migrate` runs in the
+  Railway start command on the private network (drizzle-kit moved to prod
+  deps). Closes the "migrations are manual" gap; a failed migration keeps the
+  previous deployment serving.
+
+---
+
 ## [0.9.1] — 2026-07-05 — Make "apply" unmissable
 
 Feedback: a seeker logged in and couldn't find where to apply. The flow existed
