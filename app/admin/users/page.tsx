@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'کاربران — مدیریت' };
 
 const inputClass =
-  'bg-surface border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
+  'bg-canvas border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
 
 const ERROR_MESSAGES: Record<string, string> = {
   name: 'نام نامعتبر است.',
@@ -50,11 +50,11 @@ export default async function AdminUsersPage({
       <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
         <h2 className="text-h3 mb-4">ایجاد کاربر جدید</h2>
         {sp.created && <p className="mb-3 text-body-sm text-success">کاربر با موفقیت ایجاد شد.</p>}
-        {sp.error && <p className="mb-3 text-body-sm text-red-600">{ERROR_MESSAGES[sp.error] ?? 'خطا در ایجاد کاربر.'}</p>}
+        {sp.error && <p className="mb-3 text-body-sm text-red-400">{ERROR_MESSAGES[sp.error] ?? 'خطا در ایجاد کاربر.'}</p>}
         <form action={createUserAction} className="grid gap-3 sm:grid-cols-2">
           <input name="name" placeholder="نام" required className={inputClass} />
           <input name="email" type="email" placeholder="ایمیل" required className={inputClass} />
-          <input name="username" placeholder="نام کاربری (a-z، ۰-۹، -)" required className={inputClass} />
+          <input name="username" dir="ltr" placeholder="نام کاربری (a-z، ۰-۹، -)" required className={inputClass} />
           <input name="roleTitle" placeholder="عنوان شغلی (اختیاری)" className={inputClass} />
           <select name="role" defaultValue="talent" aria-label="نقش" className={inputClass}>
             <option value="talent">Talent · استعداد</option>
@@ -64,7 +64,7 @@ export default async function AdminUsersPage({
           <input name="password" type="text" placeholder="رمز عبور موقت (حداقل ۸ کاراکتر)" required minLength={8} className={inputClass} />
           <button
             type="submit"
-            className="sm:col-span-2 rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+            className="sm:col-span-2 rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
           >
             ایجاد کاربر
           </button>
@@ -81,7 +81,7 @@ export default async function AdminUsersPage({
           <div key={u.id} className="grid grid-cols-[2fr_1fr_1fr] items-center gap-3 border-t border-border-subtle px-4 py-3 text-body-sm">
             <div className="min-w-0">
               <div className="truncate text-fg">{u.name}</div>
-              <div className="truncate text-text-muted">{u.email}</div>
+              <div className="truncate text-text-tertiary">{u.email}</div>
             </div>
             <span className="text-text-tertiary">{roleLabel(u)}</span>
             <span className="text-text-tertiary">{u.status}</span>

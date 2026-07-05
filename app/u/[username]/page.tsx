@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getCurrentUser } from '@/lib/auth/session';
 import { ShieldCheck, ThumbsUp, Award, FolderKanban, Briefcase } from 'lucide-react';
 import { Avatar } from '@/components/atoms/Avatar';
 import { StatusPill } from '@/components/atoms/StatusPill';
@@ -30,6 +31,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const isSponsor = profile.accountType === 'sponsor';
   const sponsorOpps = isSponsor ? await getOpportunitiesBySponsor(profile.id) : [];
 
+  const viewer = await getCurrentUser();
+  const isOwnProfile = !!viewer?.username && viewer.username === profile.username;
+
   const stats = [
     { label: 'پروژه', value: profile.stats.projectCount, icon: FolderKanban },
     { label: 'مهارت تأیید شده', value: profile.stats.verifiedSkillCount, icon: ShieldCheck },
@@ -47,7 +51,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <h1 className="text-h2 leading-tight">{profile.name}</h1>
               {isSponsor ? (
-                <span className="bg-fg text-white text-micro px-2 py-0.5 rounded-full">Sponsor</span>
+                <span className="bg-info text-on-action text-micro px-2 py-0.5 rounded-full">Sponsor</span>
               ) : (
                 <>
                   <RoleBadge role={profile.roleBadge} />
@@ -57,6 +61,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             </div>
             {profile.roleTitle && <p className="text-body text-info">{profile.roleTitle}</p>}
           </div>
+          {isOwnProfile && (
+            <Link
+              href="/settings"
+              className="shrink-0 rounded-md border border-border bg-surface px-3 py-1.5 text-body-sm font-medium text-fg transition-colors hover:bg-surface-elevated"
+            >
+              ویرایش پروفایل
+            </Link>
+          )}
         </div>
 
         {/* ── Bio ── */}
@@ -103,7 +115,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                   <Link
                     key={o.id}
                     href={`/opportunities/${o.id}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:shadow-md"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:bg-surface-elevated hover:border-border"
                   >
                     <span className="truncate text-body text-fg">{o.title}</span>
                     <span className="shrink-0 text-body-sm text-text-tertiary">{toFaDigits(o.applicantCount)} متقاضی</span>

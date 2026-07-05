@@ -7,6 +7,43 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.9.0] — 2026-07-05 — Self-service editing + the v4 dark redesign
+
+### Added — own your profile (no more admin-only content)
+- **Settings hub** (`/settings`, signed-in) — edit your profile (name, role title,
+  bio, GitHub, LinkedIn); talent also manage **skills** (claim from the taxonomy
+  with a 1–5 level, remove — verification stays system-owned) and **projects**.
+- **Project editor** — `/projects/new` and `/projects/[id]/edit`: title,
+  description, stage, GitHub/demo links, skills + AI-tools as toggle pills, a
+  required IP-ownership confirmation, draft/publish, and delete (danger zone).
+  Owners get an **edit** button on their public project page.
+- **Opportunity close/reopen** for the owning sponsor (or admin), on the detail page.
+- Entry points: a تنظیمات nav link, "ویرایش پروفایل" on your own public profile,
+  "پروژه‌ی جدید" on the talent home.
+- New queries (`me.ts`, `taxonomy.ts`), actions (`profile.ts`, `projects.ts`),
+  and atoms/molecules (`PublishBadge`, `SkillCheckboxes`, `AiToolCheckboxes`,
+  `ProjectForm`); shared form classes in `lib/ui.ts`.
+- Security: every action is session-gated and ownership-scoped (`userId` from the
+  session, never the form); http(s)-only URL validation (`lib/validation.ts`)
+  so a stored link can never be a `javascript:` URL; join-table re-sync in a
+  transaction. Hardened via a 6-finding adversarial review (confirmed finding
+  fixed: keyboard-visible focus on the toggle pills).
+
+### Changed — design tokens v4 "obsidian" (dark)
+- **Full dark redesign** matching Amir's reference palettes, verbatim swatches:
+  charcoal canvas `#222121`, surface `#2A2A2A`, near-white text/buttons
+  `#FAFCFC` (+ `#E5E4E3` hover), hairline white-alpha borders, **bright teal
+  `#4CD1D6`** accent (links, active, focus, logo hub), emerald `#34D399`
+  verified, and the amber `#FFAB00` as a reserved micro-accent (Spotlight).
+- **White primary buttons with near-black text** (new `--color-on-action`
+  token); the landing's sponsor card + CTA band are now striking inverted
+  near-white cards on the dark canvas.
+- **Logo/favicon inverted** — white squircle, dark node-graph, teal hub.
+- Funnel/error colors rebuilt for dark (`amber-400/15`, `red-400/15` chips,
+  `red-400` errors); avatars on a mid-dark + teal palette; `color-scheme: dark`.
+
+---
+
 ## [0.8.2] — 2026-07-05 — Teal accent + hero polish
 
 ### Changed

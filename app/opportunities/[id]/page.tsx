@@ -8,7 +8,7 @@ import {
   getApplicants,
   getProjectOptions,
 } from '@/lib/db/queries/opportunities';
-import { applyAction, updateApplicationStatusAction } from '@/lib/actions/opportunities';
+import { applyAction, updateApplicationStatusAction, setOpportunityStatusAction } from '@/lib/actions/opportunities';
 import { Avatar } from '@/components/atoms/Avatar';
 import { ApplicationStatusPill } from '@/components/atoms/ApplicationStatusPill';
 import { EmptyState } from '@/components/atoms/EmptyState';
@@ -18,7 +18,7 @@ import { toFaDigits } from '@/lib/format';
 export const dynamic = 'force-dynamic';
 
 const inputClass =
-  'bg-surface border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
+  'bg-canvas border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -33,6 +33,11 @@ export default async function OpportunityDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ applied?: string; error?: string }>;
 }) {
+  const ERROR_MESSAGES: Record<string, string> = {
+    closed: 'این فرصت بسته شده است.',
+    own: 'نمی‌توانی به فرصت خودت اقدام کنی.',
+    forbidden: 'اجازه‌ی این کار را نداری.',
+  };
   const { id } = await params;
   const sp = await searchParams;
   const opp = await getOpportunityById(id);
@@ -66,13 +71,35 @@ export default async function OpportunityDetailPage({
       </p>
       <p className="mb-8 whitespace-pre-line text-body-lg leading-relaxed text-fg/90">{opp.description}</p>
 
+      {sp.error && ERROR_MESSAGES[sp.error] && (
+        <p className="mb-6 text-body-sm text-red-400">{ERROR_MESSAGES[sp.error]}</p>
+      )}
+
+      {canManage && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface p-4 shadow-sm">
+          <span className="text-body-sm text-text-tertiary">
+            {opp.status === 'open' ? 'این فرصت باز است و متقاضی می‌پذیرد.' : 'این فرصت بسته است.'}
+          </span>
+          <form action={setOpportunityStatusAction}>
+            <input type="hidden" name="opportunityId" value={id} />
+            <input type="hidden" name="status" value={opp.status === 'open' ? 'closed' : 'open'} />
+            <button
+              type="submit"
+              className="rounded-md border border-border bg-surface px-4 py-2 text-body-sm font-medium text-fg transition-colors hover:bg-canvas"
+            >
+              {opp.status === 'open' ? 'بستن فرصت' : 'بازگشایی فرصت'}
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* ── Action zone ── */}
       {!user && (
         <div className="rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
           <p className="mb-3 text-body text-fg">برای اقدام به این فرصت وارد شوید.</p>
           <Link
             href="/login"
-            className="inline-block rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+            className="inline-block rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
           >
             ورود
           </Link>
@@ -110,7 +137,7 @@ export default async function OpportunityDetailPage({
           )}
           <button
             type="submit"
-            className="rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+            className="rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
           >
             ارسال درخواست
           </button>

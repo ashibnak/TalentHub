@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="text-body-sm text-text-muted mb-4">این پروفایل وجود ندارد یا حذف شده است.</p>
         <Link
           href="/"
-          className="inline-block bg-action hover:bg-action-hover text-white px-4 py-2 rounded-md text-body font-medium transition-colors"
+          className="inline-block bg-action hover:bg-action-hover text-on-action px-4 py-2 rounded-md text-body font-medium transition-colors"
         >
           بازگشت به خانه
         </Link>

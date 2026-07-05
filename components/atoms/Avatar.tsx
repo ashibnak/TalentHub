@@ -1,7 +1,7 @@
-// On-theme avatar palette (v3): dark monochrome + teal accent. All dark enough
-// for white text (a bright accent bg would make white initials unreadable).
-// Background is chosen from the name hash; text is always white.
-const AVATAR_COLORS = ['#0a0a0a', '#1f1f1f', '#0f766e', '#3f3f46', '#134e4a', '#525252'];
+// On-theme avatar palette (v4 dark): mid-dark grays + deep teal, all a step
+// lighter than the charcoal surfaces so avatars read on cards, and all dark
+// enough for white text. Background from the name hash; text always white.
+const AVATAR_COLORS = ['#3f3f46', '#52525b', '#0f766e', '#4a4a4a', '#134e4a', '#5f5f66'];
 
 function pickAvatarColorIndex(name: string) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);

@@ -4,7 +4,7 @@ export type BuildingStatus = 'building' | 'shipped' | 'idle';
 const STATUS_CONFIG: Record<BuildingStatus, { label: string; bg: string; text: string; dot: string }> = {
   building: { label: 'Currently building', bg: 'bg-info-subtle', text: 'text-info', dot: 'bg-info' },
   shipped: { label: 'Shipped', bg: 'bg-success-subtle', text: 'text-success', dot: 'bg-success' },
-  idle: { label: 'Idle', bg: 'bg-fg/5', text: 'text-text-muted', dot: 'bg-fg/30' },
+  idle: { label: 'Idle', bg: 'bg-fg/5', text: 'text-text-tertiary', dot: 'bg-fg/30' },
 };
 
 export function StatusPill({ status }: { status: BuildingStatus }) {

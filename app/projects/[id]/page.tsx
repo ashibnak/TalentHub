@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Github, ExternalLink, ThumbsUp } from 'lucide-react';
+import { Github, ExternalLink, ThumbsUp, Pencil } from 'lucide-react';
 import { getProjectById } from '@/lib/db/queries/projects';
+import { getCurrentUser } from '@/lib/auth/session';
 import { Avatar } from '@/components/atoms/Avatar';
 import { SkillTag } from '@/components/atoms/SkillTag';
 import { AiToolTag } from '@/components/atoms/AiToolTag';
@@ -21,6 +22,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const project = await getProjectById(id);
   if (!project) notFound();
+
+  const viewer = await getCurrentUser();
+  const isOwner = !!viewer?.username && viewer.username === project.owner.username;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -66,6 +70,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <ThumbsUp size={16} strokeWidth={1.5} />
           {toFaDigits(project.upvoteCount)}
         </span>
+        {isOwner && (
+          <Link
+            href={`/projects/${project.id}/edit`}
+            className="ms-auto inline-flex items-center gap-2 rounded-md border border-border bg-transparent px-4 py-2 text-body font-medium text-fg transition-colors hover:bg-info-subtle"
+          >
+            <Pencil size={16} strokeWidth={1.5} />
+            ویرایش
+          </Link>
+        )}
       </div>
 
       {project.skills.length > 0 && (

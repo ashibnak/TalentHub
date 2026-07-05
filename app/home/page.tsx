@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'خانه — AIGraph' };
 
 const inputClass =
-  'bg-surface border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
+  'bg-canvas border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const user = await requireUser();
@@ -30,13 +30,25 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     const opportunities = await getMyOpportunities(user.id);
     return (
       <main className="mx-auto max-w-3xl px-4 py-12">
-        <h1 className="text-h1 mb-1">سلام {user.name}</h1>
-        <p className="text-body-sm text-text-tertiary mb-8">پنل کارفرما — فرصت بگذار و متقاضی‌ها را بررسی کن</p>
+        <div className="mb-8 flex items-center justify-between gap-3">
+          <div>
+            <h1 className="text-h1 mb-1">سلام {user.name}</h1>
+            <p className="text-body-sm text-text-tertiary">پنل کارفرما — فرصت بگذار و متقاضی‌ها را بررسی کن</p>
+          </div>
+          {user.username && (
+            <Link
+              href={`/u/${user.username}`}
+              className="shrink-0 rounded-md border border-border bg-surface px-4 py-2 text-body font-medium text-fg shadow-sm transition-colors hover:bg-surface-elevated"
+            >
+              پروفایل من
+            </Link>
+          )}
+        </div>
 
         <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
           <h2 className="text-h3 mb-4">فرصت جدید</h2>
           {sp.error === 'opp_invalid' && (
-            <p className="mb-3 text-body-sm text-red-600">عنوان (حداقل ۳ کاراکتر) و توضیحات (حداقل ۱۰ کاراکتر) را کامل کن.</p>
+            <p className="mb-3 text-body-sm text-red-400">عنوان (حداقل ۳ کاراکتر) و توضیحات (حداقل ۱۰ کاراکتر) را کامل کن.</p>
           )}
           <form action={createOpportunityAction} className="flex flex-col gap-3">
             <label className="block text-body-sm text-text-tertiary">
@@ -49,7 +61,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             </label>
             <button
               type="submit"
-              className="self-start rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+              className="self-start rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
             >
               انتشار فرصت
             </button>
@@ -63,7 +75,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
               <Link
                 key={o.id}
                 href={`/opportunities/${o.id}`}
-                className="flex items-center justify-between rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:shadow-md"
+                className="flex items-center justify-between rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:bg-surface-elevated hover:border-border"
               >
                 <span className="truncate text-body text-fg">{o.title}</span>
                 <span className="shrink-0 text-body-sm text-text-tertiary">
@@ -88,14 +100,22 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <h1 className="text-h1 mb-1">سلام {user.name}</h1>
           <p className="text-body-sm text-text-tertiary">پیگیری درخواست‌ها و کشف فرصت‌ها</p>
         </div>
-        {user.username && (
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Link
-            href={`/u/${user.username}`}
-            className="shrink-0 rounded-md border border-border bg-surface px-4 py-2 text-body font-medium text-fg shadow-sm transition-colors hover:bg-canvas"
+            href="/projects/new"
+            className="rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
           >
-            پروفایل من
+            پروژه‌ی جدید
           </Link>
-        )}
+          {user.username && (
+            <Link
+              href={`/u/${user.username}`}
+              className="rounded-md border border-border bg-surface px-4 py-2 text-body font-medium text-fg shadow-sm transition-colors hover:bg-surface-elevated"
+            >
+              پروفایل من
+            </Link>
+          )}
+        </div>
       </div>
 
       <h2 className="text-h3 mb-4">درخواست‌های من</h2>
@@ -105,7 +125,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <Link
               key={a.id}
               href={`/opportunities/${a.opportunityId}`}
-              className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:shadow-md"
+              className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:bg-surface-elevated hover:border-border"
             >
               <div className="min-w-0">
                 <div className="truncate text-body text-fg">{a.opportunityTitle}</div>

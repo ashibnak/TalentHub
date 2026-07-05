@@ -123,7 +123,7 @@ export function DirectoryFilters({ facets, showSort = false }: { facets: Directo
           {facets.skills.map((s) => {
             const active = selectedSkills.includes(s.slug);
             return (
-              <button key={s.slug} type="button" aria-pressed={active} onClick={() => toggleMulti('skill', s.slug)} className={chip(active, 'bg-action text-white border-transparent')}>
+              <button key={s.slug} type="button" aria-pressed={active} onClick={() => toggleMulti('skill', s.slug)} className={chip(active, 'bg-action text-on-action border-transparent')}>
                 {s.name}
               </button>
             );
@@ -136,7 +136,7 @@ export function DirectoryFilters({ facets, showSort = false }: { facets: Directo
           {facets.tools.map((t) => {
             const active = selectedTools.includes(t.slug);
             return (
-              <button key={t.slug} type="button" aria-pressed={active} onClick={() => toggleMulti('tool', t.slug)} className={chip(active, 'bg-success text-white border-transparent')}>
+              <button key={t.slug} type="button" aria-pressed={active} onClick={() => toggleMulti('tool', t.slug)} className={chip(active, 'bg-success text-on-action border-transparent')}>
                 {t.label}
               </button>
             );

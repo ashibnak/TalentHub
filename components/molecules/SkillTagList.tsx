@@ -1,4 +1,5 @@
 import { SkillTag } from '@/components/atoms/SkillTag';
+import { toFaDigits } from '@/lib/format';
 
 // Compact skill list for directory/user cards (plan Week 5): shows the first 6
 // tags then a +N collapse chip (design system §5.4). The full public profile
@@ -17,7 +18,7 @@ export function SkillTagList({ tags }: { tags: Tag[] }) {
         <SkillTag key={tag.slug ?? tag.label} label={tag.label} verified={tag.verified} />
       ))}
       {hiddenCount > 0 && (
-        <span className="bg-fg/5 text-text-muted text-micro px-2 py-0.5 rounded-sm">+{hiddenCount}</span>
+        <span className="bg-fg/5 text-text-muted text-micro px-2 py-0.5 rounded-sm">+{toFaDigits(hiddenCount)}</span>
       )}
     </div>
   );

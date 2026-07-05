@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'ورود — AIGraph' };
 
 const inputClass =
-  'mt-1 w-full bg-surface border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
+  'mt-1 w-full bg-canvas border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
@@ -22,7 +22,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <h1 className="text-h2">ورود به AIGraph</h1>
       </div>
       <form action={loginAction} className="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-        {error && <p className="text-body-sm text-red-600">ایمیل یا رمز عبور نادرست است.</p>}
+        {error && <p className="text-body-sm text-red-400">ایمیل یا رمز عبور نادرست است.</p>}
         <label className="block text-body-sm text-text-tertiary">
           ایمیل
           <input name="email" type="email" required autoComplete="email" className={inputClass} />
@@ -33,7 +33,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </label>
         <button
           type="submit"
-          className="mt-1 rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+          className="mt-1 rounded-md bg-action px-4 py-2 text-body font-medium text-on-action shadow-sm transition-colors hover:bg-action-hover"
         >
           ورود
         </button>

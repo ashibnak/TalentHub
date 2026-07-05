@@ -89,3 +89,25 @@ export async function updateApplicationStatusAction(formData: FormData) {
   await db.update(applications).set({ status: status as AppStatus, updatedAt: new Date() }).where(eq(applications.id, applicationId));
   revalidatePath(`/opportunities/${row.oppId}`);
 }
+
+/** Sponsor (owner) or admin closes / reopens an opportunity. */
+export async function setOpportunityStatusAction(formData: FormData) {
+  const user = await requireUser();
+  const opportunityId = String(formData.get('opportunityId') ?? '');
+  const status = String(formData.get('status') ?? '');
+  if (!opportunityId || (status !== 'open' && status !== 'closed')) redirect('/home');
+
+  const db = getDb();
+  const [opp] = await db
+    .select({ id: opportunities.id, sponsorId: opportunities.sponsorId })
+    .from(opportunities)
+    .where(eq(opportunities.id, opportunityId))
+    .limit(1);
+  if (!opp) redirect('/home');
+  if (opp.sponsorId !== user.id && !user.isAdmin) redirect(`/opportunities/${opportunityId}?error=forbidden`);
+
+  await db.update(opportunities).set({ status: status as 'open' | 'closed' }).where(eq(opportunities.id, opportunityId));
+  revalidatePath('/opportunities');
+  revalidatePath(`/opportunities/${opportunityId}`);
+  redirect(`/opportunities/${opportunityId}`);
+}

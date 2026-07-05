@@ -70,13 +70,13 @@ export default async function Home() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/people"
-              className="rounded-full bg-action px-6 py-3 text-body-lg font-medium text-white transition-colors hover:bg-action-hover"
+              className="rounded-full bg-action px-6 py-3 text-body-lg font-medium text-on-action transition-colors hover:bg-action-hover"
             >
               کاوش استعدادها
             </Link>
             <Link
               href="/opportunities"
-              className="rounded-full border border-border bg-surface px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-canvas"
+              className="rounded-full border border-border bg-surface px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-surface-elevated"
             >
               دیدن فرصت‌ها
             </Link>
@@ -164,18 +164,18 @@ export default async function Home() {
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
           </div>
-          <div className="rounded-2xl bg-fg p-8 text-white">
-            <h2 className="mb-2 text-h2 text-white">برای کارفرماها</h2>
-            <p className="mb-6 text-body text-white/70">استعداد واقعی را پیدا کن، نه رزومه‌ی خوش‌آب‌ورنگ.</p>
+          <div className="rounded-2xl bg-fg p-8 text-on-action">
+            <h2 className="mb-2 text-h2 text-on-action">برای کارفرماها</h2>
+            <p className="mb-6 text-body text-on-action/70">استعداد واقعی را پیدا کن، نه رزومه‌ی خوش‌آب‌ورنگ.</p>
             <ul className="mb-6 flex flex-col gap-3">
               {['فرصت و نیازت را منتشر کن', 'متقاضی‌های واقعی با پروژه‌ی اثبات‌شده', 'در قیف استخدام بررسی و انتخاب کن', 'به کل گراف استعدادها دسترسی داشته باش'].map((t) => (
-                <li key={t} className="flex items-center gap-2 text-body text-white">
-                  <Check size={16} strokeWidth={2} className="text-info shrink-0" />
+                <li key={t} className="flex items-center gap-2 text-body text-on-action">
+                  <Check size={16} strokeWidth={2} className="text-info-inverted shrink-0" />
                   {t}
                 </li>
               ))}
             </ul>
-            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body font-medium text-white transition-colors hover:text-white/80">
+            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body font-medium text-on-action transition-colors hover:text-on-action/80">
               دیدن فرصت‌ها
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
@@ -222,13 +222,13 @@ export default async function Home() {
       {/* ── Final CTA ── */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
         <div className="rounded-2xl bg-fg px-8 py-16 text-center">
-          <h2 className="mb-3 text-h1 text-white">استعدادت را به گراف اضافه کن</h2>
-          <p className="mx-auto mb-8 max-w-lg text-body-lg text-white/70">
+          <h2 className="mb-3 text-h1 text-on-action">استعدادت را به گراف اضافه کن</h2>
+          <p className="mx-auto mb-8 max-w-lg text-body-lg text-on-action/70">
             پروفایل بساز، پروژه‌هایت را نشان بده، و به فرصت‌های واقعی وصل شو.
           </p>
           <Link
             href="/login"
-            className="inline-block rounded-full bg-white px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-white/90"
+            className="inline-block rounded-full bg-canvas px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-surface"
           >
             ورود به حساب
           </Link>

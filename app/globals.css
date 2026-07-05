@@ -1,48 +1,57 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ─────────────────────────────────────────────────────────────
-   Design tokens — v3 "monochrome + accent" (Vercel / Linear / Stripe).
-   Black + white + neutral grays, BLACK primary buttons, one teal accent
-   used sparingly, hairline borders, tight type. Fonts unchanged.
+   Design tokens — v4 "obsidian" (dark charcoal + bright teal).
+   Built from Amir's reference palettes, verbatim swatches:
+   #222121 canvas · #2A2A2A surface · #FAFCFC text/action · #E5E4E3 hover
+   · #4CD1D6 teal accent · #FFAB00 amber micro-accent (spotlight).
+   White primary buttons with near-black text (Vercel/Linear dark).
+   Fonts unchanged (Vazirmatn).
    ───────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
 
-  /* Surfaces */
-  --color-canvas: #fafafa;
-  --color-surface: #ffffff;
-  --color-surface-elevated: #ffffff;
-  --color-spotlight: #f0fdfa;
+  /* Surfaces — charcoal ladder */
+  --color-canvas: #222121;
+  --color-surface: #2a2a2a;
+  --color-surface-elevated: #333232;
+  --color-spotlight: rgba(76, 209, 214, 0.08);
 
-  /* Primary action — near-black (Vercel-style buttons) */
-  --color-action: #0a0a0a;
-  --color-action-hover: #2a2a2a;
-  --color-action-subtle: rgba(10, 10, 10, 0.05);
+  /* Primary action — near-white (dark-mode primary buttons) */
+  --color-action: #fafcfc;
+  --color-action-hover: #e5e4e3;
+  --color-action-subtle: rgba(250, 252, 252, 0.07);
+  /* Text/icon color to sit ON action / info / success fills (all bright) */
+  --color-on-action: #1a1a1a;
 
-  /* Accent — teal (deep, readable as text/fills; the bright #4CD1D6 pop lives in
-     the logo hub + hero glow). B&W base + one accent. */
-  --color-info: #0f766e;
-  --color-info-subtle: rgba(15, 118, 110, 0.08);
-  --color-info-muted: rgba(15, 118, 110, 0.14);
+  /* Accent — bright teal. High contrast on charcoal; used for links, active,
+     focus, the logo hub. Text on a teal fill is on-action (dark). */
+  --color-info: #4cd1d6;
+  --color-info-subtle: rgba(76, 209, 214, 0.10);
+  --color-info-muted: rgba(76, 209, 214, 0.18);
+  /* Deep teal for accents ON the inverted (near-white) cards, where the bright
+     teal would wash out. */
+  --color-info-inverted: #0f766e;
 
-  /* Success — emerald (verified / accepted), minimal */
-  --color-success: #059669;
-  --color-success-subtle: rgba(5, 150, 105, 0.10);
-  --color-success-muted: rgba(5, 150, 105, 0.14);
+  /* Success — bright emerald (verified / accepted) */
+  --color-success: #34d399;
+  --color-success-subtle: rgba(52, 211, 153, 0.12);
+  --color-success-muted: rgba(52, 211, 153, 0.20);
 
-  /* Text — near-black + neutral gray scale */
-  --color-fg: #0a0a0a;
-  --color-text-secondary: #0f766e;
-  --color-text-tertiary: #525252;
-  --color-text-muted: #737373;
-  --color-text-disabled: #a3a3a3;
+  /* Micro-accent — amber, reserved for Spotlight moments */
+  --color-highlight: #ffab00;
 
-  /* Borders — neutral hairlines */
-  --color-border: #e5e5e5;
-  --color-border-subtle: #f0f0f0;
-  --color-border-focus: #0a0a0a;
+  /* Text — near-white + neutral gray-on-dark scale */
+  --color-fg: #fafcfc;
+  --color-text-secondary: #4cd1d6;
+  --color-text-tertiary: #b5b4b4;
+  --color-text-muted: #8c8b8b;
+  --color-text-disabled: #5f5e5e;
+
+  /* Borders — light hairlines at low alpha */
+  --color-border: rgba(250, 252, 252, 0.14);
+  --color-border-subtle: rgba(250, 252, 252, 0.08);
+  --color-border-focus: #4cd1d6;
 
   /* Type scale — tight, editorial */
   --text-display: 3.75rem;
@@ -87,10 +96,10 @@
 
 @layer base {
   html {
-    color-scheme: light;
+    color-scheme: dark;
     background-color: var(--color-canvas);
   }
   ::selection {
-    background-color: rgba(76, 209, 214, 0.30);
+    background-color: rgba(76, 209, 214, 0.35);
   }
 }

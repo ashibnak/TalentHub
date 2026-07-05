@@ -38,9 +38,14 @@ export function Nav({ user }: { user: { name: string; isAdmin: boolean } | null 
             </Link>
           )}
           {user && !user.isAdmin && (
-            <Link href="/home" aria-current={pathname === '/home' ? 'page' : undefined} className={linkClass(pathname === '/home')}>
-              خانه
-            </Link>
+            <>
+              <Link href="/home" aria-current={pathname === '/home' ? 'page' : undefined} className={linkClass(pathname === '/home')}>
+                خانه
+              </Link>
+              <Link href="/settings" aria-current={pathname.startsWith('/settings') ? 'page' : undefined} className={linkClass(pathname.startsWith('/settings'))}>
+                تنظیمات
+              </Link>
+            </>
           )}
           {user ? (
             <form action={logoutAction}>
@@ -51,7 +56,7 @@ export function Nav({ user }: { user: { name: string; isAdmin: boolean } | null 
           ) : (
             <Link
               href="/login"
-              className="rounded-full bg-action px-4 py-1.5 text-body-sm font-medium text-white transition-colors hover:bg-action-hover"
+              className="rounded-full bg-action px-4 py-1.5 text-body-sm font-medium text-on-action transition-colors hover:bg-action-hover"
             >
               ورود
             </Link>
