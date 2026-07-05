@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Vazirmatn } from 'next/font/google';
+import { Nav } from '@/components/layout/Nav';
 import './globals.css';
 
 const vazirmatn = Vazirmatn({
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl" className={`dark ${vazirmatn.variable}`}>
       <body className="min-h-screen bg-canvas font-sans text-white antialiased">
+        <Nav />
         {children}
       </body>
     </html>

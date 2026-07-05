@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import {
   users,
@@ -150,4 +150,63 @@ export const getProfileByUsername = cache(async (username: string): Promise<Prof
       upvotesReceived,
     },
   };
+});
+
+export type DirectoryUser = {
+  username: string;
+  name: string;
+  roleTitle: string | null;
+  roleBadge: RoleBadge;
+  topSkills: { slug: string; name: string; verified: boolean }[];
+};
+
+/**
+ * People directory (plan Week 5). Real members only (active, non-admin, with a
+ * username). Fetches users + their skills/domains in a fixed number of queries
+ * (no N+1) and computes role_badge + top skills in JS.
+ */
+export const getPeopleDirectory = cache(async (): Promise<DirectoryUser[]> => {
+  const db = getDb();
+
+  const userRows = await db
+    .select({ id: users.id, username: users.username, name: users.name, roleTitle: users.roleTitle })
+    .from(users)
+    .where(and(eq(users.status, 'active'), eq(users.isAdmin, false), isNotNull(users.username)))
+    .orderBy(users.name);
+  if (userRows.length === 0) return [];
+
+  const ids = userRows.map((u) => u.id);
+  const [skillRows, domainRows] = await Promise.all([
+    db
+      .select({
+        userId: userSkills.userId,
+        slug: skills.slug,
+        name: skills.name,
+        category: skills.category,
+        verified: userSkills.verified,
+      })
+      .from(userSkills)
+      .innerJoin(skills, eq(userSkills.skillId, skills.id))
+      .where(inArray(userSkills.userId, ids))
+      .orderBy(desc(userSkills.verified), desc(userSkills.claimedLevel), skills.name),
+    db
+      .select({ userId: userDomainExpertise.userId })
+      .from(userDomainExpertise)
+      .where(inArray(userDomainExpertise.userId, ids)),
+  ]);
+
+  const domainCountByUser = new Map<string, number>();
+  for (const d of domainRows) domainCountByUser.set(d.userId, (domainCountByUser.get(d.userId) ?? 0) + 1);
+
+  return userRows.map((u) => {
+    const userSkillRows = skillRows.filter((s) => s.userId === u.id);
+    const technicalSkillCount = userSkillRows.filter((s) => s.category !== 'ai_tool').length;
+    return {
+      username: u.username!,
+      name: u.name,
+      roleTitle: u.roleTitle,
+      roleBadge: computeRoleBadge({ technicalSkillCount, domainCount: domainCountByUser.get(u.id) ?? 0 }),
+      topSkills: userSkillRows.slice(0, 3).map((s) => ({ slug: s.slug, name: s.name, verified: s.verified })),
+    };
+  });
 });

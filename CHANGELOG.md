@@ -7,6 +7,37 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.4.0] — 2026-07-05 — Live product: landing, nav & directories
+
+The app is now a browsable product, not just isolated profile URLs.
+
+### Added
+- **Landing page** (`/`) with the wordmark hero, tagline, both-personas framing,
+  and live platform stats (members / projects / challenges / verified skills).
+- **Top navigation** (`components/layout/Nav.tsx` + `Logo`) on every page —
+  People / Projects / Challenges, with active state + `aria-current`.
+- **People directory** (`/people`) — member cards (avatar, role badge, top skills);
+  the system admin account is excluded.
+- **Projects directory** (`/projects`) + **project detail** (`/projects/[id]`) —
+  stage, owner, skills, AI tools, GitHub/demo links, and linked challenge problems.
+- **Challenges directory** (`/challenges`) + **challenge detail** (`/challenges/[slug]`)
+  — problems with a **Spotlight** badge and the **"Domain experts in this area"**
+  matchmaking grid (plan §3.5).
+- Query modules `stats.ts`, `projects.ts`, `challenges.ts`, and `getPeopleDirectory`.
+- Shared atoms: `EmptyState`, `AiToolTag`, `SpotlightBadge`.
+- Expanded demo seed (`db:seed:demo`): ~11 members across all personas, 10 projects
+  (several linked to challenge problems), and one spotlighted problem.
+
+### Fixed
+- Hardened via a second 6-dimension adversarial review (10 findings): challenge
+  project-counts now tally only published projects via active problems; excluded
+  handle-less owners from project/expert links (no `/u/null`); domain-expert
+  ordering is years-desc **nulls-last** then last-active; removed off-scale
+  `py-24`/`size-40` and the nav `backdrop-blur` (anti-pattern §9); fixed h1→h3
+  heading skips on list pages; added `aria-current` to the nav.
+
+---
+
 ## [0.3.0] — 2026-07-05 — DB-backed profiles
 
 The public profile is now served dynamically from Postgres.

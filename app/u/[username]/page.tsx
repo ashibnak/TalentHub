@@ -7,6 +7,7 @@ import { RoleBadge } from '@/components/atoms/RoleBadge';
 import { ProjectCard } from '@/components/molecules/ProjectCard';
 import { ProfileSkills } from '@/components/molecules/ProfileSkills';
 import { DomainExpertiseList } from '@/components/molecules/DomainExpertiseList';
+import { EmptyState } from '@/components/atoms/EmptyState';
 import { getProfileByUsername } from '@/lib/db/queries/users';
 import { toFaDigits } from '@/lib/format';
 
@@ -111,11 +112,7 @@ export default async function ProfilePage({
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <FolderKanban className="text-info mx-auto mb-3" size={32} strokeWidth={1.5} />
-              <p className="text-body text-white mb-1.5">هنوز پروژه‌ای ثبت نشده</p>
-              <p className="text-body-sm text-text-muted">این کاربر هنوز پروژه‌ای اضافه نکرده است</p>
-            </div>
+            <EmptyState icon={FolderKanban} title="هنوز پروژه‌ای ثبت نشده" hint="این کاربر هنوز پروژه‌ای اضافه نکرده است" />
           )}
         </section>
 
