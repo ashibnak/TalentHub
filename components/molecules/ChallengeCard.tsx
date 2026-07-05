@@ -8,10 +8,10 @@ export function ChallengeCard({ challenge }: { challenge: DirectoryChallenge }) 
   return (
     <Link
       href={`/challenges/${challenge.slug}`}
-      className="block bg-surface border border-border-subtle rounded-lg p-6 hover:bg-surface-elevated transition-colors"
+      className="block bg-surface border border-border-subtle rounded-lg p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
-      <h2 className="text-h3 text-white mb-2">{challenge.title}</h2>
-      <p className="text-body-sm text-white/60 leading-relaxed mb-4 line-clamp-2">{challenge.description}</p>
+      <h2 className="text-h3 text-fg mb-2">{challenge.title}</h2>
+      <p className="text-body-sm text-text-tertiary leading-relaxed mb-4 line-clamp-2">{challenge.description}</p>
       <div className="flex items-center gap-4 text-body-sm text-text-tertiary">
         <span className="flex items-center gap-1">
           <Target size={14} strokeWidth={1.5} />

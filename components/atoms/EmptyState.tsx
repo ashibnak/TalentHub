@@ -5,7 +5,7 @@ export function EmptyState({ icon: Icon, title, hint }: { icon: LucideIcon; titl
   return (
     <div className="text-center py-16">
       <Icon className="text-info mx-auto mb-3" size={32} strokeWidth={1.5} />
-      <p className="text-body text-white mb-2">{title}</p>
+      <p className="text-body text-fg mb-2">{title}</p>
       {hint && <p className="text-body-sm text-text-muted">{hint}</p>}
     </div>
   );

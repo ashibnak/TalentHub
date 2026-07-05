@@ -1,6 +1,7 @@
 import { cache } from 'react';
-import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, isNotNull, type SQL } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
+import { escapeLike } from '@/lib/db/queries/filters';
 import {
   users,
   skills,
@@ -23,9 +24,30 @@ export type DirectoryProject = {
   skills: { slug: string; name: string }[];
 };
 
-/** Projects directory (plan Week 5) — published projects, most-upvoted first. */
-export const getProjectsDirectory = cache(async (): Promise<DirectoryProject[]> => {
+export type ProjectFilters = { q?: string; skills?: string[]; tools?: string[]; sort?: 'newest' | 'upvotes' };
+
+/** Projects directory (plan Week 5) — published projects with skill/tool filters,
+ *  title search, and sort (most-upvoted default, or newest). */
+export const getProjectsDirectory = cache(async (filters: ProjectFilters = {}): Promise<DirectoryProject[]> => {
   const db = getDb();
+
+  const conditions = [eq(projects.status, 'published'), isNotNull(users.username)];
+  const q = filters.q?.trim();
+  if (q) conditions.push(ilike(projects.title, `%${escapeLike(q)}%`));
+  if (filters.skills?.length) {
+    conditions.push(
+      inArray(
+        projects.id,
+        db.select({ id: projectSkills.projectId }).from(projectSkills).innerJoin(skills, eq(projectSkills.skillId, skills.id)).where(inArray(skills.slug, filters.skills)),
+      ),
+    );
+  }
+  if (filters.tools?.length) {
+    conditions.push(
+      inArray(projects.id, db.select({ id: projectAiTools.projectId }).from(projectAiTools).where(inArray(projectAiTools.toolSlug, filters.tools))),
+    );
+  }
+  const orderBy: SQL[] = filters.sort === 'newest' ? [desc(projects.createdAt)] : [desc(projects.upvoteCount), desc(projects.createdAt)];
 
   const rows = await db
     .select({
@@ -39,8 +61,8 @@ export const getProjectsDirectory = cache(async (): Promise<DirectoryProject[]> 
     })
     .from(projects)
     .innerJoin(users, eq(projects.userId, users.id))
-    .where(and(eq(projects.status, 'published'), isNotNull(users.username)))
-    .orderBy(desc(projects.upvoteCount), desc(projects.createdAt));
+    .where(and(...conditions))
+    .orderBy(...orderBy);
   if (rows.length === 0) return [];
 
   const ids = rows.map((r) => r.id);

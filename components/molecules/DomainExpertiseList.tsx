@@ -13,7 +13,7 @@ export function DomainExpertiseList({ domains }: { domains: DomainExpertiseItem[
   return (
     <ul className="flex flex-col gap-1.5">
       {domains.map((d) => (
-        <li key={d.slug} className="text-body-sm text-white/80">
+        <li key={d.slug} className="text-body-sm text-fg">
           {d.name}
           {d.yearsExperience != null && (
             <span className="text-text-muted"> · {toFaDigits(d.yearsExperience)} سال</span>

@@ -56,13 +56,13 @@ export default async function ProfilePage({
             </div>
             {profile.roleTitle && <p className="text-body text-info">{profile.roleTitle}</p>}
           </div>
-          <button className="shrink-0 bg-transparent text-white border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors">
+          <button className="shrink-0 bg-transparent text-fg border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors">
             دنبال کن
           </button>
         </div>
 
         {/* ── Bio ── */}
-        {profile.bio && <p className="text-body-lg text-white/80 mb-6">{profile.bio}</p>}
+        {profile.bio && <p className="text-body-lg text-fg/80 mb-6">{profile.bio}</p>}
 
         {/* ── Stats row ── */}
         <div className="border-t border-b border-border-subtle grid grid-cols-4 mb-8">
@@ -71,7 +71,7 @@ export default async function ProfilePage({
               key={label}
               className={`flex flex-col items-center py-4 gap-1 ${i > 0 ? 'border-s border-border-subtle' : ''}`}
             >
-              <span className="text-h2 text-white">{toFaDigits(value)}</span>
+              <span className="text-h2 text-fg">{toFaDigits(value)}</span>
               <div className="flex items-center gap-1 text-info">
                 <Icon size={14} strokeWidth={1.5} />
                 <span className="text-micro">{label}</span>

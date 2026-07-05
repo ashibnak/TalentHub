@@ -3,13 +3,13 @@ import { FlaskConical, Zap, Wrench, Rocket, ShieldCheck, type LucideIcon } from 
 // The 5 project stages (schema `project_stage`). Labels stay English (§7.5).
 export type ProjectStage = 'experiment' | 'weekend_hack' | 'building' | 'shipped' | 'maintained';
 
-// Color ladder from design system §5.4 (opacity/energy ladder + icon, not a rainbow).
+// Energy ladder: neutral → light indigo → indigo → emerald (shipped) → outline.
 const STAGE_CONFIG: Record<ProjectStage, { label: string; className: string; Icon: LucideIcon }> = {
-  experiment: { label: 'Experiment', className: 'bg-white/8 text-white/70', Icon: FlaskConical },
-  weekend_hack: { label: 'Weekend Hack', className: 'bg-info-muted text-white', Icon: Zap },
-  building: { label: 'Building', className: 'bg-info text-surface', Icon: Wrench },
-  shipped: { label: 'Shipped', className: 'bg-action text-white', Icon: Rocket },
-  maintained: { label: 'Maintained', className: 'border border-white/40 text-white', Icon: ShieldCheck },
+  experiment: { label: 'Experiment', className: 'bg-fg/5 text-text-tertiary', Icon: FlaskConical },
+  weekend_hack: { label: 'Weekend Hack', className: 'bg-info-subtle text-info', Icon: Zap },
+  building: { label: 'Building', className: 'bg-info text-white', Icon: Wrench },
+  shipped: { label: 'Shipped', className: 'bg-success text-white', Icon: Rocket },
+  maintained: { label: 'Maintained', className: 'border border-border text-text-tertiary', Icon: ShieldCheck },
 };
 
 export function StageBadge({ stage }: { stage: ProjectStage }) {

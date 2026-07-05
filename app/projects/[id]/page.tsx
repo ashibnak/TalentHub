@@ -32,11 +32,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       {/* owner */}
       <Link href={`/u/${project.owner.username}`} className="group inline-flex items-center gap-2 mb-6">
         <Avatar name={project.owner.name} size={32} />
-        <span className="text-body text-white group-hover:text-info transition-colors">{project.owner.name}</span>
+        <span className="text-body text-fg group-hover:text-info transition-colors">{project.owner.name}</span>
         {project.owner.roleTitle && <span className="text-body-sm text-text-tertiary">· {project.owner.roleTitle}</span>}
       </Link>
 
-      <p className="text-body-lg text-white/80 leading-relaxed mb-6">{project.description}</p>
+      <p className="text-body-lg text-fg/80 leading-relaxed mb-6">{project.description}</p>
 
       {/* links + upvotes */}
       <div className="flex flex-wrap items-center gap-3 mb-8">
@@ -45,7 +45,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-transparent text-white border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-transparent text-fg border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors"
           >
             <Github size={16} strokeWidth={1.5} />
             GitHub
@@ -56,7 +56,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             href={project.demoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-transparent text-white border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-transparent text-fg border border-border hover:bg-info-subtle px-4 py-2 rounded-md text-body font-medium transition-colors"
           >
             <ExternalLink size={16} strokeWidth={1.5} />
             دمو
@@ -98,7 +98,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <Link
                 key={p.problemId}
                 href={`/challenges/${p.challengeSlug}`}
-                className="text-body text-info hover:text-white transition-colors"
+                className="text-body text-info hover:text-fg transition-colors"
               >
                 {p.challengeTitle} · {p.problemTitle}
               </Link>

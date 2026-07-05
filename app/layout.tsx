@@ -15,14 +15,10 @@ export const metadata: Metadata = {
   description: 'شبکه‌ی استعدادهای AI ایران',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl" className={`dark ${vazirmatn.variable}`}>
-      <body className="min-h-screen bg-canvas font-sans text-white antialiased">
+    <html lang="fa" dir="rtl" className={vazirmatn.variable}>
+      <body className="min-h-screen bg-canvas font-sans text-fg antialiased">
         <Nav />
         {children}
       </body>

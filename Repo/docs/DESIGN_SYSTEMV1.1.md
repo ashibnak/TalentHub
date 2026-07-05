@@ -1,5 +1,12 @@
 # AIGraph Design System
 
+> ⚠️ **SUPERSEDED (2026-07-05):** the app now ships a **light** theme (v2) — indigo
+> `#4f46e5` accent, emerald `#059669` for verified/shipped, Apple-gray canvas,
+> soft shadows, frosted nav. The live source of truth for tokens is
+> `app/globals.css`. The palette/dark-mode/shadow rules below are historical; the
+> structural conventions (spacing scale, tag collapse, Persian/English §7.5,
+> component order, Lucide 1.5) still apply. A full v2 rewrite of this doc is pending.
+
 **Version: v1.1** · phase 1 (dark mode, internal launch) — locked
 
 ## Changelog

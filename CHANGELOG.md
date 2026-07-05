@@ -7,6 +7,32 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.5.0] — 2026-07-05 — Light redesign + directory filters
+
+### Changed
+- **New high-tech LIGHT theme** (design tokens v2). Indigo (`#4f46e5`) accent,
+  emerald (`#059669`) for verified/shipped, Apple-gray canvas (`#f5f6f8`), white
+  cards with soft shadows + hover lift, rounder corners, frosted-glass nav,
+  gradient hero. Fonts unchanged (Vazirmatn). Because the whole app is token-
+  driven, this was mostly a re-theme of `app/globals.css` plus flipping the
+  ~60 `text-white`-type literals that don't auto-follow tokens.
+  > Supersedes the dark-only palette in `DESIGN_SYSTEMV1.1.md` (that doc predates
+  > this redesign and needs a v2 pass).
+
+### Added
+- **Directory filter & search** (plan Week 5): URL-driven skill/AI-tool chips,
+  text search (debounced), and a sort control on Projects — server-rendered, no
+  client fetching (`DirectoryFilters`, `getFilterFacets`, `escapeLike`). Seed now
+  populates `project_skills` so project skill-filtering works.
+
+### Fixed
+- Filter-feature review (7 findings): search input no longer drops characters
+  mid-type (URL sync only on external change); debounce cleared on unmount and on
+  clear-all; per-directory facet sets (no dead chips); `ai_tool` skills excluded
+  from skill chips; inputs get the §5.2 focus background.
+
+---
+
 ## [0.4.0] — 2026-07-05 — Live product: landing, nav & directories
 
 The app is now a browsable product, not just isolated profile URLs.

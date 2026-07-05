@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { and, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, inArray, isNotNull, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import {
   users,
@@ -8,8 +8,10 @@ import {
   domains,
   userDomainExpertise,
   projects,
+  projectAiTools,
   userBadges,
 } from '@/lib/db/schema';
+import { escapeLike } from '@/lib/db/queries/filters';
 import { computeRoleBadge, type RoleBadge } from '@/lib/users/role-badge';
 import type { BuildingStatus } from '@/components/atoms/StatusPill';
 import type { ProjectStage } from '@/components/atoms/StageBadge';
@@ -165,13 +167,39 @@ export type DirectoryUser = {
  * username). Fetches users + their skills/domains in a fixed number of queries
  * (no N+1) and computes role_badge + top skills in JS.
  */
-export const getPeopleDirectory = cache(async (): Promise<DirectoryUser[]> => {
+export type PeopleFilters = { q?: string; skills?: string[]; tools?: string[] };
+
+export const getPeopleDirectory = cache(async (filters: PeopleFilters = {}): Promise<DirectoryUser[]> => {
   const db = getDb();
+
+  const conditions = [eq(users.status, 'active'), eq(users.isAdmin, false), isNotNull(users.username)];
+  const q = filters.q?.trim();
+  if (q) conditions.push(ilike(users.name, `%${escapeLike(q)}%`));
+  if (filters.skills?.length) {
+    conditions.push(
+      inArray(
+        users.id,
+        db.select({ id: userSkills.userId }).from(userSkills).innerJoin(skills, eq(userSkills.skillId, skills.id)).where(inArray(skills.slug, filters.skills)),
+      ),
+    );
+  }
+  if (filters.tools?.length) {
+    conditions.push(
+      inArray(
+        users.id,
+        db
+          .selectDistinct({ id: projects.userId })
+          .from(projects)
+          .innerJoin(projectAiTools, eq(projectAiTools.projectId, projects.id))
+          .where(and(eq(projects.status, 'published'), inArray(projectAiTools.toolSlug, filters.tools))),
+      ),
+    );
+  }
 
   const userRows = await db
     .select({ id: users.id, username: users.username, name: users.name, roleTitle: users.roleTitle })
     .from(users)
-    .where(and(eq(users.status, 'active'), eq(users.isAdmin, false), isNotNull(users.username)))
+    .where(and(...conditions))
     .orderBy(users.name);
   if (userRows.length === 0) return [];
 

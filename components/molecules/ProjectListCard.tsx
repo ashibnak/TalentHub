@@ -10,13 +10,13 @@ export function ProjectListCard({ project }: { project: DirectoryProject }) {
   return (
     <Link
       href={`/projects/${project.id}`}
-      className="block bg-surface border border-border-subtle rounded-lg p-4 hover:bg-surface-elevated transition-colors"
+      className="block bg-surface border border-border-subtle rounded-lg p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h2 className="text-h3 text-white leading-snug">{project.title}</h2>
+        <h2 className="text-h3 text-fg leading-snug">{project.title}</h2>
         <StageBadge stage={project.stage} />
       </div>
-      <p className="text-body-sm text-white/60 leading-relaxed mb-3 line-clamp-2">{project.description}</p>
+      <p className="text-body-sm text-text-tertiary leading-relaxed mb-3 line-clamp-2">{project.description}</p>
       {project.skills.length > 0 && (
         <div className="mb-3">
           <SkillTagList tags={project.skills.map((s) => ({ slug: s.slug, label: s.name }))} />

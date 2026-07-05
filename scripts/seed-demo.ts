@@ -20,6 +20,7 @@ import {
   domains,
   userDomainExpertise,
   projects,
+  projectSkills,
   projectAiTools,
   projectChallengeProblems,
   challenges,
@@ -257,7 +258,9 @@ async function main() {
         .onConflictDoNothing();
     }
 
-    // Projects (+ ai tools + challenge-problem links) — atomic, only if none yet.
+    // Projects (+ skills + ai tools + challenge-problem links) — atomic, only if none yet.
+    // Project skills reuse the first few of the owner's declared skills.
+    const projectSkillSlugs = du.skills.slice(0, 4).map((s) => s.slug);
     if (du.projects.length) {
       await db.transaction(async (tx) => {
         const existingProject = await tx.select({ id: projects.id }).from(projects).where(eq(projects.userId, user.id)).limit(1);
@@ -270,6 +273,9 @@ async function main() {
               upvoteCount: p.upvotes, status: 'published', isPersonalProjectConfirmed: true, githubUrl: p.github,
             })
             .returning({ id: projects.id });
+          if (projectSkillSlugs.length) {
+            await tx.insert(projectSkills).values(projectSkillSlugs.map((slug) => ({ projectId: proj.id, skillId: skillIdBySlug.get(slug)! }))).onConflictDoNothing();
+          }
           if (p.aiTools?.length) {
             await tx.insert(projectAiTools).values(p.aiTools.map((t) => ({ projectId: proj.id, toolSlug: t }))).onConflictDoNothing();
           }

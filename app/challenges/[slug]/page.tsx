@@ -25,7 +25,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
     <main className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-h1 mb-2">{challenge.title}</h1>
       {challenge.sponsorTeam && <p className="text-body-sm text-info mb-4">{challenge.sponsorTeam}</p>}
-      <p className="text-body-lg text-white/80 leading-relaxed mb-8">{challenge.description}</p>
+      <p className="text-body-lg text-fg/80 leading-relaxed mb-8">{challenge.description}</p>
 
       {/* Problems */}
       <section className="mb-8">
@@ -35,10 +35,10 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
             {challenge.problems.map((p) => (
               <div key={p.id} className="bg-surface border border-border-subtle rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-h3 text-white">{p.title}</h3>
+                  <h3 className="text-h3 text-fg">{p.title}</h3>
                   {p.isSpotlight && <SpotlightBadge />}
                 </div>
-                <p className="text-body-sm text-white/60 leading-relaxed mb-2">{p.description}</p>
+                <p className="text-body-sm text-fg/60 leading-relaxed mb-2">{p.description}</p>
                 <span className="inline-flex items-center gap-1 text-body-sm text-text-tertiary">
                   <FolderKanban size={14} strokeWidth={1.5} />
                   {toFaDigits(p.projectCount)} پروژه
@@ -64,7 +64,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
               >
                 <Avatar name={e.name} size={40} />
                 <div className="min-w-0">
-                  <div className="text-body text-white truncate">{e.name}</div>
+                  <div className="text-body text-fg truncate">{e.name}</div>
                   {e.roleTitle && <div className="text-body-sm text-text-tertiary truncate">{e.roleTitle}</div>}
                   {e.yearsExperience != null && (
                     <div className="text-micro text-info">{toFaDigits(e.yearsExperience)} سال تجربه</div>

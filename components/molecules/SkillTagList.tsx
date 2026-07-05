@@ -14,13 +14,10 @@ export function SkillTagList({ tags }: { tags: Tag[] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {visible.map((tag) => (
-        // Key on the unique slug when available; skill display names are not unique.
         <SkillTag key={tag.slug ?? tag.label} label={tag.label} verified={tag.verified} />
       ))}
       {hiddenCount > 0 && (
-        <span className="bg-white/5 text-text-muted text-micro px-2 py-0.5 rounded-sm">
-          +{hiddenCount}
-        </span>
+        <span className="bg-fg/5 text-text-muted text-micro px-2 py-0.5 rounded-sm">+{hiddenCount}</span>
       )}
     </div>
   );

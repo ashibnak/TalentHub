@@ -2,9 +2,9 @@ export type BuildingStatus = 'building' | 'shipped' | 'idle';
 
 // Labels stay English — platform status vocabulary (design system §7.5).
 const STATUS_CONFIG: Record<BuildingStatus, { label: string; bg: string; text: string; dot: string }> = {
-  building: { label: 'Currently building', bg: 'bg-info-muted', text: 'text-info', dot: 'bg-info' },
-  shipped: { label: 'Shipped', bg: 'bg-white/10', text: 'text-white', dot: 'bg-white' },
-  idle: { label: 'Idle', bg: 'bg-white/5', text: 'text-text-muted', dot: 'bg-white/40' },
+  building: { label: 'Currently building', bg: 'bg-info-subtle', text: 'text-info', dot: 'bg-info' },
+  shipped: { label: 'Shipped', bg: 'bg-success-subtle', text: 'text-success', dot: 'bg-success' },
+  idle: { label: 'Idle', bg: 'bg-fg/5', text: 'text-text-muted', dot: 'bg-fg/30' },
 };
 
 export function StatusPill({ status }: { status: BuildingStatus }) {
