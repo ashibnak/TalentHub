@@ -15,6 +15,20 @@
       "when": 1783256702546,
       "tag": "0001_typical_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783268008699,
+      "tag": "0002_bouncy_squadron_supreme",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783268936846,
+      "tag": "0003_sticky_warstar",
+      "breakpoints": true
     }
   ]
 }

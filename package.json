@@ -1,6 +1,6 @@
 {
   "name": "aigraph",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +13,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx scripts/seed.ts",
-    "db:seed:demo": "tsx scripts/seed-demo.ts"
+    "db:seed:demo": "tsx scripts/seed-demo.ts",
+    "db:seed:opps": "tsx scripts/seed-opportunities.ts",
+    "admin:set": "tsx scripts/set-admin.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

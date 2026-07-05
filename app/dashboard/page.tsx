@@ -4,12 +4,14 @@ import { Users, Rocket, FolderKanban, ShieldCheck } from 'lucide-react';
 import { getDashboardMetrics } from '@/lib/db/queries/dashboard';
 import { BarList } from '@/components/molecules/BarList';
 import { Avatar } from '@/components/atoms/Avatar';
+import { requireAdmin } from '@/lib/auth/session';
 import { toFaDigits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'داشبورد — AIGraph' };
 
 export default async function DashboardPage() {
+  await requireAdmin(); // admin-only
   const m = await getDashboardMetrics();
 
   const stats = [

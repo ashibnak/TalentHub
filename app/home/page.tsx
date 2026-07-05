@@ -1,0 +1,141 @@
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { Briefcase, Send } from 'lucide-react';
+import { requireUser } from '@/lib/auth/session';
+import {
+  getMyApplications,
+  getMyOpportunities,
+  getOpportunities,
+} from '@/lib/db/queries/opportunities';
+import { createOpportunityAction } from '@/lib/actions/opportunities';
+import { ApplicationStatusPill } from '@/components/atoms/ApplicationStatusPill';
+import { OpportunityCard } from '@/components/molecules/OpportunityCard';
+import { EmptyState } from '@/components/atoms/EmptyState';
+import { toFaDigits } from '@/lib/format';
+
+export const dynamic = 'force-dynamic';
+export const metadata: Metadata = { title: 'خانه — AIGraph' };
+
+const inputClass =
+  'bg-surface border border-border focus:border-border-focus focus:bg-info-subtle rounded-md px-3 py-2 text-body text-fg placeholder:text-text-muted outline-none transition-colors';
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const user = await requireUser();
+  if (user.isAdmin) redirect('/admin');
+  const sp = await searchParams;
+
+  // ── Sponsor home ──
+  if (user.accountType === 'sponsor') {
+    const opportunities = await getMyOpportunities(user.id);
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-12">
+        <h1 className="text-h1 mb-1">سلام {user.name}</h1>
+        <p className="text-body-sm text-text-tertiary mb-8">پنل کارفرما — فرصت بگذار و متقاضی‌ها را بررسی کن</p>
+
+        <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
+          <h2 className="text-h3 mb-4">فرصت جدید</h2>
+          {sp.error === 'opp_invalid' && (
+            <p className="mb-3 text-body-sm text-red-600">عنوان (حداقل ۳ کاراکتر) و توضیحات (حداقل ۱۰ کاراکتر) را کامل کن.</p>
+          )}
+          <form action={createOpportunityAction} className="flex flex-col gap-3">
+            <label className="block text-body-sm text-text-tertiary">
+              عنوان فرصت
+              <input name="title" required className={`mt-1 w-full ${inputClass}`} placeholder="مثلاً مهندس هوش مصنوعی" />
+            </label>
+            <label className="block text-body-sm text-text-tertiary">
+              توضیحات
+              <textarea name="description" rows={4} required className={`mt-1 w-full ${inputClass}`} placeholder="توضیح نیاز، مهارت‌های لازم و معیار موفقیت" />
+            </label>
+            <button
+              type="submit"
+              className="self-start rounded-md bg-action px-4 py-2 text-body font-medium text-white shadow-sm transition-colors hover:bg-action-hover"
+            >
+              انتشار فرصت
+            </button>
+          </form>
+        </section>
+
+        <h2 className="text-h3 mb-4">فرصت‌های من</h2>
+        {opportunities.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {opportunities.map((o) => (
+              <Link
+                key={o.id}
+                href={`/opportunities/${o.id}`}
+                className="flex items-center justify-between rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:shadow-md"
+              >
+                <span className="truncate text-body text-fg">{o.title}</span>
+                <span className="shrink-0 text-body-sm text-text-tertiary">
+                  {toFaDigits(o.applicantCount)} متقاضی{o.status === 'closed' ? ' · بسته' : ''}
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <EmptyState icon={Briefcase} title="هنوز فرصتی نگذاشته‌ای" hint="اولین فرصت را از فرم بالا منتشر کن" />
+        )}
+      </main>
+    );
+  }
+
+  // ── Talent home ──
+  const [apps, openOpps] = await Promise.all([getMyApplications(user.id), getOpportunities()]);
+  return (
+    <main className="mx-auto max-w-3xl px-4 py-12">
+      <div className="mb-8 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-h1 mb-1">سلام {user.name}</h1>
+          <p className="text-body-sm text-text-tertiary">پیگیری درخواست‌ها و کشف فرصت‌ها</p>
+        </div>
+        {user.username && (
+          <Link
+            href={`/u/${user.username}`}
+            className="shrink-0 rounded-md border border-border bg-surface px-4 py-2 text-body font-medium text-fg shadow-sm transition-colors hover:bg-canvas"
+          >
+            پروفایل من
+          </Link>
+        )}
+      </div>
+
+      <h2 className="text-h3 mb-4">درخواست‌های من</h2>
+      {apps.length > 0 ? (
+        <div className="mb-8 flex flex-col gap-2">
+          {apps.map((a) => (
+            <Link
+              key={a.id}
+              href={`/opportunities/${a.opportunityId}`}
+              className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:shadow-md"
+            >
+              <div className="min-w-0">
+                <div className="truncate text-body text-fg">{a.opportunityTitle}</div>
+                <div className="truncate text-body-sm text-text-muted">{a.sponsorName}</div>
+              </div>
+              <ApplicationStatusPill status={a.status} />
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="mb-8">
+          <EmptyState icon={Send} title="هنوز درخواستی نداده‌ای" hint="از فرصت‌ها یکی را انتخاب کن و اقدام کن" />
+        </div>
+      )}
+
+      {openOpps.length > 0 && (
+        <>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-h3">فرصت‌های باز</h2>
+            <Link href="/opportunities" className="text-body-sm text-info transition-colors hover:text-action">
+              همه
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {openOpps.slice(0, 4).map((o) => (
+              <OpportunityCard key={o.id} opportunity={o} />
+            ))}
+          </div>
+        </>
+      )}
+    </main>
+  );
+}

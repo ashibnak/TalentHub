@@ -7,6 +7,35 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.7.0] — 2026-07-05 — Auth, roles & the opportunities loop
+
+The product now has accounts and a working two-sided marketplace.
+
+### Added
+- **Authentication** — lightweight credential auth (email + password, no email
+  sending, Node scrypt). Sessions (`sessions` table + httpOnly cookie),
+  `getCurrentUser`/`requireUser`/`requireAdmin`, a `/login` page, and login state
+  in the nav. Login is constant-time (no user-enumeration timing leak).
+- **Roles** — `account_type` (`talent` | `sponsor`) + the `is_admin` flag.
+- **Admin panel** (`/admin`, admin-gated) — create users by role, list users; the
+  CHRO `/dashboard` is now admin-only.
+- **Opportunities & applications** — Sponsors post opportunities (`/opportunities`
+  + detail); Talent apply (optional attached project + note); applications move
+  through a hiring funnel (applied → shortlisted → next call → accepted/rejected).
+  Sponsors review applicants and update status; Talent track their applications.
+- **Role-based home** (`/home`) — talent see an application tracker + open
+  opportunities; sponsors get a post form + their opportunities.
+- **Landing login button**; example seed (`db:seed:opps`): a sponsor, 3
+  opportunities, 7 applications across every stage, and login-able demo accounts.
+
+### Fixed
+- Auth security review: constant-time login (user-enumeration). Opportunities
+  review: idempotent apply (double-apply no longer 500s via
+  `onConflictDoNothing`), attached-project ownership validation (no cross-user
+  attach / FK crash), and accessible labels on the create-opportunity form.
+
+---
+
 ## [0.6.0] — 2026-07-05 — CHRO dashboard (Week 6)
 
 ### Added

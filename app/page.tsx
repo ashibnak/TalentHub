@@ -59,10 +59,16 @@ export default async function Home() {
               کاوش افراد
             </Link>
             <Link
-              href="/projects"
+              href="/opportunities"
               className="rounded-full border border-border bg-surface px-6 py-3 text-body-lg font-medium text-fg shadow-sm transition-colors hover:bg-canvas"
             >
-              دیدن پروژه‌ها
+              فرصت‌ها
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full border border-border bg-surface px-6 py-3 text-body-lg font-medium text-fg shadow-sm transition-colors hover:bg-canvas"
+            >
+              ورود به حساب
             </Link>
           </div>
         </section>

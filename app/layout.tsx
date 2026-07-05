@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Vazirmatn } from 'next/font/google';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
+import { getCurrentUser } from '@/lib/auth/session';
 import './globals.css';
 
 const vazirmatn = Vazirmatn({
@@ -16,11 +17,12 @@ export const metadata: Metadata = {
   description: 'شبکه‌ی استعدادهای AI ایران',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser();
   return (
     <html lang="fa" dir="rtl" className={vazirmatn.variable}>
       <body className="min-h-screen bg-canvas font-sans text-fg antialiased">
-        <Nav />
+        <Nav user={user ? { name: user.name, isAdmin: user.isAdmin } : null} />
         {children}
         <Footer />
       </body>

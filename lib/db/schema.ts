@@ -29,6 +29,7 @@ import {
 /* ────────────────────────────── Enums ────────────────────────────── */
 
 export const userStatus = pgEnum('user_status', ['invited', 'active', 'inactive']);
+export const accountType = pgEnum('account_type', ['talent', 'sponsor']); // + is_admin flag on top
 export const onboardingChoice = pgEnum('onboarding_choice', ['builder', 'domain_expert', 'hybrid']);
 export const onboardingConfidence = pgEnum('onboarding_confidence', ['high', 'medium', 'low', 'unknown']);
 export const skillCategory = pgEnum('skill_category', ['language', 'framework', 'tool', 'concept', 'ai_tool']);
@@ -41,6 +42,9 @@ export const personaHint = pgEnum('persona_hint', ['builder', 'domain_expert', '
 export const invitationStatus = pgEnum('invitation_status', ['pending', 'accepted', 'expired']);
 export const challengeStatus = pgEnum('challenge_status', ['pending_review', 'active', 'archived', 'rejected']);
 export const problemStatus = pgEnum('problem_status', ['pending_review', 'active', 'resolved', 'archived', 'rejected']);
+export const opportunityStatus = pgEnum('opportunity_status', ['open', 'closed']);
+// hiring funnel for an application
+export const applicationStatus = pgEnum('application_status', ['applied', 'shortlisted', 'next_call', 'accepted', 'rejected']);
 
 /* ─────────────────────────────── Orgs ────────────────────────────── */
 
@@ -69,6 +73,9 @@ export const users = pgTable(
     linkedinUrl: text('linkedin_url'),
     status: userStatus('status').default('invited').notNull(),
     isAdmin: boolean('is_admin').default(false).notNull(),
+    accountType: accountType('account_type').default('talent').notNull(),
+    passwordHash: text('password_hash'), // set only for accounts that can sign in
+
     onboardingChoice: onboardingChoice('onboarding_choice'),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
     onboardingConfidence: onboardingConfidence('onboarding_confidence'),
@@ -325,4 +332,52 @@ export const challengeFollows = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.challengeId] })],
+);
+
+/* Sessions — server-side credential-auth sessions; id is the opaque cookie token. */
+export const sessions = pgTable(
+  'sessions',
+  {
+    id: text('id').primaryKey(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index('sessions_user_idx').on(t.userId)],
+);
+
+/* Opportunities — a Sponsor posts a need/role; Talent apply to it. */
+export const opportunities = pgTable(
+  'opportunities',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    sponsorId: uuid('sponsor_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description').notNull(),
+    status: opportunityStatus('status').notNull().default('open'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [index('opportunities_sponsor_idx').on(t.sponsorId), index('opportunities_status_idx').on(t.status)],
+);
+
+/* Applications — a Talent applies to an Opportunity; status is the hiring funnel.
+ * One application per (opportunity, applicant). */
+export const applications = pgTable(
+  'applications',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    opportunityId: uuid('opportunity_id').notNull().references(() => opportunities.id, { onDelete: 'cascade' }),
+    applicantId: uuid('applicant_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    projectId: uuid('project_id').references(() => projects.id, { onDelete: 'set null' }),
+    coverNote: text('cover_note'),
+    status: applicationStatus('status').notNull().default('applied'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    unique('applications_opp_applicant_unique').on(t.opportunityId, t.applicantId),
+    index('applications_opportunity_idx').on(t.opportunityId),
+    index('applications_applicant_idx').on(t.applicantId),
+  ],
 );
