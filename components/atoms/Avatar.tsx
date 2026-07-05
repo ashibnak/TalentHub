@@ -1,6 +1,6 @@
-// Modern, vibrant avatar palette (v2). Background picked from the name hash;
-// text is always white on these saturated colors.
-const AVATAR_COLORS = ['#4f46e5', '#059669', '#0ea5e9', '#db2777', '#d97706', '#7c3aed'];
+// Refined, on-theme avatar palette (v3): black + accent hues. Background from the
+// name hash; text is always white.
+const AVATAR_COLORS = ['#0a0a0a', '#4f46e5', '#7c3aed', '#2563eb', '#059669', '#525252'];
 
 function pickAvatarColorIndex(name: string) {
   const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);

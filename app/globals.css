@@ -1,72 +1,71 @@
 @import "tailwindcss";
 
-/* Reserved for a future light/dark toggle; phase 1 ships light only. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ─────────────────────────────────────────────────────────────
-   Design tokens — v2 LIGHT theme (high-tech, Apple/Google-inspired).
-   Indigo accent + emerald for verified/shipped, Apple-gray canvas,
-   soft shadows, rounder corners. Fonts unchanged (Vazirmatn).
-   Everything is token-driven — re-theme here, the whole app follows.
+   Design tokens — v3 "monochrome + accent" (Vercel / Linear / Stripe).
+   Black + white + neutral grays, BLACK primary buttons, one electric indigo
+   accent used sparingly, hairline borders, tight type. Fonts unchanged.
    ───────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
 
   /* Surfaces */
-  --color-canvas: #f5f6f8;
+  --color-canvas: #fafafa;
   --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
-  --color-spotlight: #eef2ff;
+  --color-spotlight: #f5f3ff;
 
-  /* Primary accent — indigo */
-  --color-action: #4f46e5;
-  --color-action-hover: #4338ca;
-  --color-action-subtle: rgba(79, 70, 229, 0.08);
+  /* Primary action — near-black (Vercel-style buttons) */
+  --color-action: #0a0a0a;
+  --color-action-hover: #2a2a2a;
+  --color-action-subtle: rgba(10, 10, 10, 0.05);
 
-  /* Info / links / tags — indigo family */
+  /* Accent — electric indigo, used sparingly (links, active, highlights) */
   --color-info: #4f46e5;
   --color-info-subtle: rgba(79, 70, 229, 0.07);
   --color-info-muted: rgba(79, 70, 229, 0.12);
 
-  /* Success / verified — emerald */
+  /* Success — emerald (verified / accepted), minimal */
   --color-success: #059669;
   --color-success-subtle: rgba(5, 150, 105, 0.10);
   --color-success-muted: rgba(5, 150, 105, 0.14);
 
-  /* Foreground / text */
-  --color-fg: #1d1d1f;
+  /* Text — near-black + neutral gray scale */
+  --color-fg: #0a0a0a;
   --color-text-secondary: #4f46e5;
-  --color-text-tertiary: #6e6e73;
-  --color-text-muted: #86868b;
-  --color-text-disabled: #aeaeb2;
+  --color-text-tertiary: #525252;
+  --color-text-muted: #737373;
+  --color-text-disabled: #a3a3a3;
 
-  /* Borders */
-  --color-border: #d2d2d7;
-  --color-border-subtle: #e8e8ed;
-  --color-border-focus: #4f46e5;
+  /* Borders — neutral hairlines */
+  --color-border: #e5e5e5;
+  --color-border-subtle: #f0f0f0;
+  --color-border-focus: #0a0a0a;
 
-  /* Type scale (unchanged) — size / line-height / weight / tracking */
-  --text-display: 3.5rem;
-  --text-display--line-height: 1.05;
+  /* Type scale — tight, editorial */
+  --text-display: 3.75rem;
+  --text-display--line-height: 1.02;
   --text-display--font-weight: 700;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--letter-spacing: -0.04em;
 
   --text-h1: 2.25rem;
-  --text-h1--line-height: 1.15;
+  --text-h1--line-height: 1.1;
   --text-h1--font-weight: 700;
-  --text-h1--letter-spacing: -0.02em;
+  --text-h1--letter-spacing: -0.03em;
 
   --text-h2: 1.5rem;
-  --text-h2--line-height: 1.3;
+  --text-h2--line-height: 1.25;
   --text-h2--font-weight: 600;
-  --text-h2--letter-spacing: -0.01em;
+  --text-h2--letter-spacing: -0.02em;
 
   --text-h3: 1.125rem;
   --text-h3--line-height: 1.4;
   --text-h3--font-weight: 600;
+  --text-h3--letter-spacing: -0.01em;
 
   --text-body-lg: 1rem;
-  --text-body-lg--line-height: 1.6;
+  --text-body-lg--line-height: 1.65;
 
   --text-body: 0.875rem;
   --text-body--line-height: 1.5;
@@ -78,11 +77,11 @@
   --text-micro--line-height: 1.4;
   --text-micro--font-weight: 500;
 
-  /* Radius — softer, modern */
+  /* Radius — tight, modern */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 }
 
 @layer base {

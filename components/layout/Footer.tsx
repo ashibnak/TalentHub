@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex items-center gap-2">
           <LogoMark size={22} />
           <span className="text-body font-bold text-fg">
-            AIGraph<span className="text-action">.</span>
+            AIGraph<span className="text-info">.</span>
           </span>
         </div>
         <p className="text-body-sm text-text-muted">شبکه‌ی استعدادهای AI ایران · فاز ۱</p>

@@ -7,6 +7,24 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.8.0] — 2026-07-05 — Pro UI overhaul (monochrome + accent)
+
+### Changed
+- **New design language (tokens v3)** — Vercel / Linear / Stripe aesthetic:
+  monochrome base (near-black `#0a0a0a`, off-white `#fafafa`, neutral grays),
+  **black primary buttons**, a single electric-indigo accent used sparingly,
+  hairline borders, tighter type. Token-driven, so a `globals.css` re-theme.
+- **New logo** — a bolder, tech-driven black-squircle graph mark with white
+  nodes and one electric accent hub (`LogoMark` + favicon). Accent period on the
+  wordmark; refined avatar palette.
+- **Refined navbar** — cleaner sticky bar, real-app login button.
+- **Richer landing** — bold gradient hero + social-proof avatars, a hairline
+  live-stats strip, a "why AIGraph" feature grid, how-it-works, a two-sided
+  (builders / a black sponsors card) section, featured opportunities + challenges
+  from the DB, and a black CTA band.
+
+---
+
 ## [0.7.0] — 2026-07-05 — Auth, roles & the opportunities loop
 
 The product now has accounts and a working two-sided marketplace.
