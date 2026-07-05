@@ -11,7 +11,7 @@ const vazirmatn = Vazirmatn({
 
 export const metadata: Metadata = {
   title: 'AIGraph',
-  description: 'گراف استعداد هوش مصنوعی',
+  description: 'شبکه‌ی استعدادهای AI ایران',
 };
 
 export default function RootLayout({
@@ -20,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fa" dir="rtl" className={vazirmatn.variable}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="fa" dir="rtl" className={`dark ${vazirmatn.variable}`}>
+      <body className="min-h-screen bg-canvas font-sans text-white antialiased">
+        {children}
+      </body>
     </html>
   );
 }

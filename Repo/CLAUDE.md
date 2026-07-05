@@ -4,9 +4,9 @@ This is the AIGraph project — an AI talent graph platform for Iranian tech wor
 
 ## Read these BEFORE generating any UI or code
 
-1. **`/docs/DESIGN_SYSTEM.md`** (v1.1) — all visual design decisions. Read this before any UI component, page, or styling work. Non-negotiable. Pay special attention to section 4.1 (exact spacing allowlist), section 5.4 (tag collapse rule), section 7.5 (English vs Persian strings), and the "Component creation order" rule near the top.
-2. **`/docs/PROJECT_PLAN.md`** — the 8-week sprint plan, database schema, and feature priorities. Read this to understand sprint scope before starting any week's prompts.
-3. **`/docs/CODE_CONVENTIONS.md`** — naming, file structure, API patterns, error handling. Read this before writing any backend or API code.
+1. **`Repo/docs/DESIGN_SYSTEMV1.1.md`** (v1.1) — all visual design decisions. Read this before any UI component, page, or styling work. Non-negotiable. Pay special attention to section 4.1 (exact spacing allowlist), section 5.4 (tag collapse rule), section 7.5 (English vs Persian strings), and the "Component creation order" rule near the top. Design tokens from §2–§4 are wired into Tailwind v4 in `app/globals.css` — use the token utilities (`bg-canvas`, `text-h1`, `border-border-subtle`, …), not raw hex.
+2. **`Repo/docs/ai-talent-graph-planv0.7.md`** — the 8-week sprint plan, database schema, and feature priorities. Read this to understand sprint scope before starting any week's prompts. The schema is implemented in `lib/db/schema.ts` (Drizzle).
+3. **`Repo/CODE_CONVENTIONS.md`** — naming, file structure, API patterns, error handling. Read this before writing any backend or API code.
 
 ## Stack (don't change without explicit instruction)
 

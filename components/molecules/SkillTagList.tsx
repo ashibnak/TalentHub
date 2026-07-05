@@ -1,5 +1,6 @@
 import { SkillTag } from '@/components/atoms/SkillTag';
 
+// Tag collapse convention (design system §5.4): show first 6, then a +N chip.
 const MAX_VISIBLE_TAGS = 6;
 
 export function SkillTagList({ tags }: { tags: { label: string; verified?: boolean }[] }) {
@@ -12,7 +13,7 @@ export function SkillTagList({ tags }: { tags: { label: string; verified?: boole
         <SkillTag key={tag.label} label={tag.label} verified={tag.verified} />
       ))}
       {hiddenCount > 0 && (
-        <span className="bg-white/5 text-white/50 text-[11px] font-medium px-2 py-0.5 rounded-sm">
+        <span className="bg-white/5 text-text-muted text-micro px-2 py-0.5 rounded-sm">
           +{hiddenCount}
         </span>
       )}
