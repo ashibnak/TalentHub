@@ -7,6 +7,18 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.6.0] — 2026-07-05 — CHRO dashboard (Week 6)
+
+### Added
+- **Org dashboard** at `/dashboard` (plan Week 6) — headline metrics (members,
+  active/project-shipping members, projects, skill-verification rate), member
+  composition (Builder/Domain Expert/Hybrid), skill-distribution and AI-tool-
+  adoption bar charts (`BarList`, plain CSS — no chart lib), and a top-builders
+  leaderboard. Read-only aggregates in `lib/db/queries/dashboard.ts`.
+  > To be admin-gated once auth (Week 2) lands; public for now.
+
+---
+
 ## [0.5.1] — 2026-07-05 — Logo + landing polish
 
 ### Added
