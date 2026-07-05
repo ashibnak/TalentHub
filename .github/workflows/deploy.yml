@@ -1,0 +1,30 @@
+name: Deploy to Railway
+
+# Git-based deploy: every push to main ships to Railway automatically.
+# Auth uses a scoped Railway project token stored as the RAILWAY_TOKEN repo secret.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: railway-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Deploy to Railway (uploads repo, Railway builds & releases)
+        run: railway up --service talenthub --ci
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
