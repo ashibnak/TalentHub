@@ -45,9 +45,9 @@ const slugify = (name: string): string =>
 type SkillCat = 'language' | 'framework' | 'tool' | 'concept' | 'ai_tool';
 const SKILLS: Record<SkillCat, string[]> = {
   language: ['Python', 'TypeScript', 'JavaScript', 'Go', 'Rust', 'Java', 'C#', 'C++', 'PHP', 'Ruby', 'Kotlin', 'Swift', 'SQL'],
-  framework: ['React', 'Next.js', 'Vue', 'Svelte', 'Angular', 'Node.js', 'Express', 'NestJS', 'Django', 'FastAPI', 'Flask', 'Laravel', 'Spring', '.NET', 'Tailwind CSS', 'React Native'],
+  framework: ['React', 'Next.js', 'Vue', 'Svelte', 'Angular', 'Node.js', 'Express', 'NestJS', 'Django', 'FastAPI', 'Flask', 'Laravel', 'Spring', '.NET', 'Tailwind CSS', 'React Native', 'PyTorch'],
   tool: ['Docker', 'Kubernetes', 'Git', 'PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Elasticsearch', 'Nginx', 'Linux', 'AWS', 'GCP', 'Terraform', 'GitHub Actions', 'Kafka'],
-  concept: ['RAG', 'AI Agents', 'Prompt Engineering', 'Fine-tuning', 'Machine Learning', 'Deep Learning', 'NLP', 'Computer Vision', 'MLOps', 'Vector Databases', 'LLM Evaluation', 'System Design', 'Microservices', 'REST API', 'GraphQL'],
+  concept: ['RAG', 'AI Agents', 'Prompt Engineering', 'Fine-tuning', 'Machine Learning', 'Deep Learning', 'NLP', 'Computer Vision', 'MLOps', 'Vector Databases', 'LLM Evaluation', 'System Design', 'Microservices', 'REST API', 'GraphQL', 'Transformers'],
   ai_tool: ['Cursor', 'Claude Code', 'GitHub Copilot', 'ChatGPT', 'Claude API', 'OpenAI API', 'Lovable', 'v0', 'Bolt', 'Windsurf', 'Hugging Face', 'LangChain', 'Ollama', 'Replit'],
 };
 

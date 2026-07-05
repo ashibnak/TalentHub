@@ -18,7 +18,10 @@ function getInitials(name: string) {
 export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
   const idx = pickAvatarColorIndex(name);
   return (
+    // Decorative: the user's name is always shown as adjacent text (h1 / card
+    // label), so the initials are hidden from assistive tech to avoid double-reading.
     <div
+      aria-hidden="true"
       className="rounded-full flex items-center justify-center font-semibold shrink-0"
       style={{
         width: size,

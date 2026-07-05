@@ -1,9 +1,7 @@
-import { Wrench, Rocket, ThumbsUp } from 'lucide-react';
+import { ThumbsUp } from 'lucide-react';
+import { StageBadge, type ProjectStage } from '@/components/atoms/StageBadge';
+import { toFaDigits } from '@/lib/format';
 
-export type ProjectStage = 'building' | 'shipped';
-
-// Stage badges use the color ladder from design system §5.4:
-// Building = full info-blue, Shipped = action-red. Labels stay English (§7.5).
 export function ProjectCard({
   title,
   description,
@@ -18,23 +16,14 @@ export function ProjectCard({
   return (
     <div className="bg-surface border border-border-subtle rounded-lg p-4 hover:bg-surface-elevated transition-colors">
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h4 className="text-body font-semibold text-white leading-snug">{title}</h4>
-        {stage === 'building' ? (
-          <span className="inline-flex items-center gap-1 bg-info text-surface text-micro px-2 py-0.5 rounded-sm shrink-0 whitespace-nowrap">
-            <Wrench size={11} strokeWidth={1.5} />
-            Building
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 bg-action text-white text-micro px-2 py-0.5 rounded-sm shrink-0 whitespace-nowrap">
-            <Rocket size={11} strokeWidth={1.5} />
-            Shipped
-          </span>
-        )}
+        {/* h3: card title nested under the h2 "پروژه‌ها" section — keeps heading order h1→h2→h3 */}
+        <h3 className="text-body font-semibold text-white leading-snug">{title}</h3>
+        <StageBadge stage={stage} />
       </div>
       <p className="text-body-sm text-white/60 leading-relaxed mb-3">{description}</p>
       <div className="flex items-center gap-1 text-info text-body-sm">
-        <ThumbsUp size={13} strokeWidth={1.5} />
-        <span>{upvotes}</span>
+        <ThumbsUp size={14} strokeWidth={1.5} />
+        <span>{toFaDigits(upvotes)}</span>
       </div>
     </div>
   );
