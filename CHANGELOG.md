@@ -7,6 +7,18 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.8.1] — 2026-07-05 — More data + sponsor profiles
+
+### Added
+- **Doubled the demo network** — ~23 members and ~21 projects across DevOps, ML,
+  mobile, data, security, frontend, AI-agents, design, HR & finance (richer
+  landing/directories).
+- **Sponsor profiles** — `/u/[username]` now branches by role: a Sponsor shows a
+  `Sponsor` badge and their open **opportunities** (with applicant counts) instead
+  of the talent projects/stats. Dropped the non-functional follow-button stub.
+
+---
+
 ## [0.8.0] — 2026-07-05 — Pro UI overhaul (monochrome + accent)
 
 ### Changed

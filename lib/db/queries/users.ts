@@ -47,6 +47,7 @@ export type Profile = {
   avatarUrl: string | null;
   githubUsername: string | null;
   linkedinUrl: string | null;
+  accountType: 'talent' | 'sponsor';
   roleBadge: RoleBadge;
   buildingStatus: BuildingStatus;
   skills: ProfileSkill[];
@@ -140,6 +141,7 @@ export const getProfileByUsername = cache(async (username: string): Promise<Prof
     avatarUrl: user.avatarUrl,
     githubUsername: user.githubUsername,
     linkedinUrl: user.linkedinUrl,
+    accountType: user.accountType,
     roleBadge: computeRoleBadge({ technicalSkillCount, domainCount: sortedDomains.length }),
     buildingStatus: deriveBuildingStatus(projectRows.map((p) => p.stage)),
     skills: skillRows,

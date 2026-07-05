@@ -112,6 +112,24 @@ export const getMyApplications = cache(async (userId: string): Promise<MyApplica
     .orderBy(desc(applications.createdAt));
 });
 
+/** A sponsor's OPEN opportunities (for their public profile). */
+export const getOpportunitiesBySponsor = cache(async (sponsorId: string): Promise<{ id: string; title: string; applicantCount: number }[]> => {
+  const db = getDb();
+  const rows = await db
+    .select({ id: opportunities.id, title: opportunities.title })
+    .from(opportunities)
+    .where(and(eq(opportunities.sponsorId, sponsorId), eq(opportunities.status, 'open')))
+    .orderBy(desc(opportunities.createdAt));
+  if (rows.length === 0) return [];
+  const counts = await db
+    .select({ opportunityId: applications.opportunityId, n: count() })
+    .from(applications)
+    .where(inArray(applications.opportunityId, rows.map((r) => r.id)))
+    .groupBy(applications.opportunityId);
+  const byOpp = new Map(counts.map((c) => [c.opportunityId, Number(c.n)]));
+  return rows.map((r) => ({ ...r, applicantCount: byOpp.get(r.id) ?? 0 }));
+});
+
 export type MyOpportunity = { id: string; title: string; status: 'open' | 'closed'; applicantCount: number };
 
 /** A sponsor's own posted opportunities with applicant counts. */
