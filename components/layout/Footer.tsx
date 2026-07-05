@@ -10,7 +10,7 @@ export function Footer() {
             AIGraph<span className="text-info">.</span>
           </span>
         </div>
-        <p className="text-body-sm text-text-muted">شبکه‌ی استعدادهای AI ایران · فاز ۱</p>
+        <p className="text-body-sm text-text-muted">شبکه‌ی استعدادهای هوش مصنوعی ایران</p>
       </div>
     </footer>
   );
