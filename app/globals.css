@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
+}
+
+html {
+  background-color: #001825;
+  color-scheme: dark;
+}
