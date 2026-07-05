@@ -7,6 +7,17 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.5.1] — 2026-07-05 — Logo + landing polish
+
+### Added
+- **Logo mark** — a graph-of-nodes glyph that reads as an "A" (AIGraph), in the
+  indigo→violet gradient (`LogoMark`); used in the nav, hero, footer, and as the
+  favicon (`app/icon.svg`).
+- **Redesigned landing** — logo hero, "چطور کار می‌کند" (how-it-works) flow,
+  featured active-challenges section (from the DB), and a global site **Footer**.
+
+---
+
 ## [0.5.0] — 2026-07-05 — Light redesign + directory filters
 
 ### Changed

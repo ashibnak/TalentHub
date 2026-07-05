@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Vazirmatn } from 'next/font/google';
 import { Nav } from '@/components/layout/Nav';
+import { Footer } from '@/components/layout/Footer';
 import './globals.css';
 
 const vazirmatn = Vazirmatn({
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-canvas font-sans text-fg antialiased">
         <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   );
