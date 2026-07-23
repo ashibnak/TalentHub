@@ -42,7 +42,7 @@ export async function createUserAction(formData: FormData) {
   if (name.length < 2) redirect('/admin/users?error=name');
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) redirect('/admin/users?error=email');
   if (!/^[a-z0-9-]{3,32}$/.test(username)) redirect('/admin/users?error=username');
-  if (!['talent', 'sponsor', 'admin'].includes(role)) redirect('/admin/users?error=role');
+  if (!['talent', 'admin'].includes(role)) redirect('/admin/users?error=role');
   if (password.length < 8) redirect('/admin/users?error=password');
 
   const db = getDb();
@@ -64,7 +64,6 @@ export async function createUserAction(formData: FormData) {
     roleTitle,
     status: 'active',
     isAdmin: role === 'admin',
-    accountType: role === 'sponsor' ? 'sponsor' : 'talent',
     passwordHash: hashPassword(password),
     onboardingCompletedAt: new Date(),
   });

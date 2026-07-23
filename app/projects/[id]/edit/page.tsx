@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth/session';
 import { getAllSkills } from '@/lib/db/queries/taxonomy';
@@ -19,7 +19,6 @@ export default async function EditProjectPage({
 }) {
   const { id } = await params;
   const user = await requireUser();
-  if (user.accountType === 'sponsor') redirect('/home');
   const [project, skills, sp] = await Promise.all([getMyProjectForEdit(id, user.id), getAllSkills(), searchParams]);
   if (!project) notFound();
 

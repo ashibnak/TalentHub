@@ -15,7 +15,6 @@ export type MyProfileFields = {
   githubUsername: string | null;
   linkedinUrl: string | null;
   username: string | null;
-  accountType: 'talent' | 'sponsor';
 };
 
 export const getMyProfile = cache(async (userId: string): Promise<MyProfileFields | null> => {
@@ -27,7 +26,6 @@ export const getMyProfile = cache(async (userId: string): Promise<MyProfileField
       githubUsername: users.githubUsername,
       linkedinUrl: users.linkedinUrl,
       username: users.username,
-      accountType: users.accountType,
     })
     .from(users)
     .where(eq(users.id, userId))

@@ -32,7 +32,7 @@ async function main() {
   } else {
     await db.insert(users).values({
       orgId: org.id, email, username, name, isAdmin: true, status: 'active',
-      accountType: 'talent', passwordHash, onboardingCompletedAt: new Date(),
+      passwordHash, onboardingCompletedAt: new Date(),
     });
     console.log(`[admin] created admin ${email} (username: ${username})`);
   }

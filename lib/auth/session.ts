@@ -15,7 +15,6 @@ export type SessionUser = {
   email: string;
   username: string | null;
   isAdmin: boolean;
-  accountType: 'talent' | 'sponsor';
 };
 
 export async function createSession(userId: string): Promise<void> {
@@ -45,7 +44,6 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
       email: users.email,
       username: users.username,
       isAdmin: users.isAdmin,
-      accountType: users.accountType,
       expiresAt: sessions.expiresAt,
     })
     .from(sessions)
@@ -60,7 +58,6 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     email: row.email,
     username: row.username,
     isAdmin: row.isAdmin,
-    accountType: row.accountType,
   };
 });
 

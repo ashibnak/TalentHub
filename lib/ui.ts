@@ -1,5 +1,5 @@
 // Shared Tailwind class strings for forms/buttons, so the several self-service
-// pages stay visually identical to the existing admin/home/opportunity forms.
+// pages stay visually identical to the existing admin/home/settings forms.
 // (Plain strings — not React components — mirroring the per-page `inputClass`
 // consts already used across the app, deduplicated in one place.)
 

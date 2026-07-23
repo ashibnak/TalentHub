@@ -59,7 +59,6 @@ async function resolveSkillIds(db: Db, slugs: string[]): Promise<string[]> {
 /** Talent creates a project. */
 export async function createProjectAction(formData: FormData) {
   const user = await requireUser();
-  if (user.accountType === 'sponsor') redirect('/home');
 
   const parsed = parseProjectForm(formData);
   if ('error' in parsed) redirect(`/projects/new?error=${parsed.error}`);

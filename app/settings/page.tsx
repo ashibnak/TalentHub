@@ -47,11 +47,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const profile = await getMyProfile(user.id);
   if (!profile) notFound();
   const sp = await searchParams;
-  const isTalent = profile.accountType !== 'sponsor';
 
-  const [mySkills, myProjects, allSkills] = isTalent
-    ? await Promise.all([getMyUserSkills(user.id), getMyProjects(user.id), getAllSkills()])
-    : [[], [], []];
+  const [mySkills, myProjects, allSkills] = await Promise.all([getMyUserSkills(user.id), getMyProjects(user.id), getAllSkills()]);
   const claimedSlugs = new Set(mySkills.map((s) => s.slug));
   const availableSkills = allSkills.filter((s) => !claimedSlugs.has(s.slug));
   const skillsByCategory = CATEGORY_ORDER.map((category) => ({
@@ -114,9 +111,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </form>
       </section>
 
-      {isTalent && (
-        <>
-          {/* ── Skills ── */}
+      <>
+        {/* ── Skills ── */}
           <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
             <h2 className="text-h3 mb-4">مهارت‌ها</h2>
             {mySkills.length > 0 ? (
@@ -214,19 +210,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             ) : (
               <EmptyState icon={FolderKanban} title="هنوز پروژه‌ای نساخته‌ای" hint="اولین پروژه‌ات را اضافه کن تا در گراف دیده شوی" />
             )}
-          </section>
-        </>
-      )}
-
-      {!isTalent && (
-        <section className="rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-          <h2 className="text-h3 mb-1">فرصت‌ها</h2>
-          <p className="mb-4 text-body-sm text-text-tertiary">فرصت‌ها و متقاضی‌ها را از پنل خانه مدیریت کن.</p>
-          <Link href="/home" className={btnPrimary}>
-            پنل کارفرما
-          </Link>
         </section>
-      )}
+      </>
     </main>
   );
 }

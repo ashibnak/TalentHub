@@ -5,7 +5,6 @@ import {
   Target,
   Users,
   FolderKanban,
-  Briefcase,
   Wrench,
   Check,
   ArrowLeft,
@@ -13,9 +12,7 @@ import {
 import { getPlatformStats } from '@/lib/db/queries/stats';
 import { getPeopleDirectory } from '@/lib/db/queries/users';
 import { getChallengesDirectory } from '@/lib/db/queries/challenges';
-import { getOpportunities } from '@/lib/db/queries/opportunities';
 import { ChallengeCard } from '@/components/molecules/ChallengeCard';
-import { OpportunityCard } from '@/components/molecules/OpportunityCard';
 import { Avatar } from '@/components/atoms/Avatar';
 import { LogoMark } from '@/components/layout/LogoMark';
 import { toFaDigits } from '@/lib/format';
@@ -23,11 +20,10 @@ import { toFaDigits } from '@/lib/format';
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const [stats, people, challenges, opportunities] = await Promise.all([
+  const [stats, people, challenges] = await Promise.all([
     getPlatformStats(),
     getPeopleDirectory(),
     getChallengesDirectory(),
-    getOpportunities(),
   ]);
 
   const statItems = [
@@ -38,14 +34,14 @@ export default async function Home() {
   ];
   const features = [
     { icon: ShieldCheck, title: 'تأیید از روی کد، نه ادعا', desc: 'مهارت‌ها با تحلیل هوشمند مخزن GitHub تأیید می‌شوند. هر تیکِ سبز یعنی شواهد واقعی — نه یک خط رزومه.' },
-    { icon: Target, title: 'امتیاز تطابق شفاف', desc: 'هر فرصت مهارت‌های موردنیازش را اعلام می‌کند و درصد تطابق تو همان‌جا محاسبه می‌شود. نه حدس، نه کلیدواژه.' },
-    { icon: Activity, title: 'گرافِ زنده', desc: 'پروفایل‌ها با فعالیت واقعیِ ساختن نفس می‌کشند — پروژه‌ی تازه، مهارت تازه، فرصت تازه. پورتفولیوی مرده نداریم.' },
+    { icon: Target, title: 'چالش‌های واقعی سازمان', desc: 'دسته‌های دامنه‌ای از مشکلات واقعی — از منابع انسانی تا مهندسی — که با ابزارهای AI حل می‌شوند.' },
+    { icon: Activity, title: 'گرافِ زنده', desc: 'پروفایل‌ها با فعالیت واقعیِ ساختن نفس می‌کشند — پروژه‌ی تازه، مهارت تازه، مشارکت تازه. پورتفولیوی مرده نداریم.' },
     { icon: Users, title: 'هر دو نوع استعداد', desc: 'هم سازنده‌ها، هم متخصص‌های حوزه‌ای که با ابزارهای AI می‌سازند — کنار هم، در یک گراف.' },
   ];
   const steps = [
     { icon: Wrench, title: 'بساز', desc: 'با Cursor، Claude Code و ابزارهای AI پروژه بساز، مهارت‌هایت را ثبت کن و پروفایلت را منتشر کن.' },
     { icon: ShieldCheck, title: 'تأیید شو', desc: 'مهارت‌هایت از روی مخزن GitHub هوشمندانه تأیید می‌شود — شفاف و قابل استناد.' },
-    { icon: Briefcase, title: 'وصل شو', desc: 'فرصت‌های پیشنهادی با درصد تطابق برایت می‌آیند؛ اقدام کن و مسیر استخدام را قدم‌به‌قدم دنبال کن.' },
+    { icon: Target, title: 'دیده شو', desc: 'به چالش‌های واقعی سازمان وصل شو، در گراف استعدادها دیده شو و در رتبه‌بندی مشارکت جایگاهت را ببین.' },
   ];
 
   return (
@@ -65,12 +61,12 @@ export default async function Home() {
             <LogoMark size={56} />
           </div>
           <h1 className="mx-auto mb-5 max-w-3xl text-display font-bold text-fg">
-            جایی که استعدادِ <span className="text-info">هوش مصنوعی</span> دیده می‌شود
+            جایی که استعدادِ <span className="text-info">هوش مصنوعی</span> سازمان دیده می‌شود
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-body-lg text-text-tertiary">
             این‌جا رزومه معیار نیست — <span className="text-fg">ساختن</span> معیار است.
-            سازنده‌ها با پروژه‌های واقعی پروفایل می‌سازند و مهارت‌هایشان از روی مخزن GitHub تأیید می‌شود؛
-            کارفرماها با <span className="text-info">امتیاز تطابق شفاف</span> دقیقاً کسی را پیدا می‌کنند که کار را ساخته است.
+            همکارها با پروژه‌های واقعی پروفایل می‌سازند، مهارت‌هایشان از روی مخزن GitHub تأیید می‌شود،
+            و در چالش‌های واقعی سازمان مشارکت می‌کنند.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
@@ -80,10 +76,10 @@ export default async function Home() {
               کاوش استعدادها
             </Link>
             <Link
-              href="/opportunities"
+              href="/challenges"
               className="rounded-full border border-border bg-surface px-6 py-3 text-body-lg font-medium text-fg transition-colors hover:bg-surface-elevated"
             >
-              دیدن فرصت‌ها
+              دیدن چالش‌ها
             </Link>
           </div>
           {people.length > 0 && (
@@ -150,14 +146,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Two sides ── */}
+      {/* ── Two personas ── */}
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-border-subtle bg-surface p-8">
             <h2 className="mb-2 text-h2">برای سازنده‌ها</h2>
             <p className="mb-6 text-body text-text-tertiary">پروفایلی که مهارت‌های واقعی‌ات را ثابت می‌کند.</p>
             <ul className="mb-6 flex flex-col gap-3">
-              {['پروفایل و پروژه‌های خودت را بساز', 'مهارت‌ها از روی GitHub تأیید می‌شوند', 'فرصت‌های پیشنهادی با درصد تطابق بگیر', 'درخواست‌هایت را قدم‌به‌قدم دنبال کن'].map((t) => (
+              {['پروفایل و پروژه‌های خودت را بساز', 'مهارت‌ها از روی GitHub تأیید می‌شوند', 'به چالش‌های واقعی سازمان وصل شو', 'در رتبه‌بندی مشارکت هفتگی دیده شو'].map((t) => (
                 <li key={t} className="flex items-center gap-2 text-body text-fg">
                   <Check size={16} strokeWidth={2} className="text-success shrink-0" />
                   {t}
@@ -170,41 +166,23 @@ export default async function Home() {
             </Link>
           </div>
           <div className="rounded-2xl bg-fg p-8 text-on-action">
-            <h2 className="mb-2 text-h2 text-on-action">برای کارفرماها</h2>
-            <p className="mb-6 text-body text-on-action/70">استعداد واقعی را پیدا کن، نه رزومه‌ی خوش‌آب‌ورنگ.</p>
+            <h2 className="mb-2 text-h2 text-on-action">برای متخصص‌های حوزه‌ای</h2>
+            <p className="mb-6 text-body text-on-action/70">نیازی به کدنویسی نیست — تخصصت را با ابزارهای AI نشان بده.</p>
             <ul className="mb-6 flex flex-col gap-3">
-              {['فرصت را با مهارت‌های موردنیازش منتشر کن', 'متقاضی‌ها مرتب‌شده بر اساس درصد تطابق', 'بهترین‌های گراف را حتی پیش از اقدام ببین', 'در قیف استخدام بررسی و انتخاب کن'].map((t) => (
+              {['تخصص دامنه‌ای‌ات را ثبت کن', 'در چالش‌های حوزه‌ی خودت مشارکت کن', 'در صفحه‌ی هر چالش دیده شو', 'کنار سازنده‌ها، در یک گراف'].map((t) => (
                 <li key={t} className="flex items-center gap-2 text-body text-on-action">
                   <Check size={16} strokeWidth={2} className="text-info-inverted shrink-0" />
                   {t}
                 </li>
               ))}
             </ul>
-            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body font-medium text-on-action transition-colors hover:text-on-action/80">
-              دیدن فرصت‌ها
+            <Link href="/challenges" className="inline-flex items-center gap-1 text-body font-medium text-on-action transition-colors hover:text-on-action/80">
+              دیدن چالش‌ها
               <ArrowLeft size={16} strokeWidth={1.5} />
             </Link>
           </div>
         </div>
       </section>
-
-      {/* ── Featured opportunities ── */}
-      {opportunities.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-h2">فرصت‌های تازه</h2>
-            <Link href="/opportunities" className="inline-flex items-center gap-1 text-body-sm text-info transition-colors hover:text-fg">
-              همه
-              <ArrowLeft size={16} strokeWidth={1.5} />
-            </Link>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {opportunities.slice(0, 3).map((o) => (
-              <OpportunityCard key={o.id} opportunity={o} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* ── Featured challenges ── */}
       {challenges.length > 0 && (
@@ -229,7 +207,7 @@ export default async function Home() {
         <div className="rounded-2xl bg-fg px-8 py-16 text-center">
           <h2 className="mb-3 text-h1 text-on-action">استعدادت را به گراف اضافه کن</h2>
           <p className="mx-auto mb-8 max-w-lg text-body-lg text-on-action/70">
-            پروفایل بساز، پروژه‌هایت را نشان بده، امتیاز تطابقت را ببین و به فرصت واقعی وصل شو.
+            پروفایل بساز، پروژه‌هایت را نشان بده و در چالش‌های واقعی سازمان مشارکت کن.
           </p>
           <Link
             href="/login"

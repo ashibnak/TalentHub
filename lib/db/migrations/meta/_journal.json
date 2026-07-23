@@ -36,6 +36,13 @@
       "when": 1783280107069,
       "tag": "0004_redundant_xorn",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784791376070,
+      "tag": "0005_remove_sponsor_opportunities",
+      "breakpoints": true
     }
   ]
 }

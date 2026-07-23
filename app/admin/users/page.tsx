@@ -20,8 +20,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   org: 'سازمان یافت نشد.',
 };
 
-function roleLabel(u: { isAdmin: boolean; accountType: 'talent' | 'sponsor' }) {
-  return u.isAdmin ? 'Admin' : u.accountType === 'sponsor' ? 'Sponsor' : 'Talent';
+function roleLabel(u: { isAdmin: boolean }) {
+  return u.isAdmin ? 'Admin' : 'Talent';
 }
 
 export default async function AdminUsersPage({
@@ -36,7 +36,6 @@ export default async function AdminUsersPage({
       name: users.name,
       email: users.email,
       username: users.username,
-      accountType: users.accountType,
       isAdmin: users.isAdmin,
       status: users.status,
     })
@@ -58,7 +57,6 @@ export default async function AdminUsersPage({
           <input name="roleTitle" placeholder="عنوان شغلی (اختیاری)" className={inputClass} />
           <select name="role" defaultValue="talent" aria-label="نقش" className={inputClass}>
             <option value="talent">Talent · استعداد</option>
-            <option value="sponsor">Sponsor · کارفرما</option>
             <option value="admin">Admin · مدیر</option>
           </select>
           <input name="password" type="text" placeholder="رمز عبور موقت (حداقل ۸ کاراکتر)" required minLength={8} className={inputClass} />

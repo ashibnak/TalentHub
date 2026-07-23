@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { requireUser } from '@/lib/auth/session';
 import { getAllSkills } from '@/lib/db/queries/taxonomy';
@@ -11,7 +10,6 @@ export const metadata: Metadata = { title: 'پروژه‌ی جدید — AIGraph
 
 export default async function NewProjectPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const user = await requireUser();
-  if (user.accountType === 'sponsor') redirect('/home');
   const sp = await searchParams;
   const skills = await getAllSkills();
 
