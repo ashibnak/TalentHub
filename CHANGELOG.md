@@ -7,6 +7,28 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.11.0] — 2026-07-23 — Weekly Leaderboard 🏆
+
+A public, weekly **recognition board** — not a permanent ranking. This reverses
+the plan's original "no leaderboard in phase 1" call (see plan v0.8 changelog);
+to keep that concern honoured it resets every week and groups people so many can
+be "top of their group."
+
+### Added
+- **`/leaderboard`** (public) — Saturday→Saturday weeks in Asia/Tehran (aligned
+  to the Spotlight cycle). Three tabs by computed `role_badge`: سازنده‌ها /
+  متخصص‌های حوزه‌ای / ترکیبی, with a «این هفته / هفته‌ی گذشته» toggle. Nav link «برترین‌ها».
+- **Contribution score** from existing signals (weights in
+  `lib/leaderboard/scoring.ts`): publish a project +10, link a project to a
+  challenge problem +15, upvote received +2, win a Spotlight +50.
+- **Frozen standings + badge** — `leaderboard_snapshots` (migration 0006). When a
+  week closes, an admin hits **«بستن و ثبت هفته‌ی گذشته»** on `/admin`: standings
+  freeze and the **Top of the Week** badge goes to each group's #1. No cron
+  (Railway is a single web process) — matches how admins already pick the
+  Spotlight winner by hand. Live compute for the in-progress week.
+- New components: `atoms/RankMedal`, `molecules/LeaderboardRow`; unit tests for
+  the scoring + Tehran week-boundary math.
+
 ## [0.10.0] — 2026-07-05 — The Matching release 🎯🔔
 
 The graph starts working for both sides: structured requirements, transparent

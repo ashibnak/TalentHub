@@ -9,6 +9,7 @@ const LINKS = [
   { href: '/people', label: 'افراد' },
   { href: '/projects', label: 'پروژه‌ها' },
   { href: '/challenges', label: 'چالش‌ها' },
+  { href: '/leaderboard', label: 'برترین‌ها' },
 ];
 
 export function Nav({ user }: { user: { name: string; isAdmin: boolean } | null }) {

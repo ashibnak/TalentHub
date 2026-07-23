@@ -1,13 +1,13 @@
 {
   "name": "aigraph",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "drizzle-kit migrate && next start",
     "lint": "next lint",
-    "test": "node --test lib/users/role-badge.test.ts",
+    "test": "node --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

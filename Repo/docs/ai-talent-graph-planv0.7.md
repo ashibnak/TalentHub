@@ -4,7 +4,8 @@
 
 ## Changelog
 
-- **v0.7** (current) — تصمیم نهایی `LLM Provider` مستند شد: `AvalAI` با مدل `gpt-4o`، بعد از تست موفق روی ۳ `repo` واقعی (نرخ موفقیت ۳/۳، `latency` ~۴.۹ ثانیه، تشخیص صحیح `claim` غلط). دیگه نیازی به `plan B` برای فاز ۱ نیست.
+- **v0.8** (current) — **Weekly Leaderboard اضافه شد** (تصمیم محصولی، ۱۴۰۵/۰۵/۰۱). این تصمیمِ «no leaderboard differentiation in phase 1 / badge is identity, not ranking» (پرامپت ۷ هفته‌ی ۳، و نکته‌ی `role_badge` پایین‌تر) را **برمی‌گرداند**. جهت حفظ روحِ آن نگرانی، برد به‌صورت **recognition** طراحی شده نه سلسله‌مراتبِ دائم: هر شنبه→شنبه (Asia/Tehran، هم‌راستا با چرخه‌ی Spotlight) ریست می‌شود، اعضا بر اساس `role_badge` به سه گروه (سازنده‌ها / متخصص‌های حوزه‌ای / ترکیبی) تقسیم می‌شوند تا افراد زیادی «برترِ گروه خود» باشند. امتیاز مشارکت از سیگنال‌های موجود: انتشار پروژه (۱۰)، ثبت پروژه روی چالش (۱۵)، هر رأی دریافتی (۲)، بردن Spotlight (۵۰) — وزن‌ها در `lib/leaderboard/scoring.ts`. صفحه‌ی عمومی `/leaderboard`؛ هفته‌ی جاری زنده محاسبه می‌شود و هفته‌ی بسته‌شده توسط admin «freeze» می‌شود (جدول `leaderboard_snapshots`، migration 0006) و نشان «Top of the Week» به نفر اول هر گروه داده می‌شود. بدون cron (Railway تک‌پروسه است) — دکمه‌ی admin، هماهنگ با انتخاب دستی برنده‌ی Spotlight.
+- **v0.7** — تصمیم نهایی `LLM Provider` مستند شد: `AvalAI` با مدل `gpt-4o`، بعد از تست موفق روی ۳ `repo` واقعی (نرخ موفقیت ۳/۳، `latency` ~۴.۹ ثانیه، تشخیص صحیح `claim` غلط). دیگه نیازی به `plan B` برای فاز ۱ نیست.
 - **v0.6** — Persona-aware onboarding flow: 5-step wizard با branching بر اساس identity choice (Builder/DE/Hybrid)، schema جدید روی `users` (`onboarding_choice`, `onboarding_completed_at`, `onboarding_confidence`)، `persona_hint` روی invitations برای template ایمیل، سه template ایمیل جداگانه، landing متفاوت بعد از onboarding بر اساس persona، middleware enforcing wizard completion
 - **v0.5** — Domain Expert persona اضافه شد: schema جدید `domains` و `user_domain_expertise`، logic `role_badge` (Builder/Domain Expert/Hybrid)، section "Domain Experts" روی Challenge detail page، endorsement-based verification موکول به فاز ۲
 - **v0.4** — Challenge بازطراحی شد به‌عنوان persistent domain buckets با sub-entity `ChallengeProblem`. community-proposed با admin approval. Spotlight به‌عنوان لایه‌ی هفتگی روی buckets ماندگار. (تغییر ساختاری بزرگ)
@@ -181,6 +182,8 @@ user_domain_expertise {
 //   - 'builder': user_skills technical داره ولی domain expertise نداره
 //   - 'hybrid': هر دو
 // تو UI به‌صورت یه badge subtle کنار اسم نشون داده می‌شه. رقابتی نیست، identity ست.
+// به‌روزرسانی v0.8: خودِ `role_badge` هنوز identity است و رقابتی نیست؛ ولی از v0.8
+// همین گروه‌بندی مبنای Weekly Leaderboard (صفحه‌ی /leaderboard) هم هست. رجوع به Changelog v0.8.
 
 // projects - پروژه‌های کاربران
 projects {

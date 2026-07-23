@@ -41,6 +41,9 @@ export const personaHint = pgEnum('persona_hint', ['builder', 'domain_expert', '
 export const invitationStatus = pgEnum('invitation_status', ['pending', 'accepted', 'expired']);
 export const challengeStatus = pgEnum('challenge_status', ['pending_review', 'active', 'archived', 'rejected']);
 export const problemStatus = pgEnum('problem_status', ['pending_review', 'active', 'resolved', 'archived', 'rejected']);
+// Leaderboard group == the computed role_badge (builder / domain_expert / hybrid).
+// Mirrored as a DB enum only so frozen weekly snapshots are self-describing.
+export const leaderboardGroup = pgEnum('leaderboard_group', ['builder', 'domain_expert', 'hybrid']);
 
 /* ─────────────────────────────── Orgs ────────────────────────────── */
 
@@ -327,6 +330,35 @@ export const challengeFollows = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.challengeId] })],
+);
+
+/* ───────────────────────── Weekly leaderboard ────────────────────────
+ * Recognition board (not a permanent competitive ranking): standings reset
+ * every Saturday→Saturday (Asia/Tehran, aligned to the Spotlight cycle) and
+ * members are grouped by their computed role_badge. The live board for the
+ * in-progress week is computed on the fly from raw timestamps; when a week
+ * closes an admin "freezes" it into these rows (immutable record + the source
+ * for the Top-of-the-Week badge). Reversed the plan's "no leaderboard in
+ * phase 1" note — see CHANGELOG / plan v0.7 update.
+ */
+export const leaderboardSnapshots = pgTable(
+  'leaderboard_snapshots',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id),
+    groupType: leaderboardGroup('group_type').notNull(),
+    weekStart: timestamp('week_start', { withTimezone: true }).notNull(), // Saturday 00:00 Tehran (instant)
+    weekEnd: timestamp('week_end', { withTimezone: true }).notNull(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    rank: integer('rank').notNull(), // 1-based, within (group, week)
+    score: integer('score').notNull(),
+    breakdown: jsonb('breakdown').$type<Record<string, number>>().default({}).notNull(), // points by action, for transparency
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    unique('leaderboard_snapshots_unique').on(t.orgId, t.groupType, t.weekStart, t.userId),
+    index('leaderboard_snapshots_week_idx').on(t.orgId, t.weekStart, t.groupType, t.rank),
+  ],
 );
 
 /* Sessions — server-side credential-auth sessions; id is the opaque cookie token. */

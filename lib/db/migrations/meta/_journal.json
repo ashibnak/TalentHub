@@ -43,6 +43,13 @@
       "when": 1784791376070,
       "tag": "0005_remove_sponsor_opportunities",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784798231742,
+      "tag": "0006_loving_krista_starr",
+      "breakpoints": true
     }
   ]
 }
