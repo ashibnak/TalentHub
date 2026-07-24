@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { FolderKanban } from 'lucide-react';
 import { getProjectsDirectory } from '@/lib/db/queries/projects';
 import { getFilterFacets } from '@/lib/db/queries/facets';
+import { getCurrentUser } from '@/lib/auth/session';
 import { toArray } from '@/lib/db/queries/filters';
 import { ProjectListCard } from '@/components/molecules/ProjectListCard';
 import { DirectoryFilters } from '@/components/molecules/DirectoryFilters';
@@ -23,7 +24,8 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   };
   const hasFilters = !!(filters.q || filters.skills.length || filters.tools.length);
 
-  const [projects, facets] = await Promise.all([getProjectsDirectory(filters), getFilterFacets()]);
+  const viewer = await getCurrentUser();
+  const [projects, facets] = await Promise.all([getProjectsDirectory(filters, viewer?.id), getFilterFacets()]);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
@@ -35,7 +37,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
       {projects.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {projects.map((p) => (
-            <ProjectListCard key={p.id} project={p} />
+            <ProjectListCard key={p.id} project={p} viewerId={viewer?.id} />
           ))}
         </div>
       ) : (

@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Github, ExternalLink, ThumbsUp, Pencil } from 'lucide-react';
+import { Github, ExternalLink, Pencil } from 'lucide-react';
 import { getProjectById } from '@/lib/db/queries/projects';
 import { getCurrentUser } from '@/lib/auth/session';
+import { UpvoteButton } from '@/components/atoms/UpvoteButton';
 import { Avatar } from '@/components/atoms/Avatar';
 import { SkillTag } from '@/components/atoms/SkillTag';
 import { AiToolTag } from '@/components/atoms/AiToolTag';
 import { StageBadge } from '@/components/atoms/StageBadge';
-import { toFaDigits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,10 +20,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const project = await getProjectById(id);
+  const viewer = await getCurrentUser();
+  const project = await getProjectById(id, viewer?.id);
   if (!project) notFound();
 
-  const viewer = await getCurrentUser();
   const isOwner = !!viewer?.username && viewer.username === project.owner.username;
 
   return (
@@ -66,10 +66,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             دمو
           </a>
         )}
-        <span className="inline-flex items-center gap-1 text-info text-body">
-          <ThumbsUp size={16} strokeWidth={1.5} />
-          {toFaDigits(project.upvoteCount)}
-        </span>
+        <UpvoteButton
+          projectId={project.id}
+          count={project.upvoteCount}
+          hasUpvoted={project.hasUpvoted}
+          isOwn={isOwner}
+          isSignedIn={!!viewer}
+        />
         {isOwner && (
           <Link
             href={`/projects/${project.id}/edit`}

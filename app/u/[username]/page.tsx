@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  const profile = await getProfileByUsername(username);
+  const viewer = await getCurrentUser();
+  const profile = await getProfileByUsername(username, viewer?.id);
   if (!profile) notFound();
 
-  const viewer = await getCurrentUser();
   const isOwnProfile = !!viewer?.username && viewer.username === profile.username;
 
   const stats = [
@@ -99,7 +99,17 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           {profile.projects.length > 0 ? (
             <div className="grid grid-cols-2 gap-2">
               {profile.projects.map((p) => (
-                <ProjectCard key={p.id} title={p.title} description={p.description} stage={p.stage} upvotes={p.upvoteCount} />
+                <ProjectCard
+                  key={p.id}
+                  projectId={p.id}
+                  title={p.title}
+                  description={p.description}
+                  stage={p.stage}
+                  upvotes={p.upvoteCount}
+                  hasUpvoted={p.hasUpvoted}
+                  isOwn={isOwnProfile}
+                  isSignedIn={!!viewer}
+                />
               ))}
             </div>
           ) : (

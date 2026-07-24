@@ -9,6 +9,7 @@ import {
   userDomainExpertise,
   projects,
   projectAiTools,
+  projectUpvotes,
   userBadges,
 } from '@/lib/db/schema';
 import { escapeLike } from '@/lib/db/queries/filters';
@@ -36,6 +37,7 @@ export type ProfileProject = {
   description: string;
   stage: ProjectStage;
   upvoteCount: number;
+  hasUpvoted: boolean;
 };
 
 export type Profile = {
@@ -76,7 +78,7 @@ function deriveBuildingStatus(stages: ProjectStage[]): BuildingStatus {
  */
 // Wrapped in React's request-scoped cache() so generateMetadata and the page
 // component share ONE result per request instead of each re-hitting Postgres.
-export const getProfileByUsername = cache(async (username: string): Promise<Profile | null> => {
+export const getProfileByUsername = cache(async (username: string, viewerId?: string): Promise<Profile | null> => {
   const db = getDb();
 
   const [user] = await db.select().from(users).where(eq(users.username, username)).limit(1);
@@ -131,6 +133,20 @@ export const getProfileByUsername = cache(async (username: string): Promise<Prof
   const verifiedSkillCount = skillRows.filter((s) => s.verified).length;
   const upvotesReceived = projectRows.reduce((sum, p) => sum + p.upvoteCount, 0);
 
+  // Which of these projects the signed-in viewer has upvoted — one query, no N+1.
+  const projectIds = projectRows.map((p) => p.id);
+  const upvotedIds =
+    viewerId && projectIds.length > 0
+      ? new Set(
+          (
+            await db
+              .select({ projectId: projectUpvotes.projectId })
+              .from(projectUpvotes)
+              .where(and(eq(projectUpvotes.userId, viewerId), inArray(projectUpvotes.projectId, projectIds)))
+          ).map((r) => r.projectId),
+        )
+      : new Set<string>();
+
   return {
     id: user.id,
     username: user.username,
@@ -144,7 +160,7 @@ export const getProfileByUsername = cache(async (username: string): Promise<Prof
     buildingStatus: deriveBuildingStatus(projectRows.map((p) => p.stage)),
     skills: skillRows,
     domains: sortedDomains,
-    projects: projectRows,
+    projects: projectRows.map((p) => ({ ...p, hasUpvoted: upvotedIds.has(p.id) })),
     stats: {
       projectCount: projectRows.length,
       verifiedSkillCount,

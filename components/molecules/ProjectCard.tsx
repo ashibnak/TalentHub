@@ -1,17 +1,24 @@
-import { ThumbsUp } from 'lucide-react';
 import { StageBadge, type ProjectStage } from '@/components/atoms/StageBadge';
-import { toFaDigits } from '@/lib/format';
+import { UpvoteButton } from '@/components/atoms/UpvoteButton';
 
 export function ProjectCard({
+  projectId,
   title,
   description,
   stage,
   upvotes,
+  hasUpvoted,
+  isOwn,
+  isSignedIn,
 }: {
+  projectId: string;
   title: string;
   description: string;
   stage: ProjectStage;
   upvotes: number;
+  hasUpvoted: boolean;
+  isOwn: boolean;
+  isSignedIn: boolean;
 }) {
   return (
     <div className="bg-surface border border-border-subtle rounded-lg p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
@@ -21,10 +28,7 @@ export function ProjectCard({
         <StageBadge stage={stage} />
       </div>
       <p className="text-body-sm text-text-tertiary leading-relaxed mb-3">{description}</p>
-      <div className="flex items-center gap-1 text-info text-body-sm">
-        <ThumbsUp size={14} strokeWidth={1.5} />
-        <span>{toFaDigits(upvotes)}</span>
-      </div>
+      <UpvoteButton projectId={projectId} count={upvotes} hasUpvoted={hasUpvoted} isOwn={isOwn} isSignedIn={isSignedIn} />
     </div>
   );
 }
