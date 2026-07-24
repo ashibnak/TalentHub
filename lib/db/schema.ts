@@ -41,6 +41,9 @@ export const personaHint = pgEnum('persona_hint', ['builder', 'domain_expert', '
 export const invitationStatus = pgEnum('invitation_status', ['pending', 'accepted', 'expired']);
 export const challengeStatus = pgEnum('challenge_status', ['pending_review', 'active', 'archived', 'rejected']);
 export const problemStatus = pgEnum('problem_status', ['pending_review', 'active', 'resolved', 'archived', 'rejected']);
+// IP position a Problem declares up front, so a builder sees the ownership terms
+// before investing work: the developer keeps it, the organization owns it, or shared.
+export const ipTerms = pgEnum('ip_terms', ['developer', 'organization', 'shared']);
 // Leaderboard group == the computed role_badge (builder / domain_expert / hybrid).
 // Mirrored as a DB enum only so frozen weekly snapshots are self-describing.
 export const leaderboardGroup = pgEnum('leaderboard_group', ['builder', 'domain_expert', 'hybrid']);
@@ -285,6 +288,9 @@ export const challengeProblems = pgTable(
     reviewedBy: uuid('reviewed_by').references(() => users.id),
     reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
     rejectionReason: text('rejection_reason'),
+    // IP terms declared by whoever defines the Problem (shown to builders before they submit).
+    ipTerms: ipTerms('ip_terms').notNull().default('developer'),
+    ipTermsNote: text('ip_terms_note'), // free-form clarification of the terms
     isSpotlight: boolean('is_spotlight').notNull().default(false),
     spotlightStartsAt: timestamp('spotlight_starts_at', { withTimezone: true }),
     spotlightEndsAt: timestamp('spotlight_ends_at', { withTimezone: true }),
@@ -302,7 +308,8 @@ export const projectChallengeProblems = pgTable(
   {
     projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
     challengeProblemId: uuid('challenge_problem_id').notNull().references(() => challengeProblems.id, { onDelete: 'cascade' }),
-    submissionNotes: text('submission_notes'),
+    solutionDescription: text('solution_description').notNull(), // markdown write-up: problem / approach / limitations
+    ipTermsAcceptedAt: timestamp('ip_terms_accepted_at', { withTimezone: true }).notNull(), // when the builder accepted the Problem's IP terms
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [

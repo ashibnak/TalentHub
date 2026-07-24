@@ -1,0 +1,1 @@
+ALTER TABLE "project_challenge_problems" DROP COLUMN "submission_notes";

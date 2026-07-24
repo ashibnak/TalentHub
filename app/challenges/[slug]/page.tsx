@@ -33,7 +33,11 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
         {challenge.problems.length > 0 ? (
           <div className="flex flex-col gap-3">
             {challenge.problems.map((p) => (
-              <div key={p.id} className="bg-surface border border-border-subtle rounded-lg p-4">
+              <Link
+                key={p.id}
+                href={`/challenges/${slug}/${p.id}`}
+                className="block bg-surface border border-border-subtle rounded-lg p-4 transition-all hover:bg-surface-elevated hover:border-border"
+              >
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="text-h3 text-fg">{p.title}</h3>
                   {p.isSpotlight && <SpotlightBadge />}
@@ -43,7 +47,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
                   <FolderKanban size={14} strokeWidth={1.5} />
                   {toFaDigits(p.projectCount)} پروژه
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

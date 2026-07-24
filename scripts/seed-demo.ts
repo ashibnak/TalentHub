@@ -387,7 +387,15 @@ async function main() {
           for (const link of p.problems ?? []) {
             const problemId = problemIdByKey.get(`${link.challenge}::${link.problem}`);
             if (!problemId) throw new Error(`unknown problem: ${link.challenge}::${link.problem}`);
-            await tx.insert(projectChallengeProblems).values({ projectId: proj.id, challengeProblemId: problemId }).onConflictDoNothing();
+            await tx
+              .insert(projectChallengeProblems)
+              .values({
+                projectId: proj.id,
+                challengeProblemId: problemId,
+                solutionDescription: `این پروژه به مسئله‌ی «${link.problem}» می‌پردازد: رویکرد، پیاده‌سازی و محدودیت‌ها در توضیحات پروژه آمده است.`,
+                ipTermsAcceptedAt: new Date(),
+              })
+              .onConflictDoNothing();
           }
         }
       });

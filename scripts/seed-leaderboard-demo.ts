@@ -154,7 +154,13 @@ async function main() {
       if (problemId) {
         await db
           .insert(projectChallengeProblems)
-          .values({ projectId, challengeProblemId: problemId, createdAt: activityAt })
+          .values({
+            projectId,
+            challengeProblemId: problemId,
+            solutionDescription: `${t.description} — رویکرد، پیاده‌سازی و محدودیت‌ها در توضیحات پروژه آمده است.`,
+            ipTermsAcceptedAt: activityAt,
+            createdAt: activityAt,
+          })
           .onConflictDoNothing();
         await db
           .update(projectChallengeProblems)
