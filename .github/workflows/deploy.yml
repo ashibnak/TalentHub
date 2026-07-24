@@ -20,6 +20,21 @@ jobs:
   check:
     name: Typecheck, test, lint
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        # Wait until Postgres is accepting connections before the steps run.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +51,13 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: DB integration tests
+        run: npm run test:db
+        env:
+          # The test harness creates/drops throwaway test_* databases (needs a
+          # role that can CREATE DATABASE — the postgres superuser qualifies).
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
       - name: Lint
         run: npm run lint

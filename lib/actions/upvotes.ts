@@ -1,11 +1,12 @@
 'use server';
 
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { and, eq, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { projects, projectUpvotes, users } from '@/lib/db/schema';
+import { projects, users } from '@/lib/db/schema';
 import { requireUser } from '@/lib/auth/session';
 import { UpvoteInputSchema, checkUpvoteAllowed } from '@/lib/upvotes/rules';
+import { applyUpvoteToggle } from '@/lib/upvotes/toggle';
 
 /**
  * Toggle the current user's upvote on a project. Inserts/deletes the
@@ -36,26 +37,7 @@ export async function toggleUpvoteAction(projectId: string) {
       return;
     }
 
-    await db.transaction(async (tx) => {
-      const [existing] = await tx
-        .select({ userId: projectUpvotes.userId })
-        .from(projectUpvotes)
-        .where(and(eq(projectUpvotes.userId, user.id), eq(projectUpvotes.projectId, id)))
-        .limit(1);
-
-      if (existing) {
-        await tx.delete(projectUpvotes).where(and(eq(projectUpvotes.userId, user.id), eq(projectUpvotes.projectId, id)));
-      } else {
-        await tx.insert(projectUpvotes).values({ userId: user.id, projectId: id }).onConflictDoNothing();
-      }
-
-      // Derive the count from the real rows — not an increment — so it stays correct.
-      const [{ c }] = await tx
-        .select({ c: sql<number>`cast(count(*) as int)` })
-        .from(projectUpvotes)
-        .where(eq(projectUpvotes.projectId, id));
-      await tx.update(projects).set({ upvoteCount: Number(c) }).where(eq(projects.id, id));
-    });
+    await applyUpvoteToggle(db, user.id, id);
 
     revalidatePath('/projects');
     revalidatePath(`/projects/${id}`);
