@@ -6,48 +6,9 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { projects, projectSkills, projectAiTools, skills } from '@/lib/db/schema';
 import { requireUser } from '@/lib/auth/session';
-import { isHttpUrl } from '@/lib/validation';
-import { AI_TOOL_LABELS } from '@/lib/ai-tools';
-
-const STAGES = ['experiment', 'weekend_hack', 'building', 'shipped', 'maintained'] as const;
-type Stage = (typeof STAGES)[number];
+import { parseProjectForm } from '@/lib/projects/rules';
 
 type Db = ReturnType<typeof getDb>;
-
-type ParsedProject = {
-  title: string;
-  description: string;
-  stage: Stage;
-  githubUrl: string | null;
-  demoUrl: string | null;
-  publish: boolean;
-  skillSlugs: string[];
-  toolSlugs: string[];
-};
-
-/** Parse + validate the shared project form. Returns an error CODE string, or the
- *  parsed values. Requires the IP-confirmation checkbox (legal safeguard — never
- *  auto-set). */
-function parseProjectForm(formData: FormData): { error: string } | ParsedProject {
-  const title = String(formData.get('title') ?? '').trim();
-  const description = String(formData.get('description') ?? '').trim();
-  const stage = String(formData.get('stage') ?? 'experiment');
-  const githubUrl = String(formData.get('githubUrl') ?? '').trim() || null;
-  const demoUrl = String(formData.get('demoUrl') ?? '').trim() || null;
-  const publish = formData.get('publish') === 'on';
-  const confirmed = formData.get('confirmed') === 'on';
-  const skillSlugs = [...new Set(formData.getAll('skills').map((s) => String(s)).filter(Boolean))];
-  const toolSlugs = [...new Set(formData.getAll('tools').map((s) => String(s)).filter((s) => s in AI_TOOL_LABELS))];
-
-  if (title.length < 3 || title.length > 120) return { error: 'title' };
-  if (description.length < 10 || description.length > 4000) return { error: 'description' };
-  if (!STAGES.includes(stage as Stage)) return { error: 'stage' };
-  if (githubUrl && !isHttpUrl(githubUrl)) return { error: 'github' };
-  if (demoUrl && !isHttpUrl(demoUrl)) return { error: 'demo' };
-  if (!confirmed) return { error: 'confirm' };
-
-  return { title, description, stage: stage as Stage, githubUrl, demoUrl, publish, skillSlugs, toolSlugs };
-}
 
 /** Resolve submitted skill SLUGS → ids (validates existence; unknown slugs dropped). */
 async function resolveSkillIds(db: Db, slugs: string[]): Promise<string[]> {

@@ -6,7 +6,7 @@ import { and, eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { users, skills, userSkills } from '@/lib/db/schema';
 import { requireUser } from '@/lib/auth/session';
-import { isHttpUrl } from '@/lib/validation';
+import { parseProfileForm, parseAddSkillForm } from '@/lib/profile/rules';
 
 /** Revalidate the settings page + the user's public profile (username may be null). */
 function revalidateProfile(username: string | null) {
@@ -18,17 +18,9 @@ function revalidateProfile(username: string | null) {
 export async function updateProfileAction(formData: FormData) {
   const user = await requireUser();
 
-  const name = String(formData.get('name') ?? '').trim();
-  const roleTitle = String(formData.get('roleTitle') ?? '').trim() || null;
-  const bio = String(formData.get('bio') ?? '').trim() || null;
-  const githubUsername = String(formData.get('githubUsername') ?? '').trim().replace(/^@/, '') || null;
-  const linkedinUrl = String(formData.get('linkedinUrl') ?? '').trim() || null;
-
-  if (name.length < 2 || name.length > 80) redirect('/settings?error=name');
-  if (roleTitle && roleTitle.length > 120) redirect('/settings?error=roleTitle');
-  if (bio && bio.length > 600) redirect('/settings?error=bio');
-  if (githubUsername && !/^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,38})$/.test(githubUsername)) redirect('/settings?error=github');
-  if (linkedinUrl && !isHttpUrl(linkedinUrl)) redirect('/settings?error=linkedin');
+  const parsed = parseProfileForm(formData);
+  if ('error' in parsed) redirect(`/settings?error=${parsed.error}`);
+  const { name, roleTitle, bio, githubUsername, linkedinUrl } = parsed;
 
   await getDb().update(users).set({ name, roleTitle, bio, githubUsername, linkedinUrl }).where(eq(users.id, user.id));
   revalidateProfile(user.username);
@@ -39,10 +31,9 @@ export async function updateProfileAction(formData: FormData) {
  *  self-service can only claim, not verify (that is the future AI feature). */
 export async function addSkillAction(formData: FormData) {
   const user = await requireUser();
-  const slug = String(formData.get('skillSlug') ?? '').trim();
-  const level = Number(formData.get('claimedLevel') ?? '1');
-  if (!slug) redirect('/settings?error=skill');
-  if (!Number.isInteger(level) || level < 1 || level > 5) redirect('/settings?error=level');
+  const parsed = parseAddSkillForm(formData);
+  if ('error' in parsed) redirect(`/settings?error=${parsed.error}`);
+  const { skillSlug: slug, claimedLevel: level } = parsed;
 
   const db = getDb();
   const [skill] = await db.select({ id: skills.id }).from(skills).where(eq(skills.slug, slug)).limit(1);

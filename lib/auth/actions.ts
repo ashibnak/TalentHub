@@ -6,6 +6,7 @@ import { eq, or } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { users, orgs } from '@/lib/db/schema';
 import { hashPassword, verifyPassword } from '@/lib/auth/password';
+import { parseCreateUserForm } from '@/lib/auth/rules';
 import { isRateLimited, recordFailedAttempt, resetAttempts } from '@/lib/auth/rate-limit';
 import { createSession, destroySession, requireAdmin } from '@/lib/auth/session';
 
@@ -51,18 +52,9 @@ export async function logoutAction() {
 export async function createUserAction(formData: FormData) {
   await requireAdmin();
 
-  const name = String(formData.get('name') ?? '').trim();
-  const email = String(formData.get('email') ?? '').trim().toLowerCase();
-  const username = String(formData.get('username') ?? '').trim().toLowerCase();
-  const role = String(formData.get('role') ?? 'talent');
-  const password = String(formData.get('password') ?? '');
-  const roleTitle = String(formData.get('roleTitle') ?? '').trim() || null;
-
-  if (name.length < 2) redirect('/admin/users?error=name');
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) redirect('/admin/users?error=email');
-  if (!/^[a-z0-9-]{3,32}$/.test(username)) redirect('/admin/users?error=username');
-  if (!['talent', 'admin'].includes(role)) redirect('/admin/users?error=role');
-  if (password.length < 8) redirect('/admin/users?error=password');
+  const parsed = parseCreateUserForm(formData);
+  if ('error' in parsed) redirect(`/admin/users?error=${parsed.error}`);
+  const { name, email, username, role, password, roleTitle } = parsed;
 
   const db = getDb();
   const [org] = await db.select().from(orgs).where(eq(orgs.slug, 'main-org')).limit(1);
