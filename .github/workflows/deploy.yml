@@ -1,18 +1,49 @@
-name: Deploy to Railway
+name: CI & Deploy to Railway
 
-# Git-based deploy: every push to main ships to Railway automatically.
-# Auth uses a scoped Railway project token stored as the RAILWAY_TOKEN repo secret.
+# Pull requests run the checks only. Pushes to main (and manual dispatch) run the
+# checks and, if they pass, ship to Railway. Deploy auth uses a scoped Railway
+# project token stored as the RAILWAY_TOKEN repo secret.
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch: {}
 
+# Serialize per-ref so redundant runs on the same branch/PR cancel, while a main
+# deploy and a PR check never cancel each other.
 concurrency:
-  group: railway-deploy
+  group: railway-deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  check:
+    name: Typecheck, test, lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
   deploy:
+    name: Deploy to Railway
+    needs: check # gate: never deploy unless the checks pass
+    if: github.event_name != 'pull_request' # push to main or manual dispatch only
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
