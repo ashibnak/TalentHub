@@ -16,21 +16,6 @@ import { toFaDigits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
-const ERROR_MESSAGES: Record<string, string> = {
-  too_short: 'توضیح راه‌حل باید حداقل ۱۲۰ کاراکتر باشد.',
-  too_long: 'توضیح راه‌حل خیلی طولانی است.',
-  ip_terms: 'برای ثبت باید شرایط مالکیت فکری را بپذیری.',
-  project_invalid: 'پروژه‌ی نامعتبر است.',
-  project_not_found: 'پروژه پیدا نشد.',
-  not_owner: 'این پروژه متعلق به تو نیست.',
-  not_published: 'فقط پروژه‌های منتشرشده قابل ثبت‌اند.',
-  problem_not_found: 'مسئله پیدا نشد.',
-  problem_not_active: 'این مسئله فعال نیست.',
-  duplicate: 'این پروژه قبلاً روی این مسئله ثبت شده است.',
-  internal: 'خطایی رخ داد. دوباره تلاش کن.',
-  invalid: 'ورودی نامعتبر است.',
-};
-
 export async function generateMetadata({ params }: { params: Promise<{ problemId: string }> }): Promise<Metadata> {
   const { problemId } = await params;
   const problem = await getProblemForSubmission(problemId);
@@ -42,7 +27,7 @@ export default async function ProblemDetailPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; problemId: string }>;
-  searchParams: Promise<{ submitted?: string; error?: string }>;
+  searchParams: Promise<{ submitted?: string }>;
 }) {
   const { slug, problemId } = await params;
   const sp = await searchParams;
@@ -72,11 +57,6 @@ export default async function ProblemDetailPage({
       {sp.submitted && (
         <p className="mb-4 rounded-lg border border-info-muted bg-info-subtle px-4 py-3 text-body-sm text-info">
           پروژه‌ات روی این مسئله ثبت شد.
-        </p>
-      )}
-      {sp.error && ERROR_MESSAGES[sp.error] && (
-        <p className="mb-4 rounded-lg border border-border-subtle bg-surface px-4 py-3 text-body-sm text-red-400">
-          {ERROR_MESSAGES[sp.error]}
         </p>
       )}
 

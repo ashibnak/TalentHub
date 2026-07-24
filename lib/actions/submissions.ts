@@ -8,7 +8,17 @@ import { projects, challengeProblems, projectChallengeProblems } from '@/lib/db/
 import { requireUser } from '@/lib/auth/session';
 import { SubmissionFormSchema, checkSubmissionAllowed } from '@/lib/submissions/rules';
 
-/** Map a Zod failure to a short error code the problem page renders in Persian. */
+/**
+ * Form state returned to the client (via useActionState) on any non-success
+ * outcome, so field errors render inline and the write-up/selection are never
+ * lost. Success and auth still redirect (they never return here).
+ */
+export type SubmitState = {
+  error?: string;
+  values?: { projectId: string; solutionDescription: string; ipTermsAccepted: boolean };
+};
+
+/** Map a Zod failure to a short error code the form renders in Persian. */
 function formErrorCode(issues: readonly { path: PropertyKey[]; message: string }[]): string {
   if (issues.some((i) => i.path[0] === 'ipTermsAccepted')) return 'ip_terms';
   const solution = issues.find((i) => i.path[0] === 'solutionDescription');
@@ -20,9 +30,11 @@ function formErrorCode(issues: readonly { path: PropertyKey[]; message: string }
 /**
  * Submit one of the current user's published projects to an active challenge
  * problem, accepting the problem's IP terms. Zod-validated; all rules in
- * lib/submissions/rules.ts. Errors redirect back to the problem page with a code.
+ * lib/submissions/rules.ts. On validation failure or a business rejection it
+ * RETURNS { error, values } (input preserved); it only redirects on success or
+ * when auth/structure is missing.
  */
-export async function submitProjectToProblemAction(formData: FormData) {
+export async function submitProjectToProblemAction(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   const user = await requireUser();
 
   const slug = String(formData.get('slug') ?? '');
@@ -30,12 +42,14 @@ export async function submitProjectToProblemAction(formData: FormData) {
   if (!slug || !problemId) redirect('/challenges');
   const back = `/challenges/${slug}/${problemId}`;
 
-  const parsed = SubmissionFormSchema.safeParse({
+  const values = {
     projectId: String(formData.get('projectId') ?? ''),
     solutionDescription: String(formData.get('solutionDescription') ?? ''),
     ipTermsAccepted: formData.get('ipTermsAccepted') === 'on',
-  });
-  if (!parsed.success) redirect(`${back}?error=${formErrorCode(parsed.error.issues)}`);
+  };
+
+  const parsed = SubmissionFormSchema.safeParse(values);
+  if (!parsed.success) return { error: formErrorCode(parsed.error.issues), values };
 
   try {
     const db = getDb();
@@ -66,7 +80,7 @@ export async function submitProjectToProblemAction(formData: FormData) {
       problem: problem ?? null,
       alreadyLinked: !!linked,
     });
-    if (rejection) redirect(`${back}?error=${rejection}`);
+    if (rejection) return { error: rejection, values };
 
     await db.insert(projectChallengeProblems).values({
       projectId: parsed.data.projectId,
@@ -75,11 +89,8 @@ export async function submitProjectToProblemAction(formData: FormData) {
       ipTermsAcceptedAt: new Date(),
     });
   } catch (err) {
-    // redirect() throws NEXT_REDIRECT internally — let those propagate.
-    if (err && typeof err === 'object' && 'digest' in err && String((err as { digest: unknown }).digest).startsWith('NEXT_REDIRECT'))
-      throw err;
     console.error('[submissions.submit]', err);
-    redirect(`${back}?error=internal`);
+    return { error: 'internal', values };
   }
 
   revalidatePath(back);
