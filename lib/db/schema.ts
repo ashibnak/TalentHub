@@ -151,7 +151,11 @@ export const projects = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index('projects_user_idx').on(t.userId)],
+  (t) => [
+    index('projects_user_idx').on(t.userId),
+    // Directory (published, most-recent) + leaderboard publish-window scans.
+    index('projects_status_created_idx').on(t.status, t.createdAt),
+  ],
 );
 
 export const projectSkills = pgTable(
@@ -315,6 +319,8 @@ export const projectChallengeProblems = pgTable(
   (t) => [
     primaryKey({ columns: [t.projectId, t.challengeProblemId] }),
     index('pcp_problem_idx').on(t.challengeProblemId),
+    // Leaderboard: challenge-submission counts within a week window.
+    index('pcp_created_idx').on(t.createdAt),
   ],
 );
 
@@ -325,7 +331,13 @@ export const projectUpvotes = pgTable(
     projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.projectId] })],
+  (t) => [
+    primaryKey({ columns: [t.userId, t.projectId] }),
+    // upvote_count recompute + hasUpvoted lookups filter by project_id.
+    index('project_upvotes_project_idx').on(t.projectId),
+    // Leaderboard: upvotes-received counts within a week window.
+    index('project_upvotes_created_idx').on(t.createdAt),
+  ],
 );
 
 /* Challenge follows — email digests on new/spotlighted problems (plan §3.5, Week 8) */
