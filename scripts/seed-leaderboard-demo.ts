@@ -132,6 +132,7 @@ async function main() {
         .insert(projects)
         .values({
           userId: ownerId,
+          orgId: org.id,
           title: t.title,
           description: t.description,
           stage: t.stage,

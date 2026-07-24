@@ -12,10 +12,10 @@ import {
   projectUpvotes,
   challengeProblems,
   leaderboardSnapshots,
-  orgs,
   badges,
   userBadges,
 } from '@/lib/db/schema';
+import { getMainOrgId } from '@/lib/db/queries/org';
 import { computeRoleBadge } from '@/lib/users/role-badge';
 import {
   GROUP_ORDER,
@@ -27,7 +27,6 @@ import {
   type WeekWindow,
 } from '@/lib/leaderboard/scoring';
 
-const MAIN_ORG_SLUG = 'main-org'; // phase-1 single org (see CODE_CONVENTIONS §4)
 const TOP_BADGE_SLUG = 'top-of-the-week';
 
 export type LeaderboardEntry = {
@@ -169,11 +168,6 @@ export async function computeStandings(window: WeekWindow): Promise<LeaderboardR
 
   return { window, frozen: false, groups: rankIntoGroups(entries) };
 }
-
-const getMainOrgId = cache(async (): Promise<string | null> => {
-  const [org] = await getDb().select({ id: orgs.id }).from(orgs).where(eq(orgs.slug, MAIN_ORG_SLUG)).limit(1);
-  return org?.id ?? null;
-});
 
 /** Read a frozen week from snapshot rows (joined to users for fresh display fields). Null if the week was never frozen. */
 async function readSnapshot(window: WeekWindow): Promise<LeaderboardResult | null> {

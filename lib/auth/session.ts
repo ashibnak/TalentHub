@@ -11,6 +11,7 @@ const MAX_AGE_S = 60 * 60 * 24 * 7; // 7 days
 
 export type SessionUser = {
   id: string;
+  orgId: string;
   name: string;
   email: string;
   username: string | null;
@@ -42,6 +43,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const [row] = await getDb()
     .select({
       id: users.id,
+      orgId: users.orgId,
       name: users.name,
       email: users.email,
       username: users.username,
@@ -61,6 +63,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   }
   return {
     id: row.id,
+    orgId: row.orgId,
     name: row.name,
     email: row.email,
     username: row.username,

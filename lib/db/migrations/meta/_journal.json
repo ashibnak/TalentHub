@@ -78,6 +78,13 @@
       "when": 1784906212732,
       "tag": "0010_awesome_infant_terrible",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1784911157263,
+      "tag": "0011_magenta_vision",
+      "breakpoints": true
     }
   ]
 }

@@ -32,6 +32,7 @@ export async function createProjectAction(formData: FormData) {
       .insert(projects)
       .values({
         userId: user.id,
+        orgId: user.orgId,
         title: parsed.title,
         description: parsed.description,
         stage: parsed.stage,

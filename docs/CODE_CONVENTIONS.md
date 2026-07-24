@@ -103,6 +103,8 @@ Rules:
 - Queries live in `/lib/db/queries/*.ts`, grouped by entity — not inline in API routes or components
 - Always use typed Drizzle queries, never raw SQL unless there's a documented reason (e.g., a complex aggregate)
 - Every query touching multi-row data must include the `org_id` filter, even though phase 1 has one org — this is what keeps phase 2 multi-tenancy a small change instead of a rewrite
+- The org slug/id come from one place — `lib/db/queries/org.ts` (`MAIN_ORG_SLUG` and the cached `getMainOrgId()`). Import them; don't re-declare the `'main-org'` constant or re-query the id per module.
+- Every table carries its own `org_id` (per CLAUDE.md). As of migration `0011`, `projects` does too (backfilled from the owner's org), so it scopes directly rather than transitively through `users`. New project inserts set `org_id` from `user.orgId` (now on `SessionUser`).
 
 ## 5. Error handling in UI
 

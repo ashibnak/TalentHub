@@ -69,8 +69,8 @@ suite('upvote invariant + freeze idempotency', () => {
       VALUES (${org.id}, 'a@test.local', 'Alpha', 'builder-a', 'active', false) RETURNING id`;
     const [uB] = await testSql`INSERT INTO users (org_id, email, name, username, status, is_admin)
       VALUES (${org.id}, 'b@test.local', 'Beta', 'voter-b', 'active', false) RETURNING id`;
-    const [proj] = await testSql`INSERT INTO projects (user_id, title, description, status)
-      VALUES (${uA.id}, 'Alpha Project', 'A sufficiently long description.', 'published') RETURNING id`;
+    const [proj] = await testSql`INSERT INTO projects (user_id, org_id, title, description, status)
+      VALUES (${uA.id}, ${org.id}, 'Alpha Project', 'A sufficiently long description.', 'published') RETURNING id`;
     ids = { orgId: org.id, userA: uA.id, userB: uB.id, projectId: proj.id };
   });
 

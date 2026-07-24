@@ -374,7 +374,7 @@ async function main() {
           const [proj] = await tx
             .insert(projects)
             .values({
-              userId: user.id, title: p.title, description: p.description, stage: p.stage,
+              userId: user.id, orgId: org.id, title: p.title, description: p.description, stage: p.stage,
               upvoteCount: p.upvotes, status: 'published', isPersonalProjectConfirmed: true, githubUrl: p.github,
             })
             .returning({ id: projects.id });

@@ -1,19 +1,10 @@
 import { cache } from 'react';
 import { and, desc, eq, isNotNull, notInArray } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { orgs, users, projects, challenges, challengeProblems, projectChallengeProblems } from '@/lib/db/schema';
+import { users, projects, challenges, challengeProblems, projectChallengeProblems } from '@/lib/db/schema';
+import { getMainOrgId } from '@/lib/db/queries/org';
 import type { ProjectStage } from '@/components/atoms/StageBadge';
 import type { IpTerms } from '@/lib/submissions/rules';
-
-const MAIN_ORG_SLUG = 'main-org'; // phase-1 single org (CODE_CONVENTIONS §4)
-
-// challenge_problems / projects carry no org_id of their own — the org lives on
-// the parent `challenges` row, so we scope through that join. (Projects are
-// additionally scoped by the signed-in user's id, who belongs to the org.)
-const getMainOrgId = cache(async (): Promise<string | null> => {
-  const [org] = await getDb().select({ id: orgs.id }).from(orgs).where(eq(orgs.slug, MAIN_ORG_SLUG)).limit(1);
-  return org?.id ?? null;
-});
 
 export type ProblemForSubmission = {
   id: string;

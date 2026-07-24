@@ -136,6 +136,7 @@ export const projects = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    orgId: uuid('org_id').notNull().references(() => orgs.id, { onDelete: 'cascade' }), // owner's org (phase-1: always main-org)
     title: text('title').notNull(),
     description: text('description').notNull(),
     githubUrl: text('github_url'),
