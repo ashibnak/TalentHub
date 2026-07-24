@@ -173,6 +173,26 @@ chore: seed skills taxonomy
 - Commit after every successful Claude Code prompt that passes human review — don't batch multiple prompts into one commit
 - If a prompt produces bad output, `git reset --hard` or discard rather than trying to manually patch AI-generated code that took a wrong turn
 
-## 9. When extending this document
+## 9. Security headers
+
+Set once in `next.config.ts` via `async headers()` for `source: '/(.*)'`, so every
+response carries them. Current set:
+
+| Header | Value | Why |
+| --- | --- | --- |
+| `X-Frame-Options` | `DENY` | No framing — anti-clickjacking |
+| `X-Content-Type-Options` | `nosniff` | No MIME sniffing |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Don't leak full paths cross-origin |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=()` | Deny device APIs we don't use |
+| `Content-Security-Policy` | `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:` | Same-origin only |
+
+The app is fully same-origin (next/font self-hosts Vazirmatn, avatars are
+same-origin/data URIs, no CDN), so `default-src 'self'` holds. `'unsafe-inline'`/
+`'unsafe-eval'` are required by Next's runtime + dev HMR and Tailwind's inline
+style vars — don't tighten these without confirming the app still hydrates. Any
+new external origin (script, image, font, API) must be added to the matching CSP
+directive here first.
+
+## 10. When extending this document
 
 Same rule as DESIGN_SYSTEM.md: if a convention isn't written here, it isn't a real convention yet — add it here before relying on it across multiple prompts.
