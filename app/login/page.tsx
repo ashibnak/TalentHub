@@ -22,7 +22,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <h1 className="text-h2">ورود به AIGraph</h1>
       </div>
       <form action={loginAction} className="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-        {error && <p className="text-body-sm text-red-400">ایمیل یا رمز عبور نادرست است.</p>}
+        {error && (
+          <p className="text-body-sm text-red-400">
+            {error === 'rate_limited'
+              ? 'تلاش‌های ناموفق زیاد بود. چند دقیقه صبر کن و دوباره تلاش کن.'
+              : 'ایمیل یا رمز عبور نادرست است.'}
+          </p>
+        )}
         <label className="block text-body-sm text-text-tertiary">
           ایمیل
           <input name="email" type="email" required autoComplete="email" className={inputClass} />

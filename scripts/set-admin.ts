@@ -24,7 +24,7 @@ async function main() {
   const [org] = await db.select().from(orgs).where(eq(orgs.slug, 'main-org'));
   if (!org) throw new Error('org missing — run `npm run db:seed` first');
 
-  const passwordHash = hashPassword(password);
+  const passwordHash = await hashPassword(password);
   const [existing] = await db.select().from(users).where(eq(users.email, email));
   if (existing) {
     await db.update(users).set({ passwordHash, isAdmin: true, status: 'active' }).where(eq(users.id, existing.id));
