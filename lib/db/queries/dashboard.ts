@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { and, count, countDistinct, desc, eq, isNotNull } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { users, skills, userSkills, projects, projectAiTools } from '@/lib/db/schema';
@@ -17,9 +18,12 @@ export type DashboardMetrics = {
   topBuilders: { username: string; name: string; projectCount: number }[];
 };
 
-/** Org-wide metrics for the CHRO dashboard (plan Week 6), read-only aggregates. */
-export const getDashboardMetrics = cache(async (): Promise<DashboardMetrics> => {
-  const db = getDb();
+/** Org-wide metrics for the CHRO dashboard (plan Week 6), read-only aggregates.
+ *  Cross-request cached (60s); the return value is fully JSON-safe (no Dates). */
+export const getDashboardMetrics = cache(
+  unstable_cache(
+    async (): Promise<DashboardMetrics> => {
+      const db = getDb();
   const people = await getPeopleDirectory(); // members with computed role_badge
 
   const [totalProjects, verifiedSkills, totalSkills, activeRows, skillDist, toolDist, builderRows] = await Promise.all([
@@ -63,4 +67,8 @@ export const getDashboardMetrics = cache(async (): Promise<DashboardMetrics> => 
     toolAdoption: toolDist.map((t) => ({ label: aiToolLabel(t.slug), value: Number(t.value) })),
     topBuilders: builderRows.map((b) => ({ username: b.username!, name: b.name, projectCount: Number(b.projectCount) })),
   };
-});
+    },
+    ['dashboard-metrics'],
+    { revalidate: 60, tags: ['dashboard-metrics'] },
+  ),
+);

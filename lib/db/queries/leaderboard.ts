@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { and, eq, gte, isNotNull, lt, ne, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import {
@@ -217,13 +218,33 @@ async function readSnapshot(window: WeekWindow): Promise<LeaderboardResult | nul
 }
 
 /**
+ * Cross-request cache of the *current* week's standings — the hot anonymous
+ * path (the 7 aggregate queries in computeStandings). Only the JSON-safe
+ * groups/frozen are cached; the week window (Dates) is recomputed by the caller,
+ * so unstable_cache never has to serialize a Date. Invalidated by the
+ * 'leaderboard' tag from upvote / submission / freeze actions, else 60s TTL.
+ * Past weeks are not cached here — they read cheap frozen snapshots.
+ */
+const getCachedCurrentStandings = unstable_cache(
+  async (): Promise<{ frozen: boolean; groups: Record<LeaderboardGroup, LeaderboardEntry[]> }> => {
+    const result = await computeStandings(weekWindow(0));
+    return { frozen: result.frozen, groups: result.groups };
+  },
+  ['leaderboard-current'],
+  { revalidate: 60, tags: ['leaderboard'] },
+);
+
+/**
  * The board for a week: offset 0 = current (live), -1 = last week, etc.
  * Closed weeks read their frozen snapshot; if a closed week was never frozen we
  * fall back to a live recompute so history is never blank.
  */
 export const getLeaderboard = cache(async (offset = 0): Promise<LeaderboardResult> => {
   const window = weekWindow(offset);
-  if (offset === 0) return computeStandings(window);
+  if (offset === 0) {
+    const { frozen, groups } = await getCachedCurrentStandings();
+    return { window, frozen, groups };
+  }
   return (await readSnapshot(window)) ?? computeStandings(window);
 });
 

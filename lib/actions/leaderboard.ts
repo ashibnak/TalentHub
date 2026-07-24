@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth/session';
 import { freezeWeek } from '@/lib/db/queries/leaderboard';
 import { weekWindow } from '@/lib/leaderboard/scoring';
@@ -15,6 +15,7 @@ export async function freezeLastWeekAction() {
   await requireAdmin();
   try {
     const summary = await freezeWeek(weekWindow(-1));
+    revalidateTag('leaderboard');
     revalidatePath('/leaderboard');
     revalidatePath('/admin');
     redirect(`/admin?frozen=${summary.totalRanked}`);

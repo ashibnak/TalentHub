@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { and, eq, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { projects, projectUpvotes, users } from '@/lib/db/schema';
@@ -62,6 +62,8 @@ export async function toggleUpvoteAction(projectId: string) {
     if (proj.ownerUsername) revalidatePath(`/u/${proj.ownerUsername}`);
     revalidatePath('/home');
     revalidatePath('/leaderboard');
+    revalidateTag('leaderboard'); // upvotes-received feeds the weekly score
+
   } catch (err) {
     console.error('[upvotes.toggle]', err);
   }

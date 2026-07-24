@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { projects, challengeProblems, projectChallengeProblems } from '@/lib/db/schema';
@@ -83,5 +83,6 @@ export async function submitProjectToProblemAction(formData: FormData) {
   }
 
   revalidatePath(back);
+  revalidateTag('leaderboard'); // challenge submissions feed the weekly score
   redirect(`${back}?submitted=1`);
 }
