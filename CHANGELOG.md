@@ -7,6 +7,20 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [Unreleased]
+
+### Security
+- **Session tokens are now hashed at rest.** `sessions.id` stores `sha256(token)`;
+  the raw token lives only in the httpOnly cookie, so a database or backup leak no
+  longer yields usable session cookies. Added an index on `sessions.expires_at` and
+  opportunistic garbage-collection of expired rows inside `getCurrentUser` (no cron).
+
+### Changed
+- **Breaking:** the token-hashing change invalidates all existing sessions — every
+  user must sign in again once this deploys.
+
+---
+
 ## [0.11.0] — 2026-07-23 — Weekly Leaderboard 🏆
 
 A public, weekly **recognition board** — not a permanent ranking. This reverses

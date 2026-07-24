@@ -1,10 +1,10 @@
 import { cache } from 'react';
-import { randomBytes } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { eq } from 'drizzle-orm';
+import { eq, lt } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { sessions, users } from '@/lib/db/schema';
+import { newSessionToken, hashToken } from '@/lib/auth/session-token';
 
 const COOKIE = 'aigraph_session';
 const MAX_AGE_S = 60 * 60 * 24 * 7; // 7 days
@@ -18,9 +18,10 @@ export type SessionUser = {
 };
 
 export async function createSession(userId: string): Promise<void> {
-  const token = randomBytes(32).toString('hex');
+  const token = newSessionToken();
   const expiresAt = new Date(Date.now() + MAX_AGE_S * 1000);
-  await getDb().insert(sessions).values({ id: token, userId, expiresAt });
+  // Store only the hash; the raw token goes in the cookie.
+  await getDb().insert(sessions).values({ id: hashToken(token), userId, expiresAt });
   const store = await cookies();
   store.set(COOKIE, token, {
     httpOnly: true,
@@ -37,6 +38,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const token = store.get(COOKIE)?.value;
   if (!token) return null;
 
+  const tokenHash = hashToken(token);
   const [row] = await getDb()
     .select({
       id: users.id,
@@ -48,10 +50,15 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     })
     .from(sessions)
     .innerJoin(users, eq(sessions.userId, users.id))
-    .where(eq(sessions.id, token))
+    .where(eq(sessions.id, tokenHash))
     .limit(1);
 
-  if (!row || row.expiresAt.getTime() < Date.now()) return null;
+  if (!row || row.expiresAt.getTime() < Date.now()) {
+    // Opportunistic GC: seeing an expired session is a good moment to sweep all
+    // expired rows (uses the expires_at index). No cron needed in phase 1.
+    if (row) await getDb().delete(sessions).where(lt(sessions.expiresAt, new Date()));
+    return null;
+  }
   return {
     id: row.id,
     name: row.name,
@@ -65,7 +72,7 @@ export async function destroySession(): Promise<void> {
   const store = await cookies();
   const token = store.get(COOKIE)?.value;
   if (token) {
-    await getDb().delete(sessions).where(eq(sessions.id, token));
+    await getDb().delete(sessions).where(eq(sessions.id, hashToken(token)));
     store.delete(COOKIE);
   }
 }

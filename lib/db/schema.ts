@@ -389,7 +389,11 @@ export const sessions = pgTable(
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index('sessions_user_idx').on(t.userId)],
+  (t) => [
+    index('sessions_user_idx').on(t.userId),
+    // Opportunistic GC sweeps expired rows by expires_at.
+    index('sessions_expires_idx').on(t.expiresAt),
+  ],
 );
 
 /**
