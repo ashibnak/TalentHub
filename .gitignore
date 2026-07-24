@@ -13,3 +13,7 @@ TalenthubAIKey.txt
 /build
 next-env.d.ts
 *.tsbuildinfo
+
+# Stale scaffold from an abandoned checkout — not part of the app
+# (its tracked docs were moved to /docs, and CLAUDE.md to the repo root)
+/Repo/

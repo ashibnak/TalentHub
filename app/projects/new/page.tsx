@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'پروژه‌ی جدید — AIGraph' };
 
 export default async function NewProjectPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const user = await requireUser();
+  await requireUser(); // auth gate — redirects to /login if signed out
   const sp = await searchParams;
   const skills = await getAllSkills();
 
