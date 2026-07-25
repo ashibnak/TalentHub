@@ -21,6 +21,38 @@ Live: <https://talenthub-production-3507.up.railway.app>
 
 ---
 
+## [0.12.0] — 2026-07-25 — Invites & Onboarding (plan Week 2) 🚪
+
+The growth door, invite-only per the plan: admins mint one-time links, invited
+people set up their own account and walk a persona-aware wizard. No SMTP in
+phase 1 — the admin shares the link manually.
+
+### Added
+- **Invite links** — admin section on `/admin/users` («دعوت با لینک»): email +
+  persona hint → a one-time link valid ۷ روز, shown exactly once. Tokens are
+  stored **hashed at rest** (sha256, same standard as sessions); re-inviting an
+  email expires the older pending invite; pending invites can be revoked. Also
+  a CLI: `npm run invite:new -- --email=x@y.com --persona=builder`.
+- **`/invite/[token]`** — persona-aware welcome (Builder hears GitHub/AI-tools;
+  Domain Expert hears «نیاز نیست کد بنویسی»), then account setup (name,
+  username, password) with `useActionState` inline errors and preserved input.
+  Atomic consume — a token can never create two accounts.
+- **Onboarding wizard** at `/onboarding` (plan Week 2 Prompt 5): ۵ گام —
+  خوش‌آمد → انتخاب مسیر (builder / domain_expert / hybrid) → فرم شاخه‌ای
+  (builder: GitHub + بایو؛ متخصص حوزه: حوزه‌ها + سال تجربه؛ hybrid: هر دو +
+  مهارت‌ها) → اولین قدم (کارت‌های persona-aware) → سؤال اطمینان. «بعداً» skips
+  cleanly; everything stays editable in /settings.
+- **Funnel enforcement** — `requireUser` now routes anyone with
+  `onboarding_completed_at = null` to the wizard (plan's middleware rule,
+  enforced at the gate we already have). New `requireOnboardingUser` guards the
+  wizard itself. `SessionUser` now carries `onboardingCompletedAt`.
+- Rules modules with unit tests: `lib/invitations/rules.ts`,
+  `lib/onboarding/rules.ts` (62 tests green).
+- Migration 0012 backfills `onboarding_completed_at` for all existing accounts
+  so only invite-created users meet the wizard.
+
+---
+
 ## [0.11.0] — 2026-07-23 — Weekly Leaderboard 🏆
 
 A public, weekly **recognition board** — not a permanent ranking. This reverses

@@ -1,13 +1,13 @@
 {
   "name": "aigraph",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "drizzle-kit migrate && next start",
     "lint": "next lint",
-    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts",
+    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts lib/invitations/rules.test.ts lib/onboarding/rules.test.ts",
     "test:db": "tsx --test lib/db/integration.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -16,7 +16,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:demo": "tsx scripts/seed-demo.ts",
     "db:seed:leaderboard": "tsx scripts/seed-leaderboard-demo.ts",
-    "admin:set": "tsx scripts/set-admin.ts"
+    "admin:set": "tsx scripts/set-admin.ts",
+    "invite:new": "tsx scripts/create-invite.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

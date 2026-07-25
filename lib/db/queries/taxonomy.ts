@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { asc } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { skills } from '@/lib/db/schema';
+import { skills, domains } from '@/lib/db/schema';
 
 export type SkillCategory = 'language' | 'framework' | 'tool' | 'concept' | 'ai_tool';
 
@@ -21,4 +21,12 @@ export const getAllSkills = cache(async (): Promise<TaxonomySkill[]> => {
     .select({ id: skills.id, slug: skills.slug, name: skills.name, category: skills.category })
     .from(skills)
     .orderBy(asc(skills.name));
+});
+
+export type TaxonomyDomain = { id: string; slug: string; name: string };
+
+/** All domains, for the onboarding wizard + profile editors. */
+export const getAllDomains = cache(async (): Promise<TaxonomyDomain[]> => {
+  const db = getDb();
+  return db.select({ id: domains.id, slug: domains.slug, name: domains.name }).from(domains).orderBy(asc(domains.name));
 });
