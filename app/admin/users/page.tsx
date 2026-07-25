@@ -49,7 +49,7 @@ export default async function AdminUsersPage({
       <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
         <h2 className="text-h3 mb-4">ایجاد کاربر جدید</h2>
         {sp.created && <p className="mb-3 text-body-sm text-success">کاربر با موفقیت ایجاد شد.</p>}
-        {sp.error && <p className="mb-3 text-body-sm text-red-400">{ERROR_MESSAGES[sp.error] ?? 'خطا در ایجاد کاربر.'}</p>}
+        {sp.error && <p className="mb-3 text-body-sm text-state-error">{ERROR_MESSAGES[sp.error] ?? 'خطا در ایجاد کاربر.'}</p>}
         <form action={createUserAction} className="grid gap-3 sm:grid-cols-2">
           <input name="name" placeholder="نام" required className={inputClass} />
           <input name="email" type="email" placeholder="ایمیل" required className={inputClass} />

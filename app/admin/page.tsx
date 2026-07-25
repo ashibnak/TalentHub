@@ -51,7 +51,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           </p>
         )}
         {sp.error === 'freeze_failed' && (
-          <p className="mb-3 text-body-sm text-red-400">ثبت هفته با خطا مواجه شد. دوباره تلاش کن.</p>
+          <p className="mb-3 text-body-sm text-state-error">ثبت هفته با خطا مواجه شد. دوباره تلاش کن.</p>
         )}
         <form action={freezeLastWeekAction}>
           <button type="submit" className={btnPrimary}>

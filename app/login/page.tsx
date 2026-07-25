@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </div>
       <form action={loginAction} className="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
         {error && (
-          <p className="text-body-sm text-red-400">
+          <p className="text-body-sm text-state-error">
             {error === 'rate_limited'
               ? 'تلاش‌های ناموفق زیاد بود. چند دقیقه صبر کن و دوباره تلاش کن.'
               : 'ایمیل یا رمز عبور نادرست است.'}

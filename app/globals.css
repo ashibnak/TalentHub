@@ -56,6 +56,11 @@
   --color-border-subtle: rgba(250, 252, 252, 0.08);
   --color-border-focus: #4cd1d6;
 
+  /* Error / negative state — the single red in the palette (DESIGN_SYSTEM §5.2).
+     Enables text-state-error, bg-state-error, and border-border-error. */
+  --color-state-error: #c01221;
+  --color-border-error: #c01221;
+
   /* Type scale — tight, editorial */
   --text-display: 3.75rem;
   --text-display--line-height: 1.02;

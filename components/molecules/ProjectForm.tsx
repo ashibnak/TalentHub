@@ -51,7 +51,7 @@ export function ProjectForm({
 }) {
   return (
     <form action={action} className="flex flex-col gap-4">
-      {error && <p className="text-body-sm text-red-400">{ERROR_MESSAGES[error] ?? 'خطا در ذخیره‌ی پروژه.'}</p>}
+      {error && <p className="text-body-sm text-state-error">{ERROR_MESSAGES[error] ?? 'خطا در ذخیره‌ی پروژه.'}</p>}
       {projectId && <input type="hidden" name="projectId" value={projectId} />}
 
       <label className={labelClass}>

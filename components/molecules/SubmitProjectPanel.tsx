@@ -36,7 +36,7 @@ const FORM_MESSAGES: Record<string, string> = {
   invalid: 'ورودی نامعتبر است.',
 };
 
-const errorTextClass = 'mt-1 text-body-sm text-red-400';
+const errorTextClass = 'mt-1 text-body-sm text-state-error';
 
 // The "submit a project to this problem" affordance: a button that reveals the
 // form. Rendered only for signed-in users who have ≥1 published project (the
@@ -67,7 +67,7 @@ export function SubmitProjectPanel({ slug, problemId, projects, ipTerms, ipTerms
       <input type="hidden" name="problemId" value={problemId} />
 
       {formError && (
-        <p role="alert" className="rounded-lg border border-border-subtle bg-canvas px-4 py-3 text-body-sm text-red-400">
+        <p role="alert" className="rounded-lg border border-border-subtle bg-canvas px-4 py-3 text-body-sm text-state-error">
           {formError}
         </p>
       )}

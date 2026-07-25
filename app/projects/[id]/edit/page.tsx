@@ -41,14 +41,14 @@ export default async function EditProjectPage({
         />
       </section>
 
-      <section className="mt-8 rounded-xl border border-red-400/30 bg-surface p-6">
-        <h2 className="text-h3 mb-1 text-red-400">حذف پروژه</h2>
+      <section className="mt-8 rounded-xl border border-border-error/30 bg-surface p-6">
+        <h2 className="text-h3 mb-1 text-state-error">حذف پروژه</h2>
         <p className="mb-4 text-body-sm text-text-tertiary">این کار قابل بازگشت نیست.</p>
         <form action={deleteProjectAction}>
           <input type="hidden" name="projectId" value={id} />
           <button
             type="submit"
-            className="rounded-md border border-red-400/40 bg-surface px-4 py-2 text-body font-medium text-red-400 transition-colors hover:bg-red-400/10"
+            className="rounded-md border border-border-error/40 bg-surface px-4 py-2 text-body font-medium text-state-error transition-colors hover:bg-state-error/10"
           >
             حذف پروژه
           </button>

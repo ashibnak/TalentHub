@@ -75,7 +75,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </div>
 
       {sp.saved && <p className="mb-4 text-body-sm text-success">{SAVED_MESSAGES[sp.saved] ?? 'ذخیره شد.'}</p>}
-      {sp.error && <p className="mb-4 text-body-sm text-red-400">{ERROR_MESSAGES[sp.error] ?? 'خطا رخ داد.'}</p>}
+      {sp.error && <p className="mb-4 text-body-sm text-state-error">{ERROR_MESSAGES[sp.error] ?? 'خطا رخ داد.'}</p>}
 
       {/* ── Profile ── */}
       <section className="mb-8 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
@@ -123,7 +123,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                     {s.verified && <ShieldCheck size={11} strokeWidth={1.5} className="text-success" />}
                     <span className="text-body-sm text-fg">{s.name}</span>
                     <span className="text-micro text-text-tertiary">سطح {toFaDigits(s.claimedLevel)}</span>
-                    <button type="submit" aria-label={`حذف ${s.name}`} className="rounded-full p-0.5 text-text-muted transition-colors hover:bg-canvas hover:text-red-400">
+                    <button type="submit" aria-label={`حذف ${s.name}`} className="rounded-full p-0.5 text-text-muted transition-colors hover:bg-canvas hover:text-state-error">
                       <X size={14} strokeWidth={1.5} />
                     </button>
                   </form>
