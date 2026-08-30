@@ -1,7 +1,13 @@
-import { SkillTag } from '@/components/atoms/SkillTag';
+import { SkillTag, type SkillVerification } from '@/components/atoms/SkillTag';
 
 type SkillCategory = 'language' | 'framework' | 'tool' | 'concept' | 'ai_tool';
-type Skill = { slug: string; name: string; category: SkillCategory; verified: boolean };
+type Skill = {
+  slug: string;
+  name: string;
+  category: SkillCategory;
+  verified: boolean;
+  verification?: SkillVerification | null;
+};
 
 const CATEGORY_ORDER: SkillCategory[] = ['language', 'framework', 'tool', 'concept', 'ai_tool'];
 const CATEGORY_LABEL: Record<SkillCategory, string> = {
@@ -31,7 +37,7 @@ export function ProfileSkills({ skills }: { skills: Skill[] }) {
           <p className="text-micro text-text-tertiary mb-2">{CATEGORY_LABEL[category]}</p>
           <div className="flex flex-wrap gap-2">
             {items.map((s) => (
-              <SkillTag key={s.slug} label={s.name} verified={s.verified} />
+              <SkillTag key={s.slug} label={s.name} verified={s.verified} verification={s.verification} />
             ))}
           </div>
         </div>

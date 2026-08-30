@@ -11,8 +11,10 @@ import {
   projectAiTools,
   projectUpvotes,
   userBadges,
+  verificationRuns,
 } from '@/lib/db/schema';
 import { escapeLike } from '@/lib/db/queries/filters';
+import { repoLabel } from '@/lib/github';
 import { computeRoleBadge, type RoleBadge } from '@/lib/users/role-badge';
 import type { BuildingStatus } from '@/components/atoms/StatusPill';
 import type { ProjectStage } from '@/components/atoms/StageBadge';
@@ -23,6 +25,8 @@ export type ProfileSkill = {
   category: 'language' | 'framework' | 'tool' | 'concept' | 'ai_tool';
   claimedLevel: number;
   verified: boolean;
+  /** Evidence trail behind the shield badge — null while a skill is only claimed. */
+  verification: { source: string; verifiedAt: Date; manual: boolean } | null;
 };
 
 export type ProfileDomain = {
@@ -92,9 +96,15 @@ export const getProfileByUsername = cache(async (username: string, viewerId?: st
         category: skills.category,
         claimedLevel: userSkills.claimedLevel,
         verified: userSkills.verified,
+        verificationSource: userSkills.verificationSource,
+        verifiedAt: userSkills.verifiedAt,
+        // The run that produced the verdict — supplies the repo the profile
+        // tooltip names. Left-joined: manual verifications have no run.
+        evidenceRepoUrl: verificationRuns.githubUrl,
       })
       .from(userSkills)
       .innerJoin(skills, eq(userSkills.skillId, skills.id))
+      .leftJoin(verificationRuns, eq(userSkills.verificationRunId, verificationRuns.id))
       .where(eq(userSkills.userId, user.id))
       // Deterministic order: verified first, then higher claimed level, then name.
       .orderBy(desc(userSkills.verified), desc(userSkills.claimedLevel), skills.name),
@@ -131,6 +141,20 @@ export const getProfileByUsername = cache(async (username: string, viewerId?: st
 
   const technicalSkillCount = skillRows.filter((s) => s.category !== 'ai_tool').length;
   const verifiedSkillCount = skillRows.filter((s) => s.verified).length;
+
+  const profileSkills: ProfileSkill[] = skillRows.map(
+    ({ verificationSource, verifiedAt, evidenceRepoUrl, ...skill }) => ({
+      ...skill,
+      verification:
+        skill.verified && verifiedAt
+          ? {
+              source: evidenceRepoUrl ? repoLabel(evidenceRepoUrl) : 'بررسی دستی',
+              verifiedAt,
+              manual: verificationSource === 'manual' || !evidenceRepoUrl,
+            }
+          : null,
+    }),
+  );
   const upvotesReceived = projectRows.reduce((sum, p) => sum + p.upvoteCount, 0);
 
   // Which of these projects the signed-in viewer has upvoted — one query, no N+1.
@@ -158,7 +182,7 @@ export const getProfileByUsername = cache(async (username: string, viewerId?: st
     linkedinUrl: user.linkedinUrl,
     roleBadge: computeRoleBadge({ technicalSkillCount, domainCount: sortedDomains.length }),
     buildingStatus: deriveBuildingStatus(projectRows.map((p) => p.stage)),
-    skills: skillRows,
+    skills: profileSkills,
     domains: sortedDomains,
     projects: projectRows.map((p) => ({ ...p, hasUpvoted: upvotedIds.has(p.id) })),
     stats: {
