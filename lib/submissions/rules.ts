@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
-/** IP position a Problem declares (mirrors the `ip_terms` DB enum). */
-export type IpTerms = 'developer' | 'organization' | 'shared';
+/** IP position a Problem or Idea declares (mirrors the `ip_terms` DB enum).
+ *  The tuple is the single source of truth — Zod enums build from it rather
+ *  than restating the three literals. */
+export const IP_TERMS_VALUES = ['developer', 'organization', 'shared'] as const;
+export type IpTerms = (typeof IP_TERMS_VALUES)[number];
 
 /** Plain-Persian summary of each IP position, shown to the builder before submit. */
 export const IP_TERMS_LABEL_FA: Record<IpTerms, string> = {
