@@ -1,0 +1,1 @@
+ALTER TABLE "ideas" ADD COLUMN "ip_terms" "ip_terms" DEFAULT 'developer' NOT NULL;

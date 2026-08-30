@@ -44,6 +44,10 @@ export const problemStatus = pgEnum('problem_status', ['pending_review', 'active
 // IP position a Problem declares up front, so a builder sees the ownership terms
 // before investing work: the developer keeps it, the organization owns it, or shared.
 export const ipTerms = pgEnum('ip_terms', ['developer', 'organization', 'shared']);
+// Idea lifecycle. An Idea is a PROPOSED, unbuilt solution — the contribution a
+// Domain Expert can make without writing code. Distinct from ChallengeProblem
+// (which states a problem) and from Project (which is a built solution).
+export const ideaStatus = pgEnum('idea_status', ['draft', 'submitted', 'needs_work', 'approved', 'rejected']);
 // Leaderboard group == the computed role_badge (builder / domain_expert / hybrid).
 // Mirrored as a DB enum only so frozen weekly snapshots are self-describing.
 export const leaderboardGroup = pgEnum('leaderboard_group', ['builder', 'domain_expert', 'hybrid']);
@@ -105,6 +109,9 @@ export const userSkills = pgTable(
     verified: boolean('verified').notNull().default(false),
     verificationSource: verificationSource('verification_source'),
     verifiedAt: timestamp('verified_at', { withTimezone: true }),
+    // Which AI run produced this verification — the evidence trail the profile
+    // tooltip reads (repo + date). Null for manual/admin verification.
+    verificationRunId: uuid('verification_run_id').references(() => verificationRuns.id, { onDelete: 'set null' }),
   },
   (t) => [primaryKey({ columns: [t.userId, t.skillId] })],
 );
@@ -179,19 +186,38 @@ export const projectAiTools = pgTable(
 
 /* ─────────────── AI verification & build-in-public activity ──────── */
 
-export const verificationRuns = pgTable('verification_runs', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
-  llmProvider: text('llm_provider').notNull(),
-  llmModel: text('llm_model').notNull(),
-  inputSummary: text('input_summary'),
-  output: jsonb('output').$type<Record<string, unknown>>(),
-  status: verificationStatus('status').notNull().default('pending'),
-  errorMessage: text('error_message'),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
-  completedAt: timestamp('completed_at', { withTimezone: true }),
-});
+export const verificationRuns = pgTable(
+  'verification_runs',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    projectId: uuid('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+    llmProvider: text('llm_provider').notNull(),
+    llmModel: text('llm_model').notNull(),
+    inputSummary: text('input_summary'),
+    output: jsonb('output').$type<Record<string, unknown>>(),
+    status: verificationStatus('status').notNull().default('pending'),
+    errorMessage: text('error_message'),
+    // Cache key (plan §3 "نکات پیاده‌سازی"): a successful run for the same
+    // (github_url, last_commit_sha) is reused instead of calling the model again.
+    // Denormalized off `projects` so the lookup needs no join and survives edits
+    // to the project's URL.
+    githubUrl: text('github_url'),
+    commitSha: text('commit_sha'),
+    // Observability (CODE_CONVENTIONS §6 — the only telemetry phase 1 has).
+    latencyMs: integer('latency_ms'),
+    totalTokens: integer('total_tokens'),
+    attempts: integer('attempts'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true }),
+  },
+  (t) => [
+    // Cache lookup: successful run for this exact repo+sha.
+    index('verification_runs_cache_idx').on(t.githubUrl, t.commitSha, t.status),
+    // Failsafe counter + admin list, both ordered newest-first per project.
+    index('verification_runs_project_idx').on(t.projectId, t.createdAt),
+  ],
+);
 
 export const projectActivity = pgTable(
   'project_activity',
@@ -350,6 +376,54 @@ export const challengeFollows = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.challengeId] })],
+);
+
+/* ─────────────────────────────── Ideas ───────────────────────────────
+ * The third entity, sitting between a Problem and a Project:
+ *   ChallengeProblem (a problem) → Idea (a proposed, unbuilt solution)
+ *                                → Project (a built solution)
+ * Deliberately its own table, NOT a row shape on challenge_problems: a Problem
+ * asks, an Idea answers, and the two have different authors, lifecycles and
+ * review paths.
+ *
+ * The five NOT NULL text fields are the whole point — an unstructured intake
+ * costs the single reviewer 15–30 minutes just to decode intent. Length limits
+ * are enforced at the app layer (lib/ideas/rules.ts), which is where the
+ * codebase validates everything else.
+ */
+export const ideas = pgTable(
+  'ideas',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orgId: uuid('org_id').notNull().references(() => orgs.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    // Optional: an idea may stand on its own rather than answer a Challenge.
+    // `set null` keeps the idea alive if its challenge is ever removed.
+    challengeId: uuid('challenge_id').references(() => challenges.id, { onDelete: 'set null' }),
+    title: text('title').notNull(),
+    problemStatement: text('problem_statement').notNull(), // the load-bearing field
+    proposedSolution: text('proposed_solution').notNull(),
+    targetUsers: text('target_users').notNull(),
+    successCriteria: text('success_criteria').notNull(),
+    feasibilityNote: text('feasibility_note'),
+    // Ownership declared at INTAKE, reusing the same enum challenge_problems
+    // uses. An idea may later be built by someone other than its author, and an
+    // undeclared position becomes a dispute at exactly that moment. Default
+    // 'developer' so the ordinary case costs the author no thought.
+    ipTerms: ipTerms('ip_terms').notNull().default('developer'),
+    status: ideaStatus('status').notNull().default('draft'),
+    reviewedBy: uuid('reviewed_by').references(() => users.id),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    reviewNote: text('review_note'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    // Public directory (approved, newest-first) + the admin review queue.
+    index('ideas_org_status_idx').on(t.orgId, t.status),
+    // Ideas filtered to one challenge.
+    index('ideas_challenge_status_idx').on(t.challengeId, t.status),
+  ],
 );
 
 /* ───────────────────────── Weekly leaderboard ────────────────────────

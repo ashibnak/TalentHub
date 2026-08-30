@@ -85,6 +85,27 @@
       "when": 1784911157263,
       "tag": "0011_magenta_vision",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788083594881,
+      "tag": "0012_free_doomsday",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1788085205664,
+      "tag": "0013_curly_puppet_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1788095703345,
+      "tag": "0014_fluffy_darkhawk",
+      "breakpoints": true
     }
   ]
 }
