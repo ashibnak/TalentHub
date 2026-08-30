@@ -110,4 +110,23 @@
   ::selection {
     background-color: rgba(76, 209, 214, 0.35);
   }
+
+  /* Native <select> popups.
+   *
+   * Every select in the app sets an explicit background-color (bg-canvas /
+   * bg-surface via inputClass). That opts the dropdown list out of the dark
+   * treatment `color-scheme` would otherwise give it, so Chrome/Edge on Windows
+   * paint each <option> on the system Field colour (white) while `color` still
+   * inherits text-fg (near-white) — invisible until the hover highlight lands
+   * behind it. These two rules are the fix; keep them whenever a select gets an
+   * author background. Popover surface per DESIGN_SYSTEM §2.2. */
+  option,
+  optgroup {
+    background-color: var(--color-surface-elevated);
+    color: var(--color-fg);
+  }
+  /* Placeholder rows ("یک پروژه انتخاب کن") read as hint text, not a choice. */
+  option:disabled {
+    color: var(--color-text-muted);
+  }
 }
