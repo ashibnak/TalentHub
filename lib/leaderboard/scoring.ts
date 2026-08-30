@@ -56,8 +56,30 @@ export function scoreFromBreakdown(b: ScoreBreakdown): number {
   );
 }
 
-const TEHRAN_OFFSET_MIN = 3 * 60 + 30; // +03:30, no DST
-const DAY_MS = 86_400_000;
+/** +03:30, no DST (Iran abolished it in 2022). The ONE place this offset lives. */
+export const TEHRAN_OFFSET_MIN = 3 * 60 + 30;
+export const DAY_MS = 86_400_000;
+
+/**
+ * Midnight (Tehran) of the calendar day containing `instant`, as a UTC instant.
+ *
+ * The shared primitive for every "which Tehran day is this?" question —
+ * `weekWindow` below and the Spotlight countdown both build on it, so the
+ * offset arithmetic is never written twice.
+ */
+export function tehranStartOfDay(instant: Date): Date {
+  // Shift into "Tehran wall clock" so the UTC getters read local calendar fields.
+  const wall = new Date(instant.getTime() + TEHRAN_OFFSET_MIN * 60_000);
+  const midnightWall = Date.UTC(wall.getUTCFullYear(), wall.getUTCMonth(), wall.getUTCDate());
+  // …then convert that wall clock back to a real UTC instant.
+  return new Date(midnightWall - TEHRAN_OFFSET_MIN * 60_000);
+}
+
+/** Whole Tehran calendar days from `from` to `to` (negative when `to` is past). */
+export function tehranDaysBetween(from: Date, to: Date): number {
+  const ms = tehranStartOfDay(to).getTime() - tehranStartOfDay(from).getTime();
+  return Math.round(ms / DAY_MS);
+}
 
 export type WeekWindow = {
   offset: number; // 0 = current in-progress week, -1 = last (just-closed) week, ...
@@ -70,13 +92,9 @@ export type WeekWindow = {
  * offset 0 = the week `now` falls in; -1 = the previous week; etc.
  */
 export function weekWindow(offset = 0, now: Date = new Date()): WeekWindow {
-  // Shift the instant into "Tehran wall clock" so UTC getters read local fields.
   const wall = new Date(now.getTime() + TEHRAN_OFFSET_MIN * 60_000);
-  const dow = wall.getUTCDay(); // 0=Sun … 6=Sat
-  const daysSinceSat = (dow + 1) % 7; // Sat→0, Sun→1, … Fri→6
-  // Midnight (Tehran) of this week's Saturday, expressed as a wall-clock instant…
-  const satWall = Date.UTC(wall.getUTCFullYear(), wall.getUTCMonth(), wall.getUTCDate()) - daysSinceSat * DAY_MS;
-  // …then convert that wall clock back to a real UTC instant.
-  const startMs = satWall - TEHRAN_OFFSET_MIN * 60_000 + offset * 7 * DAY_MS;
+  const daysSinceSat = (wall.getUTCDay() + 1) % 7; // Sat→0, Sun→1, … Fri→6
+  // Back up to this week's Saturday midnight (Tehran), then shift by `offset` weeks.
+  const startMs = tehranStartOfDay(now).getTime() - daysSinceSat * DAY_MS + offset * 7 * DAY_MS;
   return { offset, start: new Date(startMs), end: new Date(startMs + 7 * DAY_MS) };
 }

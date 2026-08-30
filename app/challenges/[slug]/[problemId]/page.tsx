@@ -9,12 +9,25 @@ import {
   getMySubmittableProjects,
 } from '@/lib/db/queries/submissions';
 import { SpotlightBadge } from '@/components/atoms/SpotlightBadge';
+import { SpotlightAdminControls } from '@/components/molecules/SpotlightAdminControls';
 import { EmptyState } from '@/components/atoms/EmptyState';
 import { SubmitProjectPanel } from '@/components/molecules/SubmitProjectPanel';
 import { SubmissionCard } from '@/components/molecules/SubmissionCard';
+import { getActiveSpotlightRef, getSpotlightProblem } from '@/lib/db/queries/spotlight';
+import { canSpotlight } from '@/lib/spotlight/rules';
 import { toFaDigits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
+
+// Admin-facing Spotlight outcomes, surfaced inline on this page.
+const SPOTLIGHT_ERRORS: Record<string, string> = {
+  problem_not_active: 'فقط مسئله‌های active را می‌توان Spotlight کرد.',
+  spotlight_taken: 'یک Spotlight دیگر در جریان است.',
+  already_spotlight: 'این مسئله همین حالا Spotlight است.',
+  problem_not_found: 'مسئله پیدا نشد.',
+  invalid: 'ورودی نامعتبر است.',
+  internal: 'مشکلی پیش آمد. دوباره تلاش کن.',
+};
 
 export async function generateMetadata({ params }: { params: Promise<{ problemId: string }> }): Promise<Metadata> {
   const { problemId } = await params;
@@ -27,7 +40,7 @@ export default async function ProblemDetailPage({
   searchParams,
 }: {
   params: Promise<{ slug: string; problemId: string }>;
-  searchParams: Promise<{ submitted?: string }>;
+  searchParams: Promise<{ submitted?: string; spotlight?: string; spotlightError?: string }>;
 }) {
   const { slug, problemId } = await params;
   const sp = await searchParams;
@@ -37,6 +50,12 @@ export default async function ProblemDetailPage({
 
   const [submissions, user] = await Promise.all([getProblemSubmissions(problemId), getCurrentUser()]);
   const submittable = user ? await getMySubmittableProjects(user.id, problemId) : [];
+
+  // Admins get the Spotlight control; the rule decides whether it's offerable.
+  const [spotlightProblem, activeSpotlight] = user?.isAdmin
+    ? await Promise.all([getSpotlightProblem(problemId), getActiveSpotlightRef()])
+    : [null, null];
+  const spotlightRejection = user?.isAdmin ? canSpotlight(spotlightProblem, activeSpotlight) : null;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -58,6 +77,19 @@ export default async function ProblemDetailPage({
         <p className="mb-4 rounded-lg border border-info-muted bg-info-subtle px-4 py-3 text-body-sm text-info">
           پروژه‌ات روی این مسئله ثبت شد.
         </p>
+      )}
+      {sp.spotlight === 'started' && <p className="mb-4 text-body-sm text-success">Spotlight این مسئله شروع شد.</p>}
+      {sp.spotlight === 'ended' && <p className="mb-4 text-body-sm text-success">Spotlight بسته شد.</p>}
+      {sp.spotlightError && (
+        <p className="mb-4 text-body-sm text-state-error">{SPOTLIGHT_ERRORS[sp.spotlightError] ?? SPOTLIGHT_ERRORS.internal}</p>
+      )}
+
+      {user?.isAdmin && (
+        <SpotlightAdminControls
+          problemId={problemId}
+          returnTo={`/challenges/${slug}/${problemId}`}
+          rejection={spotlightRejection}
+        />
       )}
 
       {/* ── Submit affordance ── */}

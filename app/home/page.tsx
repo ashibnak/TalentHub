@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Plus, FolderKanban } from 'lucide-react';
 import { requireUser } from '@/lib/auth/session';
 import { getMyProjects } from '@/lib/db/queries/me';
+import { getCurrentSpotlight } from '@/lib/db/queries/spotlight';
+import { SpotlightBanner } from '@/components/molecules/SpotlightBanner';
 import { StageBadge } from '@/components/atoms/StageBadge';
 import { PublishBadge } from '@/components/atoms/PublishBadge';
 import { EmptyState } from '@/components/atoms/EmptyState';
@@ -16,7 +18,7 @@ export default async function HomePage() {
   const user = await requireUser();
   if (user.isAdmin) redirect('/admin');
 
-  const myProjects = await getMyProjects(user.id);
+  const [myProjects, spotlight] = await Promise.all([getMyProjects(user.id), getCurrentSpotlight()]);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -43,6 +45,9 @@ export default async function HomePage() {
           )}
         </div>
       </div>
+
+      {/* The week's single Spotlight — renders nothing when none is running. */}
+      <SpotlightBanner spotlight={spotlight} />
 
       <h2 className="text-h3 mb-4">پروژه‌های من</h2>
       {myProjects.length > 0 ? (
