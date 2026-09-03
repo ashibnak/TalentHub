@@ -16,6 +16,7 @@ export type SessionUser = {
   email: string;
   username: string | null;
   isAdmin: boolean;
+  onboardingCompletedAt: Date | null;
 };
 
 export async function createSession(userId: string): Promise<void> {
@@ -48,6 +49,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
       email: users.email,
       username: users.username,
       isAdmin: users.isAdmin,
+      onboardingCompletedAt: users.onboardingCompletedAt,
       expiresAt: sessions.expiresAt,
     })
     .from(sessions)
@@ -68,6 +70,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     email: row.email,
     username: row.username,
     isAdmin: row.isAdmin,
+    onboardingCompletedAt: row.onboardingCompletedAt,
   };
 });
 
@@ -80,10 +83,22 @@ export async function destroySession(): Promise<void> {
   }
 }
 
-/** Gate any signed-in page/action. Redirects to /login if not signed in. */
+/** Gate any signed-in page/action. Redirects to /login if not signed in.
+ *  Users who haven't finished onboarding are funneled to the wizard first
+ *  (plan Week 2 middleware rule — enforced here since gating is per-page). */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
   if (!user) redirect('/login');
+  if (!user.onboardingCompletedAt) redirect('/onboarding');
+  return user;
+}
+
+/** Gate for the onboarding wizard itself: signed-in AND not yet onboarded.
+ *  Finished users bounce to /home instead of re-running the wizard. */
+export async function requireOnboardingUser(): Promise<SessionUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect('/login');
+  if (user.onboardingCompletedAt) redirect(user.isAdmin ? '/admin' : '/home');
   return user;
 }
 
