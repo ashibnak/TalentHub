@@ -1,6 +1,6 @@
 {
-  "id": "346649d0-46b5-4377-9387-f03d7731a6ae",
-  "prevId": "2446e4c7-1f36-46c9-a986-0a241f72bda5",
+  "id": "2446e4c7-1f36-46c9-a986-0a241f72bda5",
+  "prevId": "d81af22f-713c-44fe-bab6-9c4b35dfe9aa",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1883,90 +1883,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.tips": {
-      "name": "tips",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "category": {
-          "name": "category",
-          "type": "tip_category",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "audience": {
-          "name": "audience",
-          "type": "tip_audience",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'all'"
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "body": {
-          "name": "body",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "slug": {
-          "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "tips_audience_idx": {
-          "name": "tips_audience_idx",
-          "columns": [
-            {
-              "expression": "audience",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "tips_slug_unique": {
-          "name": "tips_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.user_badges": {
       "name": "user_badges",
       "schema": "",
@@ -2702,25 +2618,6 @@
         "tool",
         "concept",
         "ai_tool"
-      ]
-    },
-    "public.tip_audience": {
-      "name": "tip_audience",
-      "schema": "public",
-      "values": [
-        "builder",
-        "domain_expert",
-        "all"
-      ]
-    },
-    "public.tip_category": {
-      "name": "tip_category",
-      "schema": "public",
-      "values": [
-        "prompt_engineering",
-        "ai_tools",
-        "ai_in_domain",
-        "platform"
       ]
     },
     "public.user_status": {

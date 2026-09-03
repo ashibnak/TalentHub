@@ -1,6 +1,6 @@
 {
-  "id": "8291deb3-70ce-4b34-816e-1e747e510dde",
-  "prevId": "346649d0-46b5-4377-9387-f03d7731a6ae",
+  "id": "346649d0-46b5-4377-9387-f03d7731a6ae",
+  "prevId": "2446e4c7-1f36-46c9-a986-0a241f72bda5",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1080,108 +1080,6 @@
             "group_type",
             "week_start",
             "user_id"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.lessons": {
-      "name": "lessons",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "slug": {
-          "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "provider": {
-          "name": "provider",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "title": {
-          "name": "title",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "url": {
-          "name": "url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "level": {
-          "name": "level",
-          "type": "lesson_level",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "audience": {
-          "name": "audience",
-          "type": "tip_audience",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'all'"
-        },
-        "duration_minutes": {
-          "name": "duration_minutes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "lessons_audience_idx": {
-          "name": "lessons_audience_idx",
-          "columns": [
-            {
-              "expression": "audience",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "lessons_slug_unique": {
-          "name": "lessons_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
           ]
         }
       },
@@ -2734,15 +2632,6 @@
         "builder",
         "domain_expert",
         "hybrid"
-      ]
-    },
-    "public.lesson_level": {
-      "name": "lesson_level",
-      "schema": "public",
-      "values": [
-        "beginner",
-        "intermediate",
-        "advanced"
       ]
     },
     "public.onboarding_choice": {

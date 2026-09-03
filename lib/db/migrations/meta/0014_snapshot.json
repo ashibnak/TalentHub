@@ -1,6 +1,6 @@
 {
-  "id": "2446e4c7-1f36-46c9-a986-0a241f72bda5",
-  "prevId": "d81af22f-713c-44fe-bab6-9c4b35dfe9aa",
+  "id": "d81af22f-713c-44fe-bab6-9c4b35dfe9aa",
+  "prevId": "6c80f378-0a4c-463f-85e7-dd73bc7072e5",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -676,14 +676,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "ip_terms": {
-          "name": "ip_terms",
-          "type": "ip_terms",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'developer'"
         },
         "status": {
           "name": "status",

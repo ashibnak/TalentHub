@@ -1,6 +1,6 @@
 {
-  "id": "15ef4cb9-9b02-4f49-b0eb-caaca846a0b9",
-  "prevId": "8291deb3-70ce-4b34-816e-1e747e510dde",
+  "id": "8291deb3-70ce-4b34-816e-1e747e510dde",
+  "prevId": "346649d0-46b5-4377-9387-f03d7731a6ae",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1126,15 +1126,7 @@
           "name": "url",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
-        },
-        "kind": {
-          "name": "kind",
-          "type": "lesson_kind",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'course'"
+          "notNull": true
         },
         "level": {
           "name": "level",
@@ -1142,13 +1134,6 @@
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
-        },
-        "topics": {
-          "name": "topics",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'{}'"
         },
         "audience": {
           "name": "audience",
@@ -2749,16 +2734,6 @@
         "builder",
         "domain_expert",
         "hybrid"
-      ]
-    },
-    "public.lesson_kind": {
-      "name": "lesson_kind",
-      "schema": "public",
-      "values": [
-        "course",
-        "article",
-        "doc",
-        "tip"
       ]
     },
     "public.lesson_level": {
