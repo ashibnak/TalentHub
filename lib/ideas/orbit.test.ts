@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   charterIsComplete,
+  clinicIsReady,
   nextOrbitStage,
   orbitAdvanceError,
   readScores,
@@ -31,48 +32,77 @@ describe('nextOrbitStage', () => {
 
 describe('orbitAdvanceError', () => {
   it('refuses a stage skip and an idea that was never submitted', () => {
-    assert.equal(orbitAdvanceError({ from: null, to: 'screening', scores: null, pitchUrl: null, charter: null }), 'not_started');
     assert.equal(
-      orbitAdvanceError({ from: 'signal', to: 'clinic', scores: null, pitchUrl: null, charter: null }),
+      orbitAdvanceError({ from: null, to: 'screening', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
+      'not_started',
+    );
+    assert.equal(
+      orbitAdvanceError({ from: 'signal', to: 'clinic', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
       'not_next',
     );
   });
 
   it('lets signal move to screening with no extra evidence', () => {
-    assert.equal(orbitAdvanceError({ from: 'signal', to: 'screening', scores: null, pitchUrl: null, charter: null }), null);
+    assert.equal(
+      orbitAdvanceError({ from: 'signal', to: 'screening', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
+      null,
+    );
   });
 
   it('demands a full 1–5 scorecard to leave screening', () => {
     assert.equal(
-      orbitAdvanceError({ from: 'screening', to: 'clinic', scores: null, pitchUrl: null, charter: null }),
+      orbitAdvanceError({ from: 'screening', to: 'clinic', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
       'scores_required',
     );
-    assert.equal(orbitAdvanceError({ from: 'screening', to: 'clinic', scores: SCORES, pitchUrl: null, charter: null }), null);
+    assert.equal(
+      orbitAdvanceError({ from: 'screening', to: 'clinic', scores: SCORES, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
+      null,
+    );
   });
 
-  it('demands a deck link to leave the pitch, a charter to enter the pilot, and continue to leave it', () => {
+  it('demands a clinic, a deck, a linked project, a charter, and continue', () => {
     assert.equal(
-      orbitAdvanceError({ from: 'pitch', to: 'lab', scores: null, pitchUrl: null, charter: null }),
+      orbitAdvanceError({ from: 'clinic', to: 'pitch', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
+      'clinic_required',
+    );
+    assert.equal(
+      orbitAdvanceError({ from: 'clinic', to: 'pitch', scores: null, clinicReady: true, pitchUrl: null, demoLinked: false, charter: null }),
+      null,
+    );
+    assert.equal(
+      orbitAdvanceError({ from: 'pitch', to: 'lab', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: null }),
       'pitch_required',
     );
     assert.equal(
-      orbitAdvanceError({ from: 'pitch', to: 'lab', scores: null, pitchUrl: 'https://example.com/deck', charter: null }),
+      orbitAdvanceError({ from: 'pitch', to: 'lab', scores: null, clinicReady: false, pitchUrl: 'https://example.com/deck', demoLinked: false, charter: null }),
       null,
     );
     assert.equal(
-      orbitAdvanceError({ from: 'demo', to: 'pilot', scores: null, pitchUrl: null, charter: null }),
+      orbitAdvanceError({ from: 'demo', to: 'pilot', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: CHARTER }),
+      'demo_required',
+    );
+    assert.equal(
+      orbitAdvanceError({ from: 'demo', to: 'pilot', scores: null, clinicReady: false, pitchUrl: null, demoLinked: true, charter: null }),
       'charter_required',
     );
     assert.equal(
-      orbitAdvanceError({ from: 'demo', to: 'pilot', scores: null, pitchUrl: null, charter: CHARTER }),
+      orbitAdvanceError({ from: 'demo', to: 'pilot', scores: null, clinicReady: false, pitchUrl: null, demoLinked: true, charter: CHARTER }),
       null,
     );
     assert.equal(
-      orbitAdvanceError({ from: 'pilot', to: 'next', scores: null, pitchUrl: null, charter: { ...CHARTER, decision: 'stop' } }),
+      orbitAdvanceError({
+        from: 'pilot',
+        to: 'next',
+        scores: null,
+        clinicReady: false,
+        pitchUrl: null,
+        demoLinked: false,
+        charter: { ...CHARTER, decision: 'stop' },
+      }),
       'continue_required',
     );
     assert.equal(
-      orbitAdvanceError({ from: 'pilot', to: 'next', scores: null, pitchUrl: null, charter: CHARTER }),
+      orbitAdvanceError({ from: 'pilot', to: 'next', scores: null, clinicReady: false, pitchUrl: null, demoLinked: false, charter: CHARTER }),
       null,
     );
   });
@@ -99,5 +129,13 @@ describe('charterIsComplete', () => {
   it('requires each charter line to say something', () => {
     assert.equal(charterIsComplete(CHARTER), true);
     assert.equal(charterIsComplete({ ...CHARTER, risks: 'کوتاه' }), false);
+  });
+});
+
+describe('clinicIsReady', () => {
+  it('needs a real date and a note of at least ten characters', () => {
+    assert.equal(clinicIsReady(new Date('2026-11-19T12:00:00Z'), 'یادداشت کارگاه برای تیم'), true);
+    assert.equal(clinicIsReady(null, 'یادداشت کارگاه برای تیم'), false);
+    assert.equal(clinicIsReady(new Date('2026-11-19T12:00:00Z'), 'کوتاه'), false);
   });
 });

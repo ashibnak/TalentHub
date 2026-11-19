@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Pencil } from 'lucide-react';
-import { getIdeaById } from '@/lib/db/queries/ideas';
+import { getDemoCandidates, getIdeaById, getIdeaMembers, getLessonUrls, getOpenedCourseKeys, isIdeaMember } from '@/lib/db/queries/ideas';
 import { getCurrentUser } from '@/lib/auth/session';
 import { submitIdeaAction, deleteIdeaAction } from '@/lib/actions/ideas';
 import { canDelete, canEdit, canSubmit, canViewIdea } from '@/lib/ideas/rules';
@@ -10,7 +10,11 @@ import { IdeaStatusBadge } from '@/components/atoms/IdeaStatusBadge';
 import { IdeaIpTerms } from '@/components/molecules/IdeaIpTerms';
 import { OrbitTrack } from '@/components/molecules/OrbitTrack';
 import { OrbitReviewForm } from '@/components/molecules/OrbitReviewForm';
-import { ORBIT_STAGE_LABEL } from '@/lib/ideas/orbit';
+import { IdeaTeam } from '@/components/molecules/IdeaTeam';
+import { DemoProjectLink } from '@/components/molecules/DemoProjectLink';
+import { OrbitCourses } from '@/components/molecules/OrbitCourses';
+import { ORBIT_STAGE_LABEL, ORBIT_STAGES } from '@/lib/ideas/orbit';
+import { ORBIT_COURSES } from '@/lib/ideas/courses';
 import { btnPrimary, btnSecondary } from '@/lib/ui';
 import { formatFaDate, toFaDigits } from '@/lib/format';
 
@@ -32,7 +36,12 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_next: 'فقط می‌توان به مرحله‌ی بعدی رفت.',
   scores_required: 'هر شش امتیاز ارزیابی باید بین ۱ و ۵ باشد.',
   pitch_required: 'لینک ارائه باید یک نشانی معتبر باشد.',
+  clinic_required: 'برای خروج از کارگاه، زمان و یادداشت کارگاه لازم است.',
+  demo_required: 'برای ورود به پایلوت، یک پروژه‌ی منتشرشده‌ی تیم را وصل کن.',
   charter_required: 'منشور پایلوت را کامل کن.',
+  username: 'نام کاربری را وارد کن.',
+  self: 'نمی‌توانی خودت را به تیم اضافه کنی.',
+  project: 'این پروژه منتشرشده و متعلق به تیم نیست.',
   continue_required: 'ورود به گام بعد فقط با تصمیم «ادامه» ممکن است.',
   not_started: 'این ایده هنوز وارد Orbit نشده است.',
   invalid: 'این تصمیم معتبر نیست.',
@@ -53,7 +62,17 @@ export default async function IdeaDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; submitted?: string; error?: string; orbit?: string; orbitError?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    submitted?: string;
+    error?: string;
+    orbit?: string;
+    orbitError?: string;
+    team?: string;
+    teamError?: string;
+    demo?: string;
+    courseError?: string;
+  }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -61,14 +80,26 @@ export default async function IdeaDetailPage({
   const idea = await getIdeaById(id);
   if (!idea) notFound();
 
-  // Approved ideas are public; anything earlier is the author's alone until then.
-  if (!canViewIdea(idea.status, idea.userId, viewer?.id ?? null, viewer?.isAdmin ?? false)) notFound();
+  const member = !!viewer && (await isIdeaMember(idea.id, viewer.id));
+  // Approved ideas are public. Earlier stages stay with the author, the team, and admins.
+  if (!canViewIdea(idea.status, idea.userId, viewer?.id ?? null, viewer?.isAdmin ?? false) && !member) notFound();
 
   const guard = { currentUserId: viewer?.id ?? '', idea };
   const isOwner = !!viewer && viewer.id === idea.userId;
   const editable = isOwner && canEdit(guard);
   const submittable = isOwner && canSubmit(guard);
   const deletable = isOwner && canDelete(guard);
+  const stageIndex = idea.orbitStage ? ORBIT_STAGES.indexOf(idea.orbitStage) : -1;
+  const onTeam = isOwner || member;
+  const showTeam = !!idea.orbitStage && (onTeam || !!viewer?.isAdmin);
+  const showDemo = stageIndex >= ORBIT_STAGES.indexOf('demo');
+  const showCourses = stageIndex >= ORBIT_STAGES.indexOf('lab') && onTeam;
+  const [members, candidates, opened, lessonUrls] = await Promise.all([
+    showTeam ? getIdeaMembers(idea.id) : Promise.resolve([]),
+    showDemo && viewer ? getDemoCandidates(idea.id, viewer.orgId) : Promise.resolve([]),
+    showCourses && viewer ? getOpenedCourseKeys(viewer.id) : Promise.resolve([]),
+    showCourses ? getLessonUrls(ORBIT_COURSES.map((course) => course.lessonSlug)) : Promise.resolve(new Map<string, string>()),
+  ]);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
@@ -110,9 +141,12 @@ export default async function IdeaDetailPage({
         </p>
       )}
       {sp.orbit && <p className="mb-6 text-body-sm text-success">تصمیم Orbit ثبت شد.</p>}
-      {(sp.error || sp.orbitError) && (
+      {sp.team && <p className="mb-6 text-body-sm text-success">تیم به‌روز شد.</p>}
+      {sp.demo && <p className="mb-6 text-body-sm text-success">پروژه‌ی دمو ذخیره شد.</p>}
+      {sp.courseError && <p className="mb-6 text-body-sm text-state-error">این درس در فهرست موجود نیست.</p>}
+      {(sp.error || sp.orbitError || sp.teamError) && (
         <p className="mb-6 text-body-sm text-state-error">
-          {ERROR_MESSAGES[sp.orbitError ?? sp.error ?? ''] ?? ERROR_MESSAGES.internal}
+          {ERROR_MESSAGES[sp.orbitError ?? sp.teamError ?? sp.error ?? ''] ?? ERROR_MESSAGES.internal}
         </p>
       )}
 
@@ -132,6 +166,7 @@ export default async function IdeaDetailPage({
         {idea.dataNeeded && <Section title="چه داده‌ای لازم است؟" body={idea.dataNeeded} />}
         {idea.teamCapability && <Section title="تیم چه توانی دارد؟" body={idea.teamCapability} />}
         {idea.feasibilityNote && <Section title="نکته‌ی اجرایی" body={idea.feasibilityNote} />}
+        {idea.clinicNote && <Section title="یادداشت کارگاه" body={idea.clinicNote} />}
         {idea.pitchUrl && <Section title="لینک ارائه" body={idea.pitchUrl} />}
         {idea.pilot.goal && <Section title="هدف پایلوت" body={idea.pilot.goal} />}
         {idea.pilot.scope && <Section title="محدوده‌ی پایلوت" body={idea.pilot.scope} />}
@@ -197,6 +232,16 @@ export default async function IdeaDetailPage({
             <p className="text-body-sm text-text-muted">پس از ثبت نهایی، در نوبت بررسی قرار می‌گیرد.</p>
           )}
         </div>
+      )}
+
+      {showTeam && (
+        <IdeaTeam ideaId={idea.id} author={idea.author} members={members} canManage={isOwner} />
+      )}
+      {showDemo && (
+        <DemoProjectLink ideaId={idea.id} current={idea.demoProject} candidates={candidates} canEdit={onTeam} />
+      )}
+      {showCourses && (
+        <OrbitCourses ideaId={idea.id} opened={opened} available={new Set(lessonUrls.keys())} />
       )}
 
       {viewer?.isAdmin && idea.orbitStage && idea.orbitStage !== 'next' && idea.status !== 'rejected' && (

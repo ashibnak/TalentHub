@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { and, desc, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { challenges, ideas, skills, userDomainExpertise, userSkills, users } from '@/lib/db/schema';
+import { challenges, ideaMembers, ideas, lessons, orbitCourseOpens, projects, skills, userDomainExpertise, userSkills, users } from '@/lib/db/schema';
 import { PUBLIC_IDEA_STATUS, type IdeaStatus } from '@/lib/ideas/rules';
 import type { OrbitStage } from '@/lib/ideas/orbit';
 import { computeRoleBadge, type RoleBadge } from '@/lib/users/role-badge';
@@ -132,6 +132,9 @@ export type IdeaDetail = {
     risks: string | null;
     decision: string | null;
   };
+  clinicAt: Date | null;
+  clinicNote: string | null;
+  demoProject: { id: string; title: string } | null;
   ipTerms: IpTerms;
   reviewNote: string | null;
   createdAt: Date;
@@ -171,6 +174,10 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
       pilotMetrics: ideas.pilotMetrics,
       pilotRisks: ideas.pilotRisks,
       pilotDecision: ideas.pilotDecision,
+      clinicAt: ideas.clinicAt,
+      clinicNote: ideas.clinicNote,
+      demoProjectId: projects.id,
+      demoProjectTitle: projects.title,
       ipTerms: ideas.ipTerms,
       reviewNote: ideas.reviewNote,
       createdAt: ideas.createdAt,
@@ -184,6 +191,7 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
     .from(ideas)
     .innerJoin(users, eq(ideas.userId, users.id))
     .leftJoin(challenges, eq(ideas.challengeId, challenges.id))
+    .leftJoin(projects, eq(ideas.demoProjectId, projects.id))
     .where(eq(ideas.id, id))
     .limit(1);
 
@@ -221,6 +229,9 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
       risks: row.pilotRisks,
       decision: row.pilotDecision,
     },
+    clinicAt: row.clinicAt,
+    clinicNote: row.clinicNote,
+    demoProject: row.demoProjectId && row.demoProjectTitle ? { id: row.demoProjectId, title: row.demoProjectTitle } : null,
     ipTerms: row.ipTerms,
     reviewNote: row.reviewNote,
     createdAt: row.createdAt,
@@ -336,4 +347,56 @@ export async function getOrbitQueue(orgId: string): Promise<OrbitQueueItem[]> {
       ? [{ id: r.id, title: r.title, status: r.status, orbitStage: r.orbitStage, authorName: r.authorName, updatedAt: r.updatedAt }]
       : [],
   );
+}
+
+export type IdeaMember = { id: string; name: string; username: string | null };
+
+export async function getIdeaMembers(ideaId: string): Promise<IdeaMember[]> {
+  return getDb()
+    .select({ id: users.id, name: users.name, username: users.username })
+    .from(ideaMembers)
+    .innerJoin(users, eq(ideaMembers.userId, users.id))
+    .where(eq(ideaMembers.ideaId, ideaId));
+}
+
+export async function isIdeaMember(ideaId: string, userId: string): Promise<boolean> {
+  const [row] = await getDb()
+    .select({ userId: ideaMembers.userId })
+    .from(ideaMembers)
+    .where(and(eq(ideaMembers.ideaId, ideaId), eq(ideaMembers.userId, userId)))
+    .limit(1);
+  return !!row;
+}
+
+export async function getDemoCandidates(ideaId: string, orgId: string) {
+  const [idea] = await getDb()
+    .select({ userId: ideas.userId })
+    .from(ideas)
+    .where(and(eq(ideas.id, ideaId), eq(ideas.orgId, orgId)))
+    .limit(1);
+  if (!idea) return [];
+  const members = await getIdeaMembers(ideaId);
+  const ids = [idea.userId, ...members.map((member) => member.id)];
+  return getDb()
+    .select({ id: projects.id, title: projects.title, owner: users.name })
+    .from(projects)
+    .innerJoin(users, eq(projects.userId, users.id))
+    .where(and(eq(projects.orgId, orgId), eq(projects.status, 'published'), inArray(projects.userId, ids)));
+}
+
+export async function getOpenedCourseKeys(userId: string): Promise<string[]> {
+  const rows = await getDb()
+    .select({ courseKey: orbitCourseOpens.courseKey })
+    .from(orbitCourseOpens)
+    .where(eq(orbitCourseOpens.userId, userId));
+  return rows.map((row) => row.courseKey);
+}
+
+export async function getLessonUrls(slugs: string[]): Promise<Map<string, string>> {
+  if (slugs.length === 0) return new Map();
+  const rows = await getDb()
+    .select({ slug: lessons.slug, url: lessons.url })
+    .from(lessons)
+    .where(inArray(lessons.slug, slugs));
+  return new Map(rows.flatMap((row) => (row.url ? [[row.slug, row.url] as const] : [])));
 }

@@ -47,6 +47,20 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
         </fieldset>
       )}
 
+      {stage === 'clinic' && (
+        <fieldset className="mb-4 flex flex-col gap-3">
+          <legend className={labelClass}>کارگاه ارائه</legend>
+          <label className="text-body-sm text-text-tertiary">
+            زمان کارگاه
+            <input name="clinicAt" type="datetime-local" required className={`mt-1 w-full ${inputClass}`} />
+          </label>
+          <label className="text-body-sm text-text-tertiary">
+            یادداشت کارگاه
+            <textarea name="clinicNote" required minLength={10} rows={3} className={`mt-1 w-full ${inputClass}`} />
+          </label>
+        </fieldset>
+      )}
+
       {stage === 'pitch' && (
         <label className={`${labelClass} mb-4 block`}>
           لینک ارائه‌ی پنج‌اسلایدی

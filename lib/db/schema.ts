@@ -450,6 +450,9 @@ export const ideas = pgTable(
     pilotMetrics: text('pilot_metrics'),
     pilotRisks: text('pilot_risks'),
     pilotDecision: text('pilot_decision'), // 'continue' | 'stop', checked in app code
+    clinicAt: timestamp('clinic_at', { withTimezone: true }),
+    clinicNote: text('clinic_note'),
+    demoProjectId: uuid('demo_project_id').references(() => projects.id, { onDelete: 'set null' }),
     // Ownership declared at INTAKE, reusing the same enum challenge_problems
     // uses. An idea may later be built by someone other than its author, and an
     // undeclared position becomes a dispute at exactly that moment. Default
@@ -468,6 +471,28 @@ export const ideas = pgTable(
     // Ideas filtered to one challenge.
     index('ideas_challenge_status_idx').on(t.challengeId, t.status),
   ],
+);
+
+/** People on an idea besides the author. The author stays on ideas.user_id. */
+export const ideaMembers = pgTable(
+  'idea_members',
+  {
+    ideaId: uuid('idea_id').notNull().references(() => ideas.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.ideaId, t.userId] }), index('idea_members_user_idx').on(t.userId)],
+);
+
+/** Which Orbit course a member opened. The course key is app-defined, not a lesson id. */
+export const orbitCourseOpens = pgTable(
+  'orbit_course_opens',
+  {
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    courseKey: text('course_key').notNull(),
+    openedAt: timestamp('opened_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.courseKey] })],
 );
 
 /* ──────────────────────────── Tip of the day ─────────────────────────

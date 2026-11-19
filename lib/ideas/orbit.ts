@@ -1,8 +1,9 @@
 /**
  * AI Orbit stage machine. An idea enters at `signal` when the author submits.
  * An admin moves it exactly one stage forward, and some gates demand evidence:
- * a scorecard to leave screening, a deck link to leave the pitch, a pilot
- * charter to leave demo day, and an explicit "continue" to leave the pilot.
+ * a scorecard to leave screening, a clinic date and note to leave the clinic,
+ * a deck link to leave the pitch, a linked project and a pilot charter to
+ * leave demo day, and an explicit "continue" to leave the pilot.
  */
 
 export const ORBIT_STAGES = ['signal', 'screening', 'clinic', 'pitch', 'lab', 'demo', 'pilot', 'next'] as const;
@@ -41,7 +42,9 @@ export type OrbitAdvanceError =
   | 'not_started'
   | 'not_next'
   | 'scores_required'
+  | 'clinic_required'
   | 'pitch_required'
+  | 'demo_required'
   | 'charter_required'
   | 'continue_required';
 
@@ -59,7 +62,9 @@ export function orbitAdvanceError(input: {
   from: OrbitStage | null;
   to: OrbitStage;
   scores: OrbitScores | null;
+  clinicReady: boolean;
   pitchUrl: string | null;
+  demoLinked: boolean;
   charter: PilotCharter | null;
 }): OrbitAdvanceError | null {
   if (!input.from) return 'not_started';
@@ -68,7 +73,9 @@ export function orbitAdvanceError(input: {
     const s = input.scores;
     if (!s || !Object.values(s).every(isScore)) return 'scores_required';
   }
+  if (input.from === 'clinic' && !input.clinicReady) return 'clinic_required';
   if (input.from === 'pitch' && !input.pitchUrl) return 'pitch_required';
+  if (input.from === 'demo' && !input.demoLinked) return 'demo_required';
   if (input.from === 'demo') {
     const c = input.charter;
     if (!c?.goal || !c.scope || !c.users || !c.metrics || !c.risks) return 'charter_required';
@@ -125,4 +132,9 @@ export function readCharter(formData: FormData): PilotCharter {
 
 export function charterIsComplete(charter: PilotCharter): boolean {
   return CHARTER_TEXT.every((key) => charter[key].length >= 10);
+}
+
+/** A clinic gate is ready when it has a real date and a note the team can use. */
+export function clinicIsReady(at: Date | null, note: string | null): boolean {
+  return !!at && !Number.isNaN(at.getTime()) && (note?.trim().length ?? 0) >= 10;
 }

@@ -4,10 +4,11 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { ideas } from '@/lib/db/schema';
+import { ideaMembers, ideas, projects } from '@/lib/db/schema';
 import { requireAdmin } from '@/lib/auth/session';
 import {
   charterIsComplete,
+  clinicIsReady,
   isHttpUrl,
   nextOrbitStage,
   orbitAdvanceError,
@@ -19,6 +20,23 @@ import {
 
 const NOTE_MIN = 10;
 const NOTE_MAX = 1000;
+
+async function linkedTeamProject(idea: { id: string; orgId: string; userId: string; demoProjectId: string | null }): Promise<boolean> {
+  if (!idea.demoProjectId) return false;
+  const [project] = await getDb()
+    .select({ userId: projects.userId, status: projects.status })
+    .from(projects)
+    .where(and(eq(projects.id, idea.demoProjectId), eq(projects.orgId, idea.orgId)))
+    .limit(1);
+  if (!project || project.status !== 'published') return false;
+  if (project.userId === idea.userId) return true;
+  const [member] = await getDb()
+    .select({ userId: ideaMembers.userId })
+    .from(ideaMembers)
+    .where(and(eq(ideaMembers.ideaId, idea.id), eq(ideaMembers.userId, project.userId)))
+    .limit(1);
+  return !!member;
+}
 
 function fail(ideaId: string, code: string): never {
   redirect(`/ideas/${ideaId}?orbitError=${code}`);
@@ -67,13 +85,20 @@ export async function reviewOrbitAction(formData: FormData) {
       const pitchUrl = pitchRaw && isHttpUrl(pitchRaw) ? pitchRaw : pitchRaw ? null : idea.pitchUrl;
       if (idea.orbitStage === 'pitch' && pitchRaw && !isHttpUrl(pitchRaw)) fail(ideaId, 'pitch_required');
 
+      const clinicNote = String(formData.get('clinicNote') ?? '').trim() || idea.clinicNote;
+      const clinicRaw = String(formData.get('clinicAt') ?? '').trim();
+      const clinicAt = clinicRaw ? new Date(clinicRaw) : idea.clinicAt;
+      const clinicReady = clinicIsReady(clinicAt, clinicNote);
+
       const read = readCharter(formData);
       const charter = charterIsComplete(read) ? read : null;
       const error = orbitAdvanceError({
         from: idea.orbitStage,
         to,
         scores,
+        clinicReady,
         pitchUrl: pitchUrl ?? null,
+        demoLinked: await linkedTeamProject(idea),
         charter,
       });
       if (error) fail(ideaId, error);
@@ -96,6 +121,9 @@ export async function reviewOrbitAction(formData: FormData) {
                 scoreMeasurable: scores.measurable,
                 scoreImplement: scores.implement,
               }
+            : {}),
+          ...(idea.orbitStage === 'clinic' && clinicReady && clinicAt
+            ? { clinicAt, clinicNote }
             : {}),
           ...(pitchUrl ? { pitchUrl } : {}),
           ...(charter
