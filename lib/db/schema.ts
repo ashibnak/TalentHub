@@ -48,6 +48,18 @@ export const ipTerms = pgEnum('ip_terms', ['developer', 'organization', 'shared'
 // Domain Expert can make without writing code. Distinct from ChallengeProblem
 // (which states a problem) and from Project (which is a built solution).
 export const ideaStatus = pgEnum('idea_status', ['draft', 'submitted', 'needs_work', 'approved', 'rejected']);
+// AI Orbit cohort position. Null while the idea is still a draft. Set to
+// 'signal' on submit, then advanced by an admin one stage at a time.
+export const orbitStage = pgEnum('orbit_stage', [
+  'signal',
+  'screening',
+  'clinic',
+  'pitch',
+  'lab',
+  'demo',
+  'pilot',
+  'next',
+]);
 // Tip-of-the-day pool. `audience` lets one pool serve both personas without
 // showing a Domain Expert a Cursor keybinding.
 export const tipCategory = pgEnum('tip_category', ['prompt_engineering', 'ai_tools', 'ai_in_domain', 'platform']);
@@ -417,6 +429,27 @@ export const ideas = pgTable(
     targetUsers: text('target_users').notNull(),
     successCriteria: text('success_criteria').notNull(),
     feasibilityNote: text('feasibility_note'),
+    // Orbit signal questions. Nullable so ideas written before the pipeline
+    // still load; the form requires them on every new save.
+    currentWorkaround: text('current_workaround'),
+    whyAgent: text('why_agent'),
+    dataNeeded: text('data_needed'),
+    teamCapability: text('team_capability'),
+    orbitStage: orbitStage('orbit_stage'),
+    // Screening scorecard, 1–5. Null until an admin scores at the screening gate.
+    scoreProblem: integer('score_problem'),
+    scoreAgentFit: integer('score_agent_fit'),
+    scorePrototype: integer('score_prototype'),
+    scoreSecurity: integer('score_security'),
+    scoreMeasurable: integer('score_measurable'),
+    scoreImplement: integer('score_implement'),
+    pitchUrl: text('pitch_url'),
+    pilotGoal: text('pilot_goal'),
+    pilotScope: text('pilot_scope'),
+    pilotUsers: text('pilot_users'),
+    pilotMetrics: text('pilot_metrics'),
+    pilotRisks: text('pilot_risks'),
+    pilotDecision: text('pilot_decision'), // 'continue' | 'stop', checked in app code
     // Ownership declared at INTAKE, reusing the same enum challenge_problems
     // uses. An idea may later be built by someone other than its author, and an
     // undeclared position becomes a dispute at exactly that moment. Default

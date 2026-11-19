@@ -9,10 +9,10 @@ import { IP_TERMS_VALUES, type IpTerms } from '@/lib/submissions/rules';
  * 15–30 minutes just to decode intent, and review here is one person against a
  * 48h target. Structure is the bottleneck fix.
  *
- * Why there are only five required fields: this feature exists for the people
- * who don't write code. A 15-field form drives away exactly those users, so
- * `feasibility_note` and `challenge_id` stay optional and nothing else is added
- * without deleting something first.
+ * The original five fields stay required. Orbit adds four signal questions
+ * (current workaround, why an agent, data needed, team capability) because
+ * screening cannot score an idea that never answered them. Feasibility and
+ * the challenge link stay optional.
  */
 
 export type IdeaStatus = 'draft' | 'submitted' | 'needs_work' | 'approved' | 'rejected';
@@ -25,6 +25,10 @@ export const IDEA_LIMITS = {
   targetUsers: { min: 1, max: 200 },
   successCriteria: { min: 1, max: 300 },
   feasibilityNote: { min: 0, max: 500 },
+  currentWorkaround: { min: 40, max: 500 },
+  whyAgent: { min: 40, max: 500 },
+  dataNeeded: { min: 20, max: 500 },
+  teamCapability: { min: 20, max: 400 },
 } as const;
 
 export type IdeaField = keyof typeof IDEA_LIMITS;
@@ -41,6 +45,10 @@ export type IdeaFormValues = {
   targetUsers: string;
   successCriteria: string;
   feasibilityNote: string;
+  currentWorkaround: string;
+  whyAgent: string;
+  dataNeeded: string;
+  teamCapability: string;
   challengeId: string;
   ipTerms: string;
 };
@@ -53,6 +61,10 @@ export type IdeaInput = {
   targetUsers: string;
   successCriteria: string;
   feasibilityNote: string | null;
+  currentWorkaround: string;
+  whyAgent: string;
+  dataNeeded: string;
+  teamCapability: string;
   challengeId: string | null;
   ipTerms: IpTerms;
 };
@@ -77,6 +89,10 @@ export const IdeaFormSchema = z.object({
     .max(IDEA_LIMITS.feasibilityNote.max, { message: 'too_long' })
     .transform((v) => v || null)
     .nullable(),
+  currentWorkaround: bounded('currentWorkaround'),
+  whyAgent: bounded('whyAgent'),
+  dataNeeded: bounded('dataNeeded'),
+  teamCapability: bounded('teamCapability'),
   // Optional link to a Challenge. Existence/eligibility is checked in the
   // action against the DB — this only rejects a malformed id.
   challengeId: z.uuid({ message: 'invalid' }).nullable(),
@@ -100,6 +116,10 @@ export function readIdeaForm(formData: FormData): IdeaFormValues {
     targetUsers: str('targetUsers'),
     successCriteria: str('successCriteria'),
     feasibilityNote: str('feasibilityNote'),
+    currentWorkaround: str('currentWorkaround'),
+    whyAgent: str('whyAgent'),
+    dataNeeded: str('dataNeeded'),
+    teamCapability: str('teamCapability'),
     challengeId: str('challengeId'),
     ipTerms: str('ipTerms'),
   };
@@ -206,7 +226,13 @@ export function isPubliclyVisible(status: IdeaStatus): boolean {
  * Whether a viewer may open an idea's detail page: approved ideas are public,
  * everything else is the author's alone until it is.
  */
-export function canViewIdea(status: IdeaStatus, ownerId: string, viewerId: string | null): boolean {
+export function canViewIdea(
+  status: IdeaStatus,
+  ownerId: string,
+  viewerId: string | null,
+  isAdmin = false,
+): boolean {
+  if (isAdmin) return true;
   return isPubliclyVisible(status) || (!!viewerId && viewerId === ownerId);
 }
 

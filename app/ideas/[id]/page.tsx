@@ -8,8 +8,11 @@ import { submitIdeaAction, deleteIdeaAction } from '@/lib/actions/ideas';
 import { canDelete, canEdit, canSubmit, canViewIdea } from '@/lib/ideas/rules';
 import { IdeaStatusBadge } from '@/components/atoms/IdeaStatusBadge';
 import { IdeaIpTerms } from '@/components/molecules/IdeaIpTerms';
+import { OrbitTrack } from '@/components/molecules/OrbitTrack';
+import { OrbitReviewForm } from '@/components/molecules/OrbitReviewForm';
+import { ORBIT_STAGE_LABEL } from '@/lib/ideas/orbit';
 import { btnPrimary, btnSecondary } from '@/lib/ui';
-import { formatFaDate } from '@/lib/format';
+import { formatFaDate, toFaDigits } from '@/lib/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +28,14 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_draft: 'این ایده قبلاً ثبت شده است.',
   locked: 'درباره‌ی این ایده تصمیم نهایی گرفته شده است.',
   internal: 'مشکلی پیش آمد. دوباره تلاش کن.',
+  note: 'یادداشت بررسی باید دست‌کم ده کاراکتر باشد.',
+  not_next: 'فقط می‌توان به مرحله‌ی بعدی رفت.',
+  scores_required: 'هر شش امتیاز ارزیابی باید بین ۱ و ۵ باشد.',
+  pitch_required: 'لینک ارائه باید یک نشانی معتبر باشد.',
+  charter_required: 'منشور پایلوت را کامل کن.',
+  continue_required: 'ورود به گام بعد فقط با تصمیم «ادامه» ممکن است.',
+  not_started: 'این ایده هنوز وارد Orbit نشده است.',
+  invalid: 'این تصمیم معتبر نیست.',
 };
 
 /** One labelled block of the idea. Section titles are Persian (design system §7.5). */
@@ -42,7 +53,7 @@ export default async function IdeaDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ saved?: string; submitted?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; submitted?: string; error?: string; orbit?: string; orbitError?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -51,7 +62,7 @@ export default async function IdeaDetailPage({
   if (!idea) notFound();
 
   // Approved ideas are public; anything earlier is the author's alone until then.
-  if (!canViewIdea(idea.status, idea.userId, viewer?.id ?? null)) notFound();
+  if (!canViewIdea(idea.status, idea.userId, viewer?.id ?? null, viewer?.isAdmin ?? false)) notFound();
 
   const guard = { currentUserId: viewer?.id ?? '', idea };
   const isOwner = !!viewer && viewer.id === idea.userId;
@@ -98,8 +109,17 @@ export default async function IdeaDetailPage({
           ایده ثبت شد و در نوبت بررسی قرار گرفت. تا وقتی تصمیم نهایی گرفته نشده، می‌توانی ویرایشش کنی.
         </p>
       )}
-      {sp.error && (
-        <p className="mb-6 text-body-sm text-state-error">{ERROR_MESSAGES[sp.error] ?? ERROR_MESSAGES.internal}</p>
+      {sp.orbit && <p className="mb-6 text-body-sm text-success">تصمیم Orbit ثبت شد.</p>}
+      {(sp.error || sp.orbitError) && (
+        <p className="mb-6 text-body-sm text-state-error">
+          {ERROR_MESSAGES[sp.orbitError ?? sp.error ?? ''] ?? ERROR_MESSAGES.internal}
+        </p>
+      )}
+
+      {idea.orbitStage && (
+        <div className="mb-6">
+          <OrbitTrack stage={idea.orbitStage} />
+        </div>
       )}
 
       <div className="flex flex-col gap-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
@@ -107,15 +127,40 @@ export default async function IdeaDetailPage({
         <Section title="راه‌حل پیشنهادی" body={idea.proposedSolution} />
         <Section title="چه کسانی استفاده می‌کنند؟" body={idea.targetUsers} />
         <Section title="از کجا بفهمیم موفق شده؟" body={idea.successCriteria} />
+        {idea.currentWorkaround && <Section title="الان این کار چطور انجام می‌شود؟" body={idea.currentWorkaround} />}
+        {idea.whyAgent && <Section title="چرا به یک عامل هوش مصنوعی نیاز است؟" body={idea.whyAgent} />}
+        {idea.dataNeeded && <Section title="چه داده‌ای لازم است؟" body={idea.dataNeeded} />}
+        {idea.teamCapability && <Section title="تیم چه توانی دارد؟" body={idea.teamCapability} />}
         {idea.feasibilityNote && <Section title="نکته‌ی اجرایی" body={idea.feasibilityNote} />}
+        {idea.pitchUrl && <Section title="لینک ارائه" body={idea.pitchUrl} />}
+        {idea.pilot.goal && <Section title="هدف پایلوت" body={idea.pilot.goal} />}
+        {idea.pilot.scope && <Section title="محدوده‌ی پایلوت" body={idea.pilot.scope} />}
+        {idea.pilot.metrics && <Section title="شاخص‌های پایلوت" body={idea.pilot.metrics} />}
+        {idea.pilot.decision && (
+          <Section title="تصمیم پایلوت" body={idea.pilot.decision === 'continue' ? 'ادامه' : 'توقف'} />
+        )}
       </div>
+
+      {idea.scores.problem != null && (
+        <div className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
+          <h2 className="text-body-sm text-text-tertiary mb-3">امتیاز ارزیابی</h2>
+          <ul className="grid grid-cols-2 gap-2 text-body-sm text-fg">
+            <li>اهمیت مسئله: {toFaDigits(idea.scores.problem ?? 0)}</li>
+            <li>تناسب عامل: {toFaDigits(idea.scores.agentFit ?? 0)}</li>
+            <li>امکان نمونه: {toFaDigits(idea.scores.prototype ?? 0)}</li>
+            <li>امنیت داده: {toFaDigits(idea.scores.security ?? 0)}</li>
+            <li>قابل سنجش: {toFaDigits(idea.scores.measurable ?? 0)}</li>
+            <li>پیاده‌سازی: {toFaDigits(idea.scores.implement ?? 0)}</li>
+          </ul>
+        </div>
+      )}
 
       {/* Ownership position declared at intake — plain Persian, shared wording. */}
       <div className="mt-6">
         <IdeaIpTerms ipTerms={idea.ipTerms} />
       </div>
 
-      {isOwner && idea.reviewNote && (
+      {(isOwner || viewer?.isAdmin) && idea.reviewNote && (
         <div className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
           <h2 className="text-body-sm text-text-tertiary mb-2">یادداشت بررسی</h2>
           <p className="text-body text-fg/90 leading-relaxed whitespace-pre-line">{idea.reviewNote}</p>
@@ -152,6 +197,13 @@ export default async function IdeaDetailPage({
             <p className="text-body-sm text-text-muted">پس از ثبت نهایی، در نوبت بررسی قرار می‌گیرد.</p>
           )}
         </div>
+      )}
+
+      {viewer?.isAdmin && idea.orbitStage && idea.orbitStage !== 'next' && idea.status !== 'rejected' && (
+        <OrbitReviewForm ideaId={idea.id} stage={idea.orbitStage} />
+      )}
+      {viewer?.isAdmin && idea.orbitStage === 'next' && (
+        <p className="mt-6 text-body-sm text-text-tertiary">این ایده به {ORBIT_STAGE_LABEL.next} رسیده است.</p>
       )}
     </main>
   );

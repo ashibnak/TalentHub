@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "drizzle-kit migrate && next start",
     "lint": "next lint",
-    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts lib/invitations/rules.test.ts lib/onboarding/rules.test.ts lib/ai/gateway.test.ts lib/verification/rules.test.ts lib/verification/resolve.test.ts lib/ideas/rules.test.ts lib/spotlight/rules.test.ts lib/tips/rules.test.ts lib/home/rules.test.ts lib/lessons/rules.test.ts lib/recommendations/rules.test.ts",
+    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts lib/invitations/rules.test.ts lib/onboarding/rules.test.ts lib/ai/gateway.test.ts lib/verification/rules.test.ts lib/verification/resolve.test.ts lib/ideas/rules.test.ts lib/ideas/orbit.test.ts lib/spotlight/rules.test.ts lib/tips/rules.test.ts lib/home/rules.test.ts lib/lessons/rules.test.ts lib/recommendations/rules.test.ts",
     "test:db": "tsx --test lib/db/integration.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

@@ -50,6 +50,10 @@ export default async function EditIdeaPage({ params }: { params: Promise<{ id: s
             targetUsers: idea.targetUsers,
             successCriteria: idea.successCriteria,
             feasibilityNote: idea.feasibilityNote ?? '',
+            currentWorkaround: idea.currentWorkaround ?? '',
+            whyAgent: idea.whyAgent ?? '',
+            dataNeeded: idea.dataNeeded ?? '',
+            teamCapability: idea.teamCapability ?? '',
             challengeId: idea.challenge?.id ?? '',
             ipTerms: idea.ipTerms,
           }}

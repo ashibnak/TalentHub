@@ -44,8 +44,9 @@ function fieldError(errors: IdeaFieldErrors | undefined, field: keyof typeof IDE
 /**
  * The idea submission form, shared by /ideas/new and /ideas/[id]/edit.
  *
- * Five required fields and one optional — deliberately short. This feature
- * exists for people who don't write code, and a long form loses exactly them.
+ * The original fields stay, plus the four Orbit signal questions screening
+ * needs. Feasibility and the challenge stay optional. This feature exists for
+ * people who don't write code, so each new question is one short answer.
  *
  * NOTE: this form intentionally shows NO other ideas — no list, no sidebar, no
  * count. Exposure to many prior ideas narrows what a participant comes up with;
@@ -122,6 +123,50 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
         max={IDEA_LIMITS.successCriteria.max}
         defaultValue={value('successCriteria')}
         error={fieldError(state.errors, 'successCriteria')}
+      />
+
+      <IdeaField
+        name="currentWorkaround"
+        label="الان این کار چطور انجام می‌شود؟"
+        helper="راه‌حل فعلی را بگو، حتی اگر دستی و کند باشد."
+        rows={3}
+        min={IDEA_LIMITS.currentWorkaround.min}
+        max={IDEA_LIMITS.currentWorkaround.max}
+        defaultValue={value('currentWorkaround')}
+        error={fieldError(state.errors, 'currentWorkaround')}
+      />
+
+      <IdeaField
+        name="whyAgent"
+        label="چرا به یک عامل هوش مصنوعی نیاز است؟"
+        helper="بگو کدام بخش تکراری، قاعده‌مند یا حجیم است که یک عامل می‌تواند انجام دهد."
+        rows={3}
+        min={IDEA_LIMITS.whyAgent.min}
+        max={IDEA_LIMITS.whyAgent.max}
+        defaultValue={value('whyAgent')}
+        error={fieldError(state.errors, 'whyAgent')}
+      />
+
+      <IdeaField
+        name="dataNeeded"
+        label="چه داده‌ای لازم است؟"
+        helper="نام داده یا سامانه را بنویس. اگر هنوز دسترسی نداری، همان را بگو."
+        rows={2}
+        min={IDEA_LIMITS.dataNeeded.min}
+        max={IDEA_LIMITS.dataNeeded.max}
+        defaultValue={value('dataNeeded')}
+        error={fieldError(state.errors, 'dataNeeded')}
+      />
+
+      <IdeaField
+        name="teamCapability"
+        label="تیم چه توانی دارد؟"
+        helper="نقش‌ها و زمانی که در هفته می‌گذارید. ثبت فردی هم مجاز است."
+        rows={2}
+        min={IDEA_LIMITS.teamCapability.min}
+        max={IDEA_LIMITS.teamCapability.max}
+        defaultValue={value('teamCapability')}
+        error={fieldError(state.errors, 'teamCapability')}
       />
 
       <IdeaField

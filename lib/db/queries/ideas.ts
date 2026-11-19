@@ -1,8 +1,9 @@
 import { cache } from 'react';
-import { and, desc, eq, inArray, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { challenges, ideas, skills, userDomainExpertise, userSkills, users } from '@/lib/db/schema';
 import { PUBLIC_IDEA_STATUS, type IdeaStatus } from '@/lib/ideas/rules';
+import type { OrbitStage } from '@/lib/ideas/orbit';
 import { computeRoleBadge, type RoleBadge } from '@/lib/users/role-badge';
 import type { IpTerms } from '@/lib/submissions/rules';
 
@@ -109,6 +110,28 @@ export type IdeaDetail = {
   targetUsers: string;
   successCriteria: string;
   feasibilityNote: string | null;
+  currentWorkaround: string | null;
+  whyAgent: string | null;
+  dataNeeded: string | null;
+  teamCapability: string | null;
+  orbitStage: OrbitStage | null;
+  scores: {
+    problem: number | null;
+    agentFit: number | null;
+    prototype: number | null;
+    security: number | null;
+    measurable: number | null;
+    implement: number | null;
+  };
+  pitchUrl: string | null;
+  pilot: {
+    goal: string | null;
+    scope: string | null;
+    users: string | null;
+    metrics: string | null;
+    risks: string | null;
+    decision: string | null;
+  };
   ipTerms: IpTerms;
   reviewNote: string | null;
   createdAt: Date;
@@ -130,6 +153,24 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
       targetUsers: ideas.targetUsers,
       successCriteria: ideas.successCriteria,
       feasibilityNote: ideas.feasibilityNote,
+      currentWorkaround: ideas.currentWorkaround,
+      whyAgent: ideas.whyAgent,
+      dataNeeded: ideas.dataNeeded,
+      teamCapability: ideas.teamCapability,
+      orbitStage: ideas.orbitStage,
+      scoreProblem: ideas.scoreProblem,
+      scoreAgentFit: ideas.scoreAgentFit,
+      scorePrototype: ideas.scorePrototype,
+      scoreSecurity: ideas.scoreSecurity,
+      scoreMeasurable: ideas.scoreMeasurable,
+      scoreImplement: ideas.scoreImplement,
+      pitchUrl: ideas.pitchUrl,
+      pilotGoal: ideas.pilotGoal,
+      pilotScope: ideas.pilotScope,
+      pilotUsers: ideas.pilotUsers,
+      pilotMetrics: ideas.pilotMetrics,
+      pilotRisks: ideas.pilotRisks,
+      pilotDecision: ideas.pilotDecision,
       ipTerms: ideas.ipTerms,
       reviewNote: ideas.reviewNote,
       createdAt: ideas.createdAt,
@@ -158,6 +199,28 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
     targetUsers: row.targetUsers,
     successCriteria: row.successCriteria,
     feasibilityNote: row.feasibilityNote,
+    currentWorkaround: row.currentWorkaround,
+    whyAgent: row.whyAgent,
+    dataNeeded: row.dataNeeded,
+    teamCapability: row.teamCapability,
+    orbitStage: row.orbitStage,
+    scores: {
+      problem: row.scoreProblem,
+      agentFit: row.scoreAgentFit,
+      prototype: row.scorePrototype,
+      security: row.scoreSecurity,
+      measurable: row.scoreMeasurable,
+      implement: row.scoreImplement,
+    },
+    pitchUrl: row.pitchUrl,
+    pilot: {
+      goal: row.pilotGoal,
+      scope: row.pilotScope,
+      users: row.pilotUsers,
+      metrics: row.pilotMetrics,
+      risks: row.pilotRisks,
+      decision: row.pilotDecision,
+    },
     ipTerms: row.ipTerms,
     reviewNote: row.reviewNote,
     createdAt: row.createdAt,
@@ -240,3 +303,37 @@ export const getMyIdeas = cache(async (userId: string, orgId: string): Promise<M
     challenge: r.challengeSlug && r.challengeTitle ? { slug: r.challengeSlug, title: r.challengeTitle } : null,
   }));
 });
+
+export type OrbitQueueItem = {
+  id: string;
+  title: string;
+  status: IdeaStatus;
+  orbitStage: OrbitStage;
+  authorName: string;
+  updatedAt: Date;
+};
+
+/** Ideas currently inside the Orbit pipeline, newest activity first. */
+export async function getOrbitQueue(orgId: string): Promise<OrbitQueueItem[]> {
+  const rows = await getDb()
+    .select({
+      id: ideas.id,
+      title: ideas.title,
+      status: ideas.status,
+      orbitStage: ideas.orbitStage,
+      authorName: users.name,
+      updatedAt: ideas.updatedAt,
+    })
+    .from(ideas)
+    .innerJoin(users, eq(ideas.userId, users.id))
+    .where(
+      and(eq(ideas.orgId, orgId), isNotNull(ideas.orbitStage), ne(ideas.status, 'rejected'), ne(ideas.orbitStage, 'next')),
+    )
+    .orderBy(desc(ideas.updatedAt));
+
+  return rows.flatMap((r) =>
+    r.orbitStage
+      ? [{ id: r.id, title: r.title, status: r.status, orbitStage: r.orbitStage, authorName: r.authorName, updatedAt: r.updatedAt }]
+      : [],
+  );
+}

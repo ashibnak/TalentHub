@@ -24,6 +24,10 @@ const VALID: IdeaFormValues = {
   targetUsers: 'کارشناسان منابع انسانی',
   successCriteria: 'میانگین زمان تأیید از دو روز به چهار ساعت برسد.',
   feasibilityNote: '',
+  currentWorkaround: 'امروز هر درخواست از سه نفر امضا می‌گیرد و دو روز طول می‌کشد.',
+  whyAgent: 'حجم درخواست تکراری است و قوانین مشخص‌اند، پس یک عامل می‌تواند بررسی کند.',
+  dataNeeded: 'قوانین مرخصی و تاریخچه‌ی درخواست‌های شش ماه اخیر.',
+  teamCapability: 'یک کارشناس منابع انسانی و یک توسعه‌دهنده، پنج ساعت در هفته.',
   challengeId: '',
   ipTerms: '',
 };
@@ -159,14 +163,19 @@ describe('parseIdeaForm — field boundaries', () => {
     if (!bad.ok) assert.equal(bad.errors.challengeId, 'invalid');
   });
 
-  it('keeps exactly five required fields — feasibilityNote is not one of them', () => {
-    const r = parseIdeaForm(
+  it('keeps feasibilityNote optional and requires the four Orbit signal answers', () => {
+    const original = parseIdeaForm(
       form({ title: '', problemStatement: '', proposedSolution: '', targetUsers: '', successCriteria: '', feasibilityNote: '' }),
     );
-    assert.equal(r.ok, false);
-    if (r.ok) return;
-    assert.equal(Object.keys(r.errors).length, 5);
-    assert.equal(r.errors.feasibilityNote, undefined);
+    assert.equal(original.ok, false);
+    if (!original.ok) {
+      assert.equal(Object.keys(original.errors).length, 5);
+      assert.equal(original.errors.feasibilityNote, undefined);
+    }
+
+    const signal = parseIdeaForm(form({ currentWorkaround: '', whyAgent: '', dataNeeded: '', teamCapability: '' }));
+    assert.equal(signal.ok, false);
+    if (!signal.ok) assert.equal(Object.keys(signal.errors).length, 4);
   });
 });
 

@@ -65,6 +65,10 @@ export async function createIdeaAction(_prev: IdeaFormState, formData: FormData)
         targetUsers: parsed.data.targetUsers,
         successCriteria: parsed.data.successCriteria,
         feasibilityNote: parsed.data.feasibilityNote,
+        currentWorkaround: parsed.data.currentWorkaround,
+        whyAgent: parsed.data.whyAgent,
+        dataNeeded: parsed.data.dataNeeded,
+        teamCapability: parsed.data.teamCapability,
         ipTerms: parsed.data.ipTerms,
         status: 'draft',
       })
@@ -109,6 +113,10 @@ export async function updateIdeaAction(_prev: IdeaFormState, formData: FormData)
         targetUsers: parsed.data.targetUsers,
         successCriteria: parsed.data.successCriteria,
         feasibilityNote: parsed.data.feasibilityNote,
+        currentWorkaround: parsed.data.currentWorkaround,
+        whyAgent: parsed.data.whyAgent,
+        dataNeeded: parsed.data.dataNeeded,
+        teamCapability: parsed.data.teamCapability,
         ipTerms: parsed.data.ipTerms,
         updatedAt: new Date(),
       })
@@ -150,7 +158,7 @@ export async function submitIdeaAction(formData: FormData) {
 
     await getDb()
       .update(ideas)
-      .set({ status: 'submitted', updatedAt: new Date() })
+      .set({ status: 'submitted', orbitStage: 'signal', updatedAt: new Date() })
       // Re-assert draft in the predicate so two rapid clicks can't double-submit.
       .where(
         and(eq(ideas.id, ideaId), eq(ideas.userId, user.id), eq(ideas.orgId, user.orgId), eq(ideas.status, 'draft')),
