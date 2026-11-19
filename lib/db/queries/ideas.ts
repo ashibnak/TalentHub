@@ -1,9 +1,11 @@
 import { cache } from 'react';
-import { and, desc, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, ne, notInArray, sql } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { challenges, ideaMembers, ideas, lessons, orbitCourseOpens, projects, skills, userDomainExpertise, userSkills, users } from '@/lib/db/schema';
+import { challenges, ideaMembers, ideaMentors, ideas, lessons, orbitCourseOpens, projects, skills, userDomainExpertise, userSkills, users } from '@/lib/db/schema';
 import { PUBLIC_IDEA_STATUS, type IdeaStatus } from '@/lib/ideas/rules';
 import type { OrbitStage } from '@/lib/ideas/orbit';
+import type { MentorRole } from '@/lib/ideas/mentors';
+import { rankRecruitSuggestions } from '@/lib/ideas/recruit';
 import { computeRoleBadge, type RoleBadge } from '@/lib/users/role-badge';
 import type { IpTerms } from '@/lib/submissions/rules';
 
@@ -135,6 +137,14 @@ export type IdeaDetail = {
   clinicAt: Date | null;
   clinicNote: string | null;
   demoProject: { id: string; title: string } | null;
+  demoScores: {
+    function: number | null;
+    value: number | null;
+    security: number | null;
+    readiness: number | null;
+  };
+  managerPitchAt: Date | null;
+  managerPitchTo: string | null;
   ipTerms: IpTerms;
   reviewNote: string | null;
   createdAt: Date;
@@ -178,6 +188,12 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
       clinicNote: ideas.clinicNote,
       demoProjectId: projects.id,
       demoProjectTitle: projects.title,
+      demoScoreFunction: ideas.demoScoreFunction,
+      demoScoreValue: ideas.demoScoreValue,
+      demoScoreSecurity: ideas.demoScoreSecurity,
+      demoScoreReadiness: ideas.demoScoreReadiness,
+      managerPitchAt: ideas.managerPitchAt,
+      managerPitchTo: ideas.managerPitchTo,
       ipTerms: ideas.ipTerms,
       reviewNote: ideas.reviewNote,
       createdAt: ideas.createdAt,
@@ -232,6 +248,14 @@ export const getIdeaById = cache(async (id: string): Promise<IdeaDetail | null> 
     clinicAt: row.clinicAt,
     clinicNote: row.clinicNote,
     demoProject: row.demoProjectId && row.demoProjectTitle ? { id: row.demoProjectId, title: row.demoProjectTitle } : null,
+    demoScores: {
+      function: row.demoScoreFunction,
+      value: row.demoScoreValue,
+      security: row.demoScoreSecurity,
+      readiness: row.demoScoreReadiness,
+    },
+    managerPitchAt: row.managerPitchAt,
+    managerPitchTo: row.managerPitchTo,
     ipTerms: row.ipTerms,
     reviewNote: row.reviewNote,
     createdAt: row.createdAt,
@@ -390,6 +414,89 @@ export async function getOpenedCourseKeys(userId: string): Promise<string[]> {
     .from(orbitCourseOpens)
     .where(eq(orbitCourseOpens.userId, userId));
   return rows.map((row) => row.courseKey);
+}
+
+export type IdeaMentor = { id: string; name: string; username: string | null; role: MentorRole };
+
+export async function getIdeaMentors(ideaId: string): Promise<IdeaMentor[]> {
+  return getDb()
+    .select({ id: users.id, name: users.name, username: users.username, role: ideaMentors.role })
+    .from(ideaMentors)
+    .innerJoin(users, eq(ideaMentors.userId, users.id))
+    .where(eq(ideaMentors.ideaId, ideaId));
+}
+
+export type RecruitSuggestion = { id: string; name: string; username: string; skills: number; domains: number };
+
+/** Active coworkers who share a skill or domain with the author or a current member. */
+export async function getRecruitSuggestions(ideaId: string, orgId: string): Promise<RecruitSuggestion[]> {
+  const db = getDb();
+  const [idea] = await db
+    .select({ userId: ideas.userId })
+    .from(ideas)
+    .where(and(eq(ideas.id, ideaId), eq(ideas.orgId, orgId)))
+    .limit(1);
+  if (!idea) return [];
+
+  const members = await getIdeaMembers(ideaId);
+  const seed = [idea.userId, ...members.map((member) => member.id)];
+  const [skillRows, domainRows] = await Promise.all([
+    db.select({ skillId: userSkills.skillId }).from(userSkills).where(inArray(userSkills.userId, seed)),
+    db.select({ domainId: userDomainExpertise.domainId }).from(userDomainExpertise).where(inArray(userDomainExpertise.userId, seed)),
+  ]);
+  const skillIds = [...new Set(skillRows.map((row) => row.skillId))];
+  const domainIds = [...new Set(domainRows.map((row) => row.domainId))];
+  if (skillIds.length === 0 && domainIds.length === 0) return [];
+
+  const base = and(eq(users.orgId, orgId), eq(users.status, 'active'), notInArray(users.id, seed), isNotNull(users.username));
+  const [bySkill, byDomain] = await Promise.all([
+    skillIds.length
+      ? db
+          .select({
+            userId: users.id,
+            name: users.name,
+            username: users.username,
+            skills: sql<number>`count(distinct ${userSkills.skillId})::int`,
+          })
+          .from(userSkills)
+          .innerJoin(users, eq(userSkills.userId, users.id))
+          .where(and(base, inArray(userSkills.skillId, skillIds)))
+          .groupBy(users.id, users.name, users.username)
+      : Promise.resolve([]),
+    domainIds.length
+      ? db
+          .select({
+            userId: users.id,
+            name: users.name,
+            username: users.username,
+            domains: sql<number>`count(distinct ${userDomainExpertise.domainId})::int`,
+          })
+          .from(userDomainExpertise)
+          .innerJoin(users, eq(userDomainExpertise.userId, users.id))
+          .where(and(base, inArray(userDomainExpertise.domainId, domainIds)))
+          .groupBy(users.id, users.name, users.username)
+      : Promise.resolve([]),
+  ]);
+
+  const merged = new Map<string, { id: string; name: string; username: string | null; skills: number; domains: number }>();
+  for (const row of bySkill) {
+    merged.set(row.userId, { id: row.userId, name: row.name, username: row.username, skills: Number(row.skills), domains: 0 });
+  }
+  for (const row of byDomain) {
+    const existing = merged.get(row.userId);
+    if (existing) existing.domains = Number(row.domains);
+    else merged.set(row.userId, { id: row.userId, name: row.name, username: row.username, skills: 0, domains: Number(row.domains) });
+  }
+
+  return rankRecruitSuggestions(
+    [...merged.values()].map((row) => ({
+      userId: row.id,
+      name: row.name,
+      username: row.username,
+      skills: row.skills,
+      domains: row.domains,
+    })),
+  ).flatMap((row) => (row.username ? [{ id: row.userId, name: row.name, username: row.username, skills: row.skills, domains: row.domains }] : []));
 }
 
 export async function getLessonUrls(slugs: string[]): Promise<Map<string, string>> {

@@ -4,9 +4,10 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
-import { ideaMembers, ideas, lessons, orbitCourseOpens, projects, users } from '@/lib/db/schema';
+import { ideaMembers, ideaMentors, ideas, lessons, orbitCourseOpens, projects, users } from '@/lib/db/schema';
 import { requireUser } from '@/lib/auth/session';
 import { orbitCourse } from '@/lib/ideas/courses';
+import { mentorRole } from '@/lib/ideas/mentors';
 
 function back(ideaId: string, code: string): never {
   redirect(`/ideas/${ideaId}?teamError=${code}`);
@@ -58,6 +59,57 @@ export async function removeIdeaMemberAction(formData: FormData) {
     .where(and(eq(ideaMembers.ideaId, ideaId), eq(ideaMembers.userId, memberId)));
   revalidatePath(`/ideas/${ideaId}`);
   redirect(`/ideas/${ideaId}?team=1`);
+}
+
+async function canManageIdea(ideaId: string, user: { id: string; orgId: string; isAdmin: boolean }) {
+  const [idea] = await getDb()
+    .select({ id: ideas.id, userId: ideas.userId })
+    .from(ideas)
+    .where(and(eq(ideas.id, ideaId), eq(ideas.orgId, user.orgId)))
+    .limit(1);
+  if (!idea) return null;
+  if (idea.userId === user.id || user.isAdmin) return idea;
+  return null;
+}
+
+/** Owner or an admin assigns one of the six mentor roles. */
+export async function assignIdeaMentorAction(formData: FormData) {
+  const user = await requireUser();
+  const ideaId = String(formData.get('ideaId') ?? '');
+  const username = String(formData.get('username') ?? '').trim().toLowerCase();
+  const role = mentorRole(String(formData.get('role') ?? ''));
+  if (!ideaId) redirect('/ideas/mine');
+  if (!username || !role) back(ideaId, 'mentor');
+
+  const idea = await canManageIdea(ideaId, user);
+  if (!idea) back(ideaId, 'not_owner');
+
+  const [mentor] = await getDb()
+    .select({ id: users.id })
+    .from(users)
+    .where(and(eq(users.orgId, user.orgId), eq(users.username, username), eq(users.status, 'active')))
+    .limit(1);
+  if (!mentor) back(ideaId, 'not_found');
+
+  await getDb().insert(ideaMentors).values({ ideaId, userId: mentor.id, role }).onConflictDoNothing();
+  revalidatePath(`/ideas/${ideaId}`);
+  redirect(`/ideas/${ideaId}?mentor=1`);
+}
+
+export async function removeIdeaMentorAction(formData: FormData) {
+  const user = await requireUser();
+  const ideaId = String(formData.get('ideaId') ?? '');
+  const mentorId = String(formData.get('mentorId') ?? '');
+  const role = mentorRole(String(formData.get('role') ?? ''));
+  if (!ideaId || !mentorId || !role) redirect('/ideas/mine');
+  const idea = await canManageIdea(ideaId, user);
+  if (!idea) back(ideaId, 'not_owner');
+
+  await getDb()
+    .delete(ideaMentors)
+    .where(and(eq(ideaMentors.ideaId, ideaId), eq(ideaMentors.userId, mentorId), eq(ideaMentors.role, role)));
+  revalidatePath(`/ideas/${ideaId}`);
+  redirect(`/ideas/${ideaId}?mentor=1`);
 }
 
 /** Owner or a member links a published project they own as the demo. */

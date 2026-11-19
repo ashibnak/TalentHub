@@ -11,8 +11,10 @@ import {
   clinicIsReady,
   isHttpUrl,
   nextOrbitStage,
+  managerPitchIsReady,
   orbitAdvanceError,
   readCharter,
+  readDemoScores,
   readScores,
   statusAfterAdvance,
   type OrbitStage,
@@ -92,6 +94,7 @@ export async function reviewOrbitAction(formData: FormData) {
 
       const read = readCharter(formData);
       const charter = charterIsComplete(read) ? read : null;
+      const demoScores = readDemoScores(formData);
       const error = orbitAdvanceError({
         from: idea.orbitStage,
         to,
@@ -99,6 +102,7 @@ export async function reviewOrbitAction(formData: FormData) {
         clinicReady,
         pitchUrl: pitchUrl ?? null,
         demoLinked: await linkedTeamProject(idea),
+        demoScores,
         charter,
       });
       if (error) fail(ideaId, error);
@@ -124,6 +128,14 @@ export async function reviewOrbitAction(formData: FormData) {
             : {}),
           ...(idea.orbitStage === 'clinic' && clinicReady && clinicAt
             ? { clinicAt, clinicNote }
+            : {}),
+          ...(idea.orbitStage === 'demo' && demoScores
+            ? {
+                demoScoreFunction: demoScores.function,
+                demoScoreValue: demoScores.value,
+                demoScoreSecurity: demoScores.security,
+                demoScoreReadiness: demoScores.readiness,
+              }
             : {}),
           ...(pitchUrl ? { pitchUrl } : {}),
           ...(charter
@@ -153,4 +165,29 @@ export async function reviewOrbitAction(formData: FormData) {
   revalidatePath(`/ideas/${ideaId}`);
   revalidatePath('/admin/ideas');
   redirect(`/ideas/${ideaId}?orbit=1`);
+}
+
+/** Record who heard the idea after it reached Next. Does not move the stage. */
+export async function saveManagerPitchAction(formData: FormData) {
+  const admin = await requireAdmin();
+  const ideaId = String(formData.get('ideaId') ?? '');
+  if (!ideaId) redirect('/admin/ideas');
+  const audience = String(formData.get('managerPitchTo') ?? '').trim();
+  const at = new Date(String(formData.get('managerPitchAt') ?? ''));
+  if (!managerPitchIsReady(at, audience)) fail(ideaId, 'pitch_audience');
+
+  const [idea] = await getDb()
+    .select({ id: ideas.id, orbitStage: ideas.orbitStage })
+    .from(ideas)
+    .where(and(eq(ideas.id, ideaId), eq(ideas.orgId, admin.orgId)))
+    .limit(1);
+  if (!idea || idea.orbitStage !== 'next') fail(ideaId, 'not_at_next');
+
+  await getDb()
+    .update(ideas)
+    .set({ managerPitchAt: at, managerPitchTo: audience, updatedAt: new Date() })
+    .where(and(eq(ideas.id, ideaId), eq(ideas.orgId, admin.orgId)));
+
+  revalidatePath(`/ideas/${ideaId}`);
+  redirect(`/ideas/${ideaId}?pitch=1`);
 }

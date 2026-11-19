@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Pencil } from 'lucide-react';
-import { getDemoCandidates, getIdeaById, getIdeaMembers, getLessonUrls, getOpenedCourseKeys, isIdeaMember } from '@/lib/db/queries/ideas';
+import { getDemoCandidates, getIdeaById, getIdeaMembers, getIdeaMentors, getLessonUrls, getOpenedCourseKeys, getRecruitSuggestions, isIdeaMember } from '@/lib/db/queries/ideas';
 import { getCurrentUser } from '@/lib/auth/session';
 import { submitIdeaAction, deleteIdeaAction } from '@/lib/actions/ideas';
 import { canDelete, canEdit, canSubmit, canViewIdea } from '@/lib/ideas/rules';
@@ -11,6 +11,8 @@ import { IdeaIpTerms } from '@/components/molecules/IdeaIpTerms';
 import { OrbitTrack } from '@/components/molecules/OrbitTrack';
 import { OrbitReviewForm } from '@/components/molecules/OrbitReviewForm';
 import { IdeaTeam } from '@/components/molecules/IdeaTeam';
+import { IdeaMentors } from '@/components/molecules/IdeaMentors';
+import { ManagerPitch } from '@/components/molecules/ManagerPitch';
 import { DemoProjectLink } from '@/components/molecules/DemoProjectLink';
 import { OrbitCourses } from '@/components/molecules/OrbitCourses';
 import { ORBIT_STAGE_LABEL, ORBIT_STAGES } from '@/lib/ideas/orbit';
@@ -38,6 +40,10 @@ const ERROR_MESSAGES: Record<string, string> = {
   pitch_required: 'لینک ارائه باید یک نشانی معتبر باشد.',
   clinic_required: 'برای خروج از کارگاه، زمان و یادداشت کارگاه لازم است.',
   demo_required: 'برای ورود به پایلوت، یک پروژه‌ی منتشرشده‌ی تیم را وصل کن.',
+  demo_scores_required: 'داوری روز ارائه باید چهار امتیاز بین ۱ و ۵ داشته باشد.',
+  pitch_audience: 'زمان ارائه و نام شنوندگان را وارد کن.',
+  not_at_next: 'ارائه به مدیران فقط وقتی ثبت می‌شود که ایده به گام بعد رسیده باشد.',
+  mentor: 'نام کاربری و نقش منتور لازم است.',
   charter_required: 'منشور پایلوت را کامل کن.',
   username: 'نام کاربری را وارد کن.',
   self: 'نمی‌توانی خودت را به تیم اضافه کنی.',
@@ -72,6 +78,8 @@ export default async function IdeaDetailPage({
     teamError?: string;
     demo?: string;
     courseError?: string;
+    mentor?: string;
+    pitch?: string;
   }>;
 }) {
   const { id } = await params;
@@ -94,8 +102,10 @@ export default async function IdeaDetailPage({
   const showTeam = !!idea.orbitStage && (onTeam || !!viewer?.isAdmin);
   const showDemo = stageIndex >= ORBIT_STAGES.indexOf('demo');
   const showCourses = stageIndex >= ORBIT_STAGES.indexOf('lab') && onTeam;
-  const [members, candidates, opened, lessonUrls] = await Promise.all([
+  const [members, suggestions, mentors, candidates, opened, lessonUrls] = await Promise.all([
     showTeam ? getIdeaMembers(idea.id) : Promise.resolve([]),
+    showTeam && isOwner && viewer ? getRecruitSuggestions(idea.id, viewer.orgId) : Promise.resolve([]),
+    showTeam ? getIdeaMentors(idea.id) : Promise.resolve([]),
     showDemo && viewer ? getDemoCandidates(idea.id, viewer.orgId) : Promise.resolve([]),
     showCourses && viewer ? getOpenedCourseKeys(viewer.id) : Promise.resolve([]),
     showCourses ? getLessonUrls(ORBIT_COURSES.map((course) => course.lessonSlug)) : Promise.resolve(new Map<string, string>()),
@@ -142,6 +152,8 @@ export default async function IdeaDetailPage({
       )}
       {sp.orbit && <p className="mb-6 text-body-sm text-success">تصمیم Orbit ثبت شد.</p>}
       {sp.team && <p className="mb-6 text-body-sm text-success">تیم به‌روز شد.</p>}
+      {sp.mentor && <p className="mb-6 text-body-sm text-success">منتورها به‌روز شدند.</p>}
+      {sp.pitch && <p className="mb-6 text-body-sm text-success">ارائه به مدیران ثبت شد.</p>}
       {sp.demo && <p className="mb-6 text-body-sm text-success">پروژه‌ی دمو ذخیره شد.</p>}
       {sp.courseError && <p className="mb-6 text-body-sm text-state-error">این درس در فهرست موجود نیست.</p>}
       {(sp.error || sp.orbitError || sp.teamError) && (
@@ -186,6 +198,18 @@ export default async function IdeaDetailPage({
             <li>امنیت داده: {toFaDigits(idea.scores.security ?? 0)}</li>
             <li>قابل سنجش: {toFaDigits(idea.scores.measurable ?? 0)}</li>
             <li>پیاده‌سازی: {toFaDigits(idea.scores.implement ?? 0)}</li>
+          </ul>
+        </div>
+      )}
+
+      {idea.demoScores.function != null && (
+        <div className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
+          <h2 className="text-body-sm text-text-tertiary mb-3">داوری روز ارائه</h2>
+          <ul className="grid grid-cols-2 gap-2 text-body-sm text-fg">
+            <li>کارکرد: {toFaDigits(idea.demoScores.function ?? 0)}</li>
+            <li>ارزش کسب‌وکار: {toFaDigits(idea.demoScores.value ?? 0)}</li>
+            <li>امنیت: {toFaDigits(idea.demoScores.security ?? 0)}</li>
+            <li>آمادگی پایلوت: {toFaDigits(idea.demoScores.readiness ?? 0)}</li>
           </ul>
         </div>
       )}
@@ -235,7 +259,24 @@ export default async function IdeaDetailPage({
       )}
 
       {showTeam && (
-        <IdeaTeam ideaId={idea.id} author={idea.author} members={members} canManage={isOwner} />
+        <IdeaTeam
+          ideaId={idea.id}
+          author={idea.author}
+          members={members}
+          suggestions={suggestions}
+          canManage={isOwner}
+        />
+      )}
+      {showTeam && (
+        <IdeaMentors ideaId={idea.id} mentors={mentors} canManage={isOwner || !!viewer?.isAdmin} />
+      )}
+      {idea.orbitStage === 'next' && (viewer?.isAdmin || idea.managerPitchAt) && (
+        <ManagerPitch
+          ideaId={idea.id}
+          at={idea.managerPitchAt}
+          audience={idea.managerPitchTo}
+          canEdit={!!viewer?.isAdmin}
+        />
       )}
       {showDemo && (
         <DemoProjectLink ideaId={idea.id} current={idea.demoProject} candidates={candidates} canEdit={onTeam} />

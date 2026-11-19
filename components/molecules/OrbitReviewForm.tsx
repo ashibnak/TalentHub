@@ -68,6 +68,25 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
         </label>
       )}
 
+      {stage === 'demo' && (
+        <fieldset className="mb-4 grid grid-cols-2 gap-3">
+          <legend className={`${labelClass} col-span-2`}>داوری روز ارائه، ۱ تا ۵</legend>
+          {(
+            [
+              ['function', 'کارکرد'],
+              ['value', 'ارزش کسب‌وکار'],
+              ['security', 'امنیت'],
+              ['readiness', 'آمادگی پایلوت'],
+            ] as const
+          ).map(([name, label]) => (
+            <label key={name} className="text-body-sm text-text-tertiary">
+              {label}
+              <input name={`demo_${name}`} type="number" min={1} max={5} required className={`mt-1 w-full ${inputClass}`} />
+            </label>
+          ))}
+        </fieldset>
+      )}
+
       {(stage === 'demo' || stage === 'pilot') && (
         <fieldset className="mb-4 flex flex-col gap-3">
           <legend className={labelClass}>منشور پایلوت</legend>

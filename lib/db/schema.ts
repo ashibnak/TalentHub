@@ -60,6 +60,14 @@ export const orbitStage = pgEnum('orbit_stage', [
   'pilot',
   'next',
 ]);
+export const mentorRole = pgEnum('mentor_role', [
+  'product',
+  'ai_architecture',
+  'engineering',
+  'data',
+  'security',
+  'pilot',
+]);
 // Tip-of-the-day pool. `audience` lets one pool serve both personas without
 // showing a Domain Expert a Cursor keybinding.
 export const tipCategory = pgEnum('tip_category', ['prompt_engineering', 'ai_tools', 'ai_in_domain', 'platform']);
@@ -453,6 +461,12 @@ export const ideas = pgTable(
     clinicAt: timestamp('clinic_at', { withTimezone: true }),
     clinicNote: text('clinic_note'),
     demoProjectId: uuid('demo_project_id').references(() => projects.id, { onDelete: 'set null' }),
+    demoScoreFunction: integer('demo_score_function'),
+    demoScoreValue: integer('demo_score_value'),
+    demoScoreSecurity: integer('demo_score_security'),
+    demoScoreReadiness: integer('demo_score_readiness'),
+    managerPitchAt: timestamp('manager_pitch_at', { withTimezone: true }),
+    managerPitchTo: text('manager_pitch_to'),
     // Ownership declared at INTAKE, reusing the same enum challenge_problems
     // uses. An idea may later be built by someone other than its author, and an
     // undeclared position becomes a dispute at exactly that moment. Default
@@ -482,6 +496,18 @@ export const ideaMembers = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (t) => [primaryKey({ columns: [t.ideaId, t.userId] }), index('idea_members_user_idx').on(t.userId)],
+);
+
+/** A mentor assigned to one idea. The same person can hold more than one role. */
+export const ideaMentors = pgTable(
+  'idea_mentors',
+  {
+    ideaId: uuid('idea_id').notNull().references(() => ideas.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    role: mentorRole('role').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.ideaId, t.userId, t.role] }), index('idea_mentors_user_idx').on(t.userId)],
 );
 
 /** Which Orbit course a member opened. The course key is app-defined, not a lesson id. */

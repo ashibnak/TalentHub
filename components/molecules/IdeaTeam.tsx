@@ -1,6 +1,7 @@
 import { Avatar } from '@/components/atoms/Avatar';
 import { addIdeaMemberAction, removeIdeaMemberAction } from '@/lib/actions/orbit-team';
-import type { IdeaMember } from '@/lib/db/queries/ideas';
+import type { IdeaMember, RecruitSuggestion } from '@/lib/db/queries/ideas';
+import { toFaDigits } from '@/lib/format';
 import { btnSecondary, inputClass, labelClass } from '@/lib/ui';
 
 /** The author plus the people they recruited by username. */
@@ -8,11 +9,13 @@ export function IdeaTeam({
   ideaId,
   author,
   members,
+  suggestions,
   canManage,
 }: {
   ideaId: string;
   author: { name: string; username: string | null };
   members: IdeaMember[];
+  suggestions: RecruitSuggestion[];
   canManage: boolean;
 }) {
   return (
@@ -40,6 +43,29 @@ export function IdeaTeam({
           </li>
         ))}
       </ul>
+      {canManage && suggestions.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-body-sm text-text-tertiary mb-2">پیشنهاد از مهارت و حوزه</h3>
+          <ul className="flex flex-col gap-2">
+            {suggestions.map((person) => (
+              <li key={person.id} className="flex flex-wrap items-center gap-3">
+                <Avatar seed={person.username} size={32} />
+                <span className="text-body text-fg">{person.name}</span>
+                <span className="text-body-sm text-text-muted">
+                  {toFaDigits(person.skills)} مهارت · {toFaDigits(person.domains)} حوزه
+                </span>
+                <form action={addIdeaMemberAction}>
+                  <input type="hidden" name="ideaId" value={ideaId} />
+                  <input type="hidden" name="username" value={person.username} />
+                  <button type="submit" className={btnSecondary}>
+                    افزودن
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {canManage && (
         <form action={addIdeaMemberAction} className="mt-4 flex flex-wrap items-end gap-3">
           <label className={labelClass}>

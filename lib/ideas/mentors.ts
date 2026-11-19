@@ -1,0 +1,16 @@
+/** Mentor types named on the Orbit landing. A person is assigned to one idea. */
+export const MENTOR_ROLES = ['product', 'ai_architecture', 'engineering', 'data', 'security', 'pilot'] as const;
+export type MentorRole = (typeof MENTOR_ROLES)[number];
+
+export const MENTOR_ROLE_LABEL: Record<MentorRole, string> = {
+  product: 'محصول',
+  ai_architecture: 'معماری هوش مصنوعی',
+  engineering: 'مهندسی',
+  data: 'داده',
+  security: 'امنیت',
+  pilot: 'پایلوت',
+};
+
+export function mentorRole(value: string): MentorRole | null {
+  return MENTOR_ROLES.find((role) => role === value) ?? null;
+}
