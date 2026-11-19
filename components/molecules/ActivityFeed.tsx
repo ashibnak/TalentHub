@@ -32,7 +32,7 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
       <div className="flex flex-col gap-3">
         {events.map((e) => (
           <div key={`${e.kind}-${e.id}`} className="flex items-start gap-3">
-            <Avatar name={e.actorName} size={32} />
+            <Avatar seed={e.actorUsername ?? e.actorName} size={32} />
             <div className="min-w-0 flex-1">
               <p className="text-body-sm text-fg leading-relaxed">
                 {e.actorUsername ? (

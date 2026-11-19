@@ -30,7 +30,7 @@ export function SimilarPeople({ people }: { people: SimilarPerson[] }) {
             className="relative rounded-lg border border-border-subtle bg-surface p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className="mb-2 flex items-center gap-2">
-              <Avatar name={p.name} size={32} />
+              <Avatar seed={p.username ?? p.userId} size={32} />
               <div className="min-w-0">
                 <p className="truncate text-body-sm text-fg">
                   {p.username ? (
