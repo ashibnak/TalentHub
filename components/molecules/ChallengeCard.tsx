@@ -21,7 +21,7 @@ export function ChallengeCard({ challenge }: { challenge: DirectoryChallenge }) 
           <FolderKanban size={14} strokeWidth={1.5} />
           {toFaDigits(challenge.projectCount)} پروژه
         </span>
-        {challenge.sponsorTeam && <span className="ms-auto text-info">{challenge.sponsorTeam}</span>}
+        {challenge.sponsorTeam && <span className="ms-auto text-text-tertiary">{challenge.sponsorTeam}</span>}
       </div>
     </Link>
   );

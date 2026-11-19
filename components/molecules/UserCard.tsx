@@ -19,7 +19,7 @@ export function UserCard({ user }: { user: DirectoryUser }) {
             <h2 className="text-body font-semibold text-fg truncate">{user.name}</h2>
             <RoleBadge role={user.roleBadge} />
           </div>
-          {user.roleTitle && <p className="text-body-sm text-info truncate">{user.roleTitle}</p>}
+          {user.roleTitle && <p className="text-body-sm text-text-tertiary truncate">{user.roleTitle}</p>}
         </div>
       </div>
       {user.topSkills.length > 0 && (

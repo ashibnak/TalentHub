@@ -11,13 +11,13 @@ export function LogoMark({ size = 28, className }: { size?: number; className?: 
       className={className}
       aria-hidden="true"
     >
-      <rect width="40" height="40" rx="11" fill="#fafcfc" />
-      <g stroke="#1a1a1a" strokeWidth="2.3" strokeLinecap="round">
+      <rect width="40" height="40" rx="11" fill="#f6f3ee" />
+      <g stroke="#141312" strokeWidth="2.3" strokeLinecap="round">
         <line x1="20" y1="20" x2="20" y2="9" />
         <line x1="20" y1="20" x2="10.5" y2="29" />
         <line x1="20" y1="20" x2="29.5" y2="29" />
       </g>
-      <g fill="#1a1a1a">
+      <g fill="#141312">
         <circle cx="20" cy="9" r="2.6" />
         <circle cx="10.5" cy="29" r="2.6" />
         <circle cx="29.5" cy="29" r="2.6" />

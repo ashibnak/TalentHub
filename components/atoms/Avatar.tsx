@@ -3,11 +3,11 @@
 // first letters collide too often to use as avatars; the name is already
 // written beside the mark.
 //
-// Palette is the app's own: charcoal ground, teal / amber / emerald marks.
-// No photos and no extra icon set.
+// Palette is the app's own: ink ground, teal marks in two strengths.
+// Shape carries the difference between people. No photos.
 
-const GROUNDS = ['#3a3939', '#333232', '#2c3a3a'];
-const ACCENTS = ['#4cd1d6', '#ffab00', '#34d399'];
+const GROUNDS = ['#1c1b1a', '#262524', '#2e2c2b'];
+const ACCENTS = ['#4cd1d6', '#7fe3e6'];
 
 function hashSeed(seed: string) {
   let h = 2166136261;

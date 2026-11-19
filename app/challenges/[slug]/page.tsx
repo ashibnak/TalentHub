@@ -24,7 +24,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-h1 mb-2">{challenge.title}</h1>
-      {challenge.sponsorTeam && <p className="text-body-sm text-info mb-4">{challenge.sponsorTeam}</p>}
+      {challenge.sponsorTeam && <p className="text-body-sm text-text-tertiary mb-4">{challenge.sponsorTeam}</p>}
       <p className="text-body-lg text-fg/80 leading-relaxed mb-8">{challenge.description}</p>
 
       {/* Problems */}
@@ -71,7 +71,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
                   <div className="text-body text-fg truncate">{e.name}</div>
                   {e.roleTitle && <div className="text-body-sm text-text-tertiary truncate">{e.roleTitle}</div>}
                   {e.yearsExperience != null && (
-                    <div className="text-micro text-info">{toFaDigits(e.yearsExperience)} سال تجربه</div>
+                    <div className="text-micro text-text-tertiary">{toFaDigits(e.yearsExperience)} سال تجربه</div>
                   )}
                 </div>
               </Link>

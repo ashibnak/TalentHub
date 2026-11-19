@@ -49,7 +49,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               <RoleBadge role={profile.roleBadge} />
               <StatusPill status={profile.buildingStatus} />
             </div>
-            {profile.roleTitle && <p className="text-body text-info">{profile.roleTitle}</p>}
+            {profile.roleTitle && <p className="text-body text-text-tertiary">{profile.roleTitle}</p>}
           </div>
           {isOwnProfile && (
             <Link

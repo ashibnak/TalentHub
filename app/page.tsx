@@ -50,11 +50,7 @@ export default async function Home() {
       <section className="relative overflow-hidden">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(76,209,214,0.18),transparent)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(35%_40%_at_88%_12%,rgba(255,171,0,0.10),transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(50%_50%_at_50%_0%,rgba(76,209,214,0.10),transparent)]"
         />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 pt-20 pb-16 text-center">
           <div className="mb-8 flex justify-center">
@@ -102,7 +98,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-border-subtle md:grid-cols-4">
           {statItems.map(({ label, value, icon: Icon }) => (
             <div key={label} className="bg-surface px-4 py-8 text-center">
-              <Icon size={16} strokeWidth={1.5} className="mx-auto mb-2 text-highlight" />
+              <Icon size={16} strokeWidth={1.5} className="mx-auto mb-2 text-info" />
               <div className="text-h1 font-bold text-fg">{toFaDigits(value)}</div>
               <div className="mt-1 text-body-sm text-text-tertiary">{label}</div>
             </div>
@@ -119,8 +115,8 @@ export default async function Home() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f, i) => (
             <div key={f.title} className="rounded-xl border border-border-subtle bg-surface p-6">
-              <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg ${i % 2 === 0 ? 'bg-info-subtle' : 'bg-highlight-subtle'}`}>
-                <f.icon size={20} strokeWidth={1.5} className={i % 2 === 0 ? 'text-info' : 'text-highlight'} />
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-info-subtle">
+                <f.icon size={20} strokeWidth={1.5} className="text-info" />
               </div>
               <h3 className="mb-1 text-h3">{f.title}</h3>
               <p className="text-body-sm leading-relaxed text-text-tertiary">{f.desc}</p>
@@ -136,7 +132,7 @@ export default async function Home() {
           {steps.map((s, i) => (
             <div key={s.title} className="rounded-xl border border-border-subtle bg-surface p-6">
               <div className="mb-3 flex items-center gap-3">
-                <span className="text-h2 font-bold text-highlight">{toFaDigits(i + 1)}</span>
+                <span className="text-h2 font-bold text-info">{toFaDigits(i + 1)}</span>
                 <s.icon size={20} strokeWidth={1.5} className="text-fg" />
               </div>
               <h3 className="mb-1 text-h3">{s.title}</h3>
@@ -211,7 +207,7 @@ export default async function Home() {
           </p>
           <Link
             href="/login"
-            className="inline-block rounded-full bg-highlight px-6 py-3 text-body-lg font-medium text-on-action transition-colors hover:bg-highlight/85"
+            className="inline-block rounded-full bg-action px-6 py-3 text-body-lg font-medium text-on-action transition-colors hover:bg-action-hover"
           >
             ورود به حساب
           </Link>

@@ -1,21 +1,19 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
-   Design tokens — v4 "obsidian" (dark charcoal + bright teal).
-   Built from Amir's reference palettes, verbatim swatches:
-   #222121 canvas · #2A2A2A surface · #FAFCFC text/action · #E5E4E3 hover
-   · #4CD1D6 teal accent · #FFAB00 amber micro-accent (spotlight).
-   White primary buttons with near-black text (Vercel/Linear dark).
+   Design tokens — ink and one jewel.
+   Canvas is a real dark, cards lift off it, and teal is only the action.
+   Amber is attention (sent back, spotlight). Green is success. Red is error.
    Vazirmatn for Persian body. Geist for Latin chips via font-latin.
    ───────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
   --font-latin: var(--font-geist), var(--font-vazirmatn), system-ui, sans-serif;
 
-  /* Surfaces — charcoal ladder */
-  --color-canvas: #222121;
-  --color-surface: #2a2a2a;
-  --color-surface-elevated: #333232;
+  /* Surfaces — ink, then a clear step up for cards */
+  --color-canvas: #121110;
+  --color-surface: #1c1b1a;
+  --color-surface-elevated: #262524;
   --color-spotlight: rgba(76, 209, 214, 0.08);
 
   /* Primary action — the bright teal itself (Amir: the accent must be SEEN).
@@ -24,7 +22,7 @@
   --color-action-hover: #6fdbdf;
   --color-action-subtle: rgba(76, 209, 214, 0.08);
   /* Text/icon color to sit ON action / info / success / highlight fills */
-  --color-on-action: #1a1a1a;
+  --color-on-action: #141312;
 
   /* Accent — bright teal. High contrast on charcoal; used for links, active,
      focus, the logo hub. Text on a teal fill is on-action (dark). */
@@ -45,12 +43,12 @@
   --color-highlight: #ffab00;
   --color-highlight-subtle: rgba(255, 171, 0, 0.12);
 
-  /* Text — near-white + neutral gray-on-dark scale */
-  --color-fg: #fafcfc;
-  --color-text-secondary: #4cd1d6;
-  --color-text-tertiary: #b5b4b4;
-  --color-text-muted: #8c8b8b;
-  --color-text-disabled: #5f5e5e;
+  /* Text — warm white, then quiet grays. Teal is not a text color. */
+  --color-fg: #f6f3ee;
+  --color-text-secondary: #c4bfb6;
+  --color-text-tertiary: #c4bfb6;
+  --color-text-muted: #9a958c;
+  --color-text-disabled: #6b675f;
 
   /* Borders — light hairlines at low alpha */
   --color-border: rgba(250, 252, 252, 0.14);
