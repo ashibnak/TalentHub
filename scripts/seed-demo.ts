@@ -50,7 +50,7 @@ type DemoUser = {
   bio: string;
   githubUsername?: string;
   onboardingChoice: 'builder' | 'domain_expert' | 'hybrid';
-  skills: { slug: string; level: number; verified?: boolean }[];
+  skills: { slug: string; level: number }[];
   domains: { slug: string; years?: number }[];
   projects: DemoProject[];
   badges: string[];
@@ -62,10 +62,10 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'مهندس یادگیری ماشین', githubUsername: 'sara-karimi', onboardingChoice: 'builder',
     bio: 'پنج سال سابقه در توسعه مدل‌های NLP فارسی و سیستم‌های توصیه‌گر. علاقه‌مند به تقاطع هوش مصنوعی و تجربه کاربری.',
     skills: [
-      { slug: 'python', level: 5, verified: true }, { slug: 'pytorch', level: 4, verified: true },
-      { slug: 'transformers', level: 4, verified: true }, { slug: 'nlp', level: 4, verified: true },
-      { slug: 'fastapi', level: 3 }, { slug: 'react', level: 3 }, { slug: 'claude-api', level: 4, verified: true },
-      { slug: 'docker', level: 2 }, { slug: 'postgresql', level: 2 }, { slug: 'hugging-face', level: 3, verified: true },
+      { slug: 'python', level: 5 }, { slug: 'pytorch', level: 4 },
+      { slug: 'transformers', level: 4 }, { slug: 'nlp', level: 4 },
+      { slug: 'fastapi', level: 3 }, { slug: 'react', level: 3 }, { slug: 'claude-api', level: 4 },
+      { slug: 'docker', level: 2 }, { slug: 'postgresql', level: 2 }, { slug: 'hugging-face', level: 3 },
     ],
     domains: [],
     projects: [
@@ -87,8 +87,8 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'مدیر محصول فنی', githubUsername: 'ali-m', onboardingChoice: 'hybrid',
     bio: 'مدیر محصول با پس‌زمینه‌ی مهندسی. بین تیم‌های فنی و کسب‌وکار پل می‌زنم و با ابزارهای AI پروتوتایپ می‌سازم.',
     skills: [
-      { slug: 'typescript', level: 4, verified: true }, { slug: 'react', level: 4, verified: true },
-      { slug: 'nextjs', level: 4, verified: true }, { slug: 'nodejs', level: 3 },
+      { slug: 'typescript', level: 4 }, { slug: 'react', level: 4 },
+      { slug: 'nextjs', level: 4 }, { slug: 'nodejs', level: 3 },
       { slug: 'postgresql', level: 3 }, { slug: 'cursor', level: 3 },
     ],
     domains: [{ slug: 'product', years: 8 }, { slug: 'marketing', years: 3 }],
@@ -102,8 +102,8 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'مهندس ارشد بک‌اند', githubUsername: 'reza-ahmadi', onboardingChoice: 'builder',
     bio: 'مهندس بک‌اند با تمرکز روی سیستم‌های توزیع‌شده و ابزارهای داخلی توسعه. عاشق Go و اتوماسیون.',
     skills: [
-      { slug: 'go', level: 5, verified: true }, { slug: 'python', level: 4, verified: true },
-      { slug: 'postgresql', level: 4, verified: true }, { slug: 'docker', level: 4, verified: true },
+      { slug: 'go', level: 5 }, { slug: 'python', level: 4 },
+      { slug: 'postgresql', level: 4 }, { slug: 'docker', level: 4 },
       { slug: 'kubernetes', level: 3 }, { slug: 'redis', level: 3 }, { slug: 'claude-code', level: 4 },
     ],
     domains: [],
@@ -118,8 +118,8 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'مهندس فرانت‌اند', githubUsername: 'nazanin-h', onboardingChoice: 'builder',
     bio: 'فرانت‌اند دولوپر با وسواس روی جزئیات تجربه‌ی کاربری و طراحی. با v0 و Cursor سریع پروتوتایپ می‌زنم.',
     skills: [
-      { slug: 'typescript', level: 5, verified: true }, { slug: 'react', level: 5, verified: true },
-      { slug: 'nextjs', level: 4, verified: true }, { slug: 'tailwind-css', level: 4, verified: true },
+      { slug: 'typescript', level: 5 }, { slug: 'react', level: 5 },
+      { slug: 'nextjs', level: 4 }, { slug: 'tailwind-css', level: 4 },
       { slug: 'v0', level: 4 }, { slug: 'cursor', level: 3 },
     ],
     domains: [],
@@ -133,9 +133,9 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'مهندس فول‌استک AI', githubUsername: 'kaveh-j', onboardingChoice: 'builder',
     bio: 'فول‌استک با تمرکز روی اپ‌های مبتنی بر LLM و RAG. از ایده تا محصول را خودم می‌سازم.',
     skills: [
-      { slug: 'typescript', level: 4, verified: true }, { slug: 'python', level: 4, verified: true },
-      { slug: 'rag', level: 5, verified: true }, { slug: 'langchain', level: 4, verified: true },
-      { slug: 'ai-agents', level: 4 }, { slug: 'nextjs', level: 3 }, { slug: 'vector-databases', level: 3, verified: true },
+      { slug: 'typescript', level: 4 }, { slug: 'python', level: 4 },
+      { slug: 'rag', level: 5 }, { slug: 'langchain', level: 4 },
+      { slug: 'ai-agents', level: 4 }, { slug: 'nextjs', level: 3 }, { slug: 'vector-databases', level: 3 },
     ],
     domains: [],
     projects: [
@@ -149,7 +149,7 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'دانشمند داده', githubUsername: 'shirin-m', onboardingChoice: 'builder',
     bio: 'دانشمند داده با تمرکز روی مدل‌های پیش‌بینی و تحلیل مالی. Python و نوت‌بوک، رفیق‌های همیشگی‌ام.',
     skills: [
-      { slug: 'python', level: 5, verified: true }, { slug: 'machine-learning', level: 4, verified: true },
+      { slug: 'python', level: 5 }, { slug: 'machine-learning', level: 4 },
       { slug: 'pytorch', level: 3 }, { slug: 'postgresql', level: 3 }, { slug: 'chatgpt', level: 3 },
     ],
     domains: [{ slug: 'finance', years: 4 }],
@@ -187,8 +187,8 @@ const DEMO_USERS: DemoUser[] = [
     roleTitle: 'رهبر رشد و بازاریابی', githubUsername: 'mahsa-t', onboardingChoice: 'hybrid',
     bio: 'بین بازاریابی و مهندسی رشد ایستاده‌ام. با ابزارهای بدون‌کد و کدنویسی سبک، کمپین‌ها را خودکار می‌کنم.',
     skills: [
-      { slug: 'python', level: 3 }, { slug: 'sql', level: 3, verified: true },
-      { slug: 'prompt-engineering', level: 4, verified: true }, { slug: 'chatgpt', level: 4 },
+      { slug: 'python', level: 3 }, { slug: 'sql', level: 3 },
+      { slug: 'prompt-engineering', level: 4 }, { slug: 'chatgpt', level: 4 },
     ],
     domains: [{ slug: 'marketing', years: 6 }],
     projects: [
@@ -200,7 +200,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'amir.tehrani@aigraph.local', username: 'amir-tehrani', name: 'امیر تهرانی',
     roleTitle: 'مهندس DevOps', githubUsername: 'amir-t', onboardingChoice: 'builder',
     bio: 'اتوماسیون زیرساخت و CI/CD. عاشق ساختن سیستم‌هایی که خودشان کار می‌کنند.',
-    skills: [{ slug: 'docker', level: 5, verified: true }, { slug: 'kubernetes', level: 4, verified: true }, { slug: 'terraform', level: 4, verified: true }, { slug: 'aws', level: 4 }, { slug: 'linux', level: 5, verified: true }, { slug: 'github-actions', level: 3 }],
+    skills: [{ slug: 'docker', level: 5 }, { slug: 'kubernetes', level: 4 }, { slug: 'terraform', level: 4 }, { slug: 'aws', level: 4 }, { slug: 'linux', level: 5 }, { slug: 'github-actions', level: 3 }],
     domains: [{ slug: 'operations', years: 6 }],
     projects: [
       { title: 'خط لوله‌ی استقرار خودکار', description: 'ابزار CI/CD سبک برای استقرار بی‌دردسر سرویس‌ها', stage: 'shipped', upvotes: 38, github: 'https://github.com/amir-t/autodeploy', aiTools: ['claude-code'] },
@@ -212,7 +212,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'leila.ahmadi@aigraph.local', username: 'leila-ahmadi', name: 'لیلا احمدی',
     roleTitle: 'پژوهشگر یادگیری ماشین', githubUsername: 'leila-a', onboardingChoice: 'builder',
     bio: 'پژوهش در بینایی ماشین و مدل‌های چندوجهی. از مقاله تا محصول.',
-    skills: [{ slug: 'python', level: 5, verified: true }, { slug: 'pytorch', level: 5, verified: true }, { slug: 'computer-vision', level: 4, verified: true }, { slug: 'deep-learning', level: 4, verified: true }, { slug: 'transformers', level: 3 }, { slug: 'hugging-face', level: 3, verified: true }],
+    skills: [{ slug: 'python', level: 5 }, { slug: 'pytorch', level: 5 }, { slug: 'computer-vision', level: 4 }, { slug: 'deep-learning', level: 4 }, { slug: 'transformers', level: 3 }, { slug: 'hugging-face', level: 3 }],
     domains: [],
     projects: [
       { title: 'تشخیص اسناد فارسی', description: 'مدل بینایی ماشین برای استخراج داده از اسناد اسکن‌شده', stage: 'building', upvotes: 56, github: 'https://github.com/leila-a/doc-vision', aiTools: ['hugging-face'] },
@@ -223,7 +223,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'hossein.rezaei@aigraph.local', username: 'hossein-rezaei', name: 'حسین رضایی',
     roleTitle: 'توسعه‌دهنده‌ی موبایل', githubUsername: 'hossein-r', onboardingChoice: 'builder',
     bio: 'اپ‌های موبایل با React Native و تجربه‌ی روان. طرفدار سادگی.',
-    skills: [{ slug: 'react-native', level: 5, verified: true }, { slug: 'typescript', level: 4, verified: true }, { slug: 'react', level: 4 }, { slug: 'nodejs', level: 3 }, { slug: 'cursor', level: 4 }],
+    skills: [{ slug: 'react-native', level: 5 }, { slug: 'typescript', level: 4 }, { slug: 'react', level: 4 }, { slug: 'nodejs', level: 3 }, { slug: 'cursor', level: 4 }],
     domains: [],
     projects: [{ title: 'اپ همیار مطالعه', description: 'اپلیکیشن موبایل برای برنامه‌ریزی و پیگیری مطالعه', stage: 'shipped', upvotes: 41, github: 'https://github.com/hossein-r/study-buddy', aiTools: ['cursor', 'v0'] }],
     badges: ['first-project'],
@@ -232,7 +232,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'parisa.karimi@aigraph.local', username: 'parisa-karimi', name: 'پریسا کریمی',
     roleTitle: 'طراح محصول', githubUsername: 'parisa-k', onboardingChoice: 'hybrid',
     bio: 'طراح محصول که با ابزارهای AI پروتوتایپ می‌سازد و به کد نزدیک است.',
-    skills: [{ slug: 'react', level: 3, verified: true }, { slug: 'tailwind-css', level: 4, verified: true }, { slug: 'v0', level: 5 }, { slug: 'prompt-engineering', level: 4, verified: true }, { slug: 'chatgpt', level: 4 }],
+    skills: [{ slug: 'react', level: 3 }, { slug: 'tailwind-css', level: 4 }, { slug: 'v0', level: 5 }, { slug: 'prompt-engineering', level: 4 }, { slug: 'chatgpt', level: 4 }],
     domains: [{ slug: 'product', years: 5 }],
     projects: [{ title: 'کیت طراحی سریع', description: 'مجموعه الگوهای رابط کاربری برای پروتوتایپ سریع با v0', stage: 'building', upvotes: 33, aiTools: ['v0', 'chatgpt'] }],
     badges: ['first-project'],
@@ -241,7 +241,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'arash.mohammadi@aigraph.local', username: 'arash-mohammadi', name: 'آرش محمدی',
     roleTitle: 'مهندس داده', githubUsername: 'arash-m', onboardingChoice: 'builder',
     bio: 'خطوط داده‌ی مقیاس‌پذیر و جریان‌های بلادرنگ. Kafka رفیق همیشگی‌ام است.',
-    skills: [{ slug: 'python', level: 4, verified: true }, { slug: 'kafka', level: 4, verified: true }, { slug: 'postgresql', level: 4, verified: true }, { slug: 'elasticsearch', level: 3 }, { slug: 'docker', level: 3 }],
+    skills: [{ slug: 'python', level: 4 }, { slug: 'kafka', level: 4 }, { slug: 'postgresql', level: 4 }, { slug: 'elasticsearch', level: 3 }, { slug: 'docker', level: 3 }],
     domains: [],
     projects: [{ title: 'موتور جریان رویداد', description: 'زیرساخت پردازش رویداد بلادرنگ برای تحلیل', stage: 'maintained', upvotes: 29, github: 'https://github.com/arash-m/event-stream' }],
     badges: ['first-project'],
@@ -258,7 +258,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'saeed.jafari@aigraph.local', username: 'saeed-jafari', name: 'سعید جعفری',
     roleTitle: 'مهندس امنیت', githubUsername: 'saeed-j', onboardingChoice: 'builder',
     bio: 'امنیت زیرساخت و تحلیل تهدید. کد امن، خواب راحت.',
-    skills: [{ slug: 'go', level: 4, verified: true }, { slug: 'linux', level: 5, verified: true }, { slug: 'docker', level: 4 }, { slug: 'python', level: 3, verified: true }],
+    skills: [{ slug: 'go', level: 4 }, { slug: 'linux', level: 5 }, { slug: 'docker', level: 4 }, { slug: 'python', level: 3 }],
     domains: [],
     projects: [{ title: 'اسکنر آسیب‌پذیری داخلی', description: 'ابزار خط فرمان برای بررسی خودکار پیکربندی‌های ناامن', stage: 'shipped', upvotes: 47, github: 'https://github.com/saeed-j/vuln-scan', aiTools: ['claude-code'] }],
     badges: ['first-project'],
@@ -267,7 +267,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'neda.moradi@aigraph.local', username: 'neda-moradi', name: 'ندا مرادی',
     roleTitle: 'مهندس فرانت‌اند', githubUsername: 'neda-m', onboardingChoice: 'builder',
     bio: 'فرانت‌اند با تمرکز روی دسترس‌پذیری و کارایی. RTL برایم مقدس است.',
-    skills: [{ slug: 'react', level: 5, verified: true }, { slug: 'nextjs', level: 4, verified: true }, { slug: 'typescript', level: 4, verified: true }, { slug: 'tailwind-css', level: 5, verified: true }, { slug: 'v0', level: 3 }],
+    skills: [{ slug: 'react', level: 5 }, { slug: 'nextjs', level: 4 }, { slug: 'typescript', level: 4 }, { slug: 'tailwind-css', level: 5 }, { slug: 'v0', level: 3 }],
     domains: [],
     projects: [{ title: 'داشبورد تحلیل بلادرنگ', description: 'رابط کاربری سریع و دسترس‌پذیر برای نمایش داده‌های زنده', stage: 'building', upvotes: 36, github: 'https://github.com/neda-m/live-dashboard', aiTools: ['cursor'] }],
     badges: ['first-project'],
@@ -276,7 +276,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'kian.nikoo@aigraph.local', username: 'kian-nikoo', name: 'کیان نیکو',
     roleTitle: 'سازنده‌ی عامل‌های AI', githubUsername: 'kian-n', onboardingChoice: 'builder',
     bio: 'عامل‌های خودمختار و سیستم‌های RAG. از ایده تا استقرار.',
-    skills: [{ slug: 'python', level: 4, verified: true }, { slug: 'ai-agents', level: 5, verified: true }, { slug: 'langchain', level: 4, verified: true }, { slug: 'rag', level: 4, verified: true }, { slug: 'claude-api', level: 4, verified: true }, { slug: 'vector-databases', level: 3 }],
+    skills: [{ slug: 'python', level: 4 }, { slug: 'ai-agents', level: 5 }, { slug: 'langchain', level: 4 }, { slug: 'rag', level: 4 }, { slug: 'claude-api', level: 4 }, { slug: 'vector-databases', level: 3 }],
     domains: [],
     projects: [
       { title: 'عامل پژوهش خودکار', description: 'عاملی که موضوع را می‌گیرد و گزارش پژوهشی مستند تولید می‌کند', stage: 'building', upvotes: 72, github: 'https://github.com/kian-n/research-agent', aiTools: ['claude-code', 'langchain'] },
@@ -288,7 +288,7 @@ const DEMO_USERS: DemoUser[] = [
     email: 'babak.sadeghi@aigraph.local', username: 'babak-sadeghi', name: 'بابک صادقی',
     roleTitle: 'مهندس بک‌اند', githubUsername: 'babak-s', onboardingChoice: 'builder',
     bio: 'APIهای تمیز و سیستم‌های قابل‌اتکا با Node و Postgres.',
-    skills: [{ slug: 'nodejs', level: 5, verified: true }, { slug: 'nestjs', level: 4, verified: true }, { slug: 'typescript', level: 4, verified: true }, { slug: 'postgresql', level: 4, verified: true }, { slug: 'redis', level: 3 }, { slug: 'rest-api', level: 4 }],
+    skills: [{ slug: 'nodejs', level: 5 }, { slug: 'nestjs', level: 4 }, { slug: 'typescript', level: 4 }, { slug: 'postgresql', level: 4 }, { slug: 'redis', level: 3 }, { slug: 'rest-api', level: 4 }],
     domains: [],
     projects: [{ title: 'API مدیریت اشتراک', description: 'سرویس مدیریت اشتراک و صورتحساب با معماری تمیز', stage: 'maintained', upvotes: 24, github: 'https://github.com/babak-s/subs-api' }],
     badges: ['first-project'],
@@ -340,11 +340,11 @@ async function main() {
           du.skills.map((s) => {
             const skillId = skillIdBySlug.get(s.slug);
             if (!skillId) throw new Error(`unknown skill slug: ${s.slug}`);
-            return {
-              userId: user.id, skillId, claimedLevel: s.level, verified: !!s.verified,
-              verificationSource: s.verified ? ('ai_repo_analysis' as const) : null,
-              verifiedAt: s.verified ? new Date() : null,
-            };
+            // Seeded skills are always CLAIMED, never verified. Verification is
+            // earned by a real run of the AI pipeline (PROJECT_PLAN §3) — seeding
+            // `verified: true` made the landing page advertise a verified-skill
+            // count with no pipeline behind it.
+            return { userId: user.id, skillId, claimedLevel: s.level, verified: false };
           }),
         )
         .onConflictDoNothing();

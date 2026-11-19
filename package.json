@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "drizzle-kit migrate && next start",
     "lint": "next lint",
-    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts lib/invitations/rules.test.ts lib/onboarding/rules.test.ts",
+    "test": "tsx --test lib/users/role-badge.test.ts lib/leaderboard/scoring.test.ts lib/submissions/rules.test.ts lib/upvotes/rules.test.ts lib/auth/password.test.ts lib/auth/rate-limit.test.ts lib/auth/session-token.test.ts lib/projects/rules.test.ts lib/profile/rules.test.ts lib/auth/rules.test.ts lib/invitations/rules.test.ts lib/onboarding/rules.test.ts lib/ai/gateway.test.ts lib/verification/rules.test.ts lib/verification/resolve.test.ts lib/ideas/rules.test.ts lib/spotlight/rules.test.ts lib/tips/rules.test.ts lib/home/rules.test.ts lib/lessons/rules.test.ts lib/recommendations/rules.test.ts",
     "test:db": "tsx --test lib/db/integration.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -17,7 +17,11 @@
     "db:seed:demo": "tsx scripts/seed-demo.ts",
     "db:seed:leaderboard": "tsx scripts/seed-leaderboard-demo.ts",
     "admin:set": "tsx scripts/set-admin.ts",
-    "invite:new": "tsx scripts/create-invite.ts"
+    "invite:new": "tsx scripts/create-invite.ts",
+    "db:seed:tips": "tsx scripts/seed-tips.ts",
+    "db:seed:home": "tsx scripts/seed-home-demo.ts",
+    "db:seed:lessons": "tsx scripts/seed-lessons.ts",
+    "lessons:check": "tsx scripts/check-lesson-links.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

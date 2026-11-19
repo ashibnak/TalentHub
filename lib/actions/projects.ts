@@ -7,8 +7,23 @@ import { getDb } from '@/lib/db';
 import { projects, projectSkills, projectAiTools, skills } from '@/lib/db/schema';
 import { requireUser } from '@/lib/auth/session';
 import { parseProjectForm } from '@/lib/projects/rules';
+import { startProjectVerification } from '@/lib/verification/run';
 
 type Db = ReturnType<typeof getDb>;
+
+/**
+ * Publishing a project with a GitHub link and at least one claimed skill kicks
+ * off AI skill verification (PROJECT_PLAN §3). Fire-and-forget by design — a
+ * publish must never fail because the verification pipeline did, so every error
+ * is swallowed here and recorded on the run row instead.
+ */
+async function triggerVerification(projectId: string): Promise<void> {
+  try {
+    await startProjectVerification(projectId);
+  } catch (err) {
+    console.error('[projects.publish] could not start verification', err);
+  }
+}
 
 /** Resolve submitted skill SLUGS → ids (validates existence; unknown slugs dropped). */
 async function resolveSkillIds(db: Db, slugs: string[]): Promise<string[]> {
@@ -47,6 +62,8 @@ export async function createProjectAction(formData: FormData) {
       await tx.insert(projectAiTools).values(parsed.toolSlugs.map((toolSlug) => ({ projectId: row.id, toolSlug })));
     return row.id;
   });
+
+  if (parsed.publish) await triggerVerification(newId);
 
   revalidatePath('/projects');
   revalidatePath('/settings');
@@ -93,6 +110,8 @@ export async function updateProjectAction(formData: FormData) {
       await tx.insert(projectAiTools).values(parsed.toolSlugs.map((toolSlug) => ({ projectId, toolSlug })));
   });
 
+  if (parsed.publish) await triggerVerification(projectId);
+
   revalidatePath('/projects');
   revalidatePath(`/projects/${projectId}`);
   revalidatePath('/settings');
@@ -122,6 +141,9 @@ export async function setProjectStatusAction(formData: FormData) {
     .update(projects)
     .set({ status: status as 'draft' | 'published', updatedAt: new Date() })
     .where(and(eq(projects.id, projectId), eq(projects.userId, user.id)));
+
+  if (status === 'published') await triggerVerification(projectId);
+
   revalidatePath('/projects');
   revalidatePath(`/projects/${projectId}`);
   revalidatePath('/settings');

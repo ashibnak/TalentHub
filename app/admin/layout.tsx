@@ -14,6 +14,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="text-body-sm font-medium text-fg">مدیریت</span>
           <Link href="/admin" className="text-body-sm text-text-tertiary transition-colors hover:text-fg">خانه</Link>
           <Link href="/admin/users" className="text-body-sm text-text-tertiary transition-colors hover:text-fg">کاربران</Link>
+          <Link href="/admin/verifications" className="text-body-sm text-text-tertiary transition-colors hover:text-fg">تأیید مهارت‌ها</Link>
           <Link href="/dashboard" className="text-body-sm text-text-tertiary transition-colors hover:text-fg">داشبورد</Link>
           <div className="flex-1" />
           <span className="text-body-sm text-text-muted">{admin.name}</span>

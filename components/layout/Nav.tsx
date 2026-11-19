@@ -9,6 +9,7 @@ const LINKS = [
   { href: '/people', label: 'افراد' },
   { href: '/projects', label: 'پروژه‌ها' },
   { href: '/challenges', label: 'چالش‌ها' },
+  { href: '/ideas', label: 'ایده‌ها' },
   { href: '/leaderboard', label: 'برترین‌ها' },
 ];
 
