@@ -42,7 +42,7 @@ export default async function IdeasPage({ searchParams }: { searchParams: Promis
         )}
       </div>
       <p className="text-body-sm text-text-tertiary mb-6 leading-relaxed">
-        راه‌حل‌های پیشنهادی که هنوز ساخته نشده‌اند — سهمی که بدون کدنویسی هم می‌شود گذاشت.
+        ایده‌هایی که هنوز به پروژه تبدیل نشده‌اند. برای اثر گذاشتن، لازم نیست کد بزنی.
       </p>
 
       <IdeaChallengeFilter challenges={challenges} />
@@ -60,8 +60,8 @@ export default async function IdeasPage({ searchParams }: { searchParams: Promis
       ) : (
         <EmptyState
           icon={Lightbulb}
-          title={challengeSlug ? 'برای این چالش هنوز ایده‌ای تأیید نشده' : 'هنوز ایده‌ای تأیید نشده'}
-          hint={challengeSlug ? 'فیلتر را بردار تا همه‌ی ایده‌ها را ببینی' : 'اولین نفری باش که ایده‌ای ثبت می‌کند.'}
+          title={challengeSlug ? 'برای این چالش هنوز ایده‌ی تأییدشده‌ای نیست' : 'هنوز ایده‌ی تأییدشده‌ای نیست'}
+          hint={challengeSlug ? 'فیلتر را بردار تا همه‌ی ایده‌ها را ببینی.' : 'اگر مسئله‌ای از کارت داری، می‌توانی اولین ایده را ثبت کنی.'}
         />
       )}
     </main>

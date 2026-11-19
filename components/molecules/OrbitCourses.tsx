@@ -15,25 +15,25 @@ export function OrbitCourses({
   const openedSet = new Set(opened);
   return (
     <section className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-      <h2 className="text-body-sm text-text-tertiary mb-1">مسیر یادگیری آزمایشگاه</h2>
-      <p className="mb-4 text-body-sm text-text-muted">ویدیو روی سایت درس می‌ماند. اینجا فقط باز شدنش ثبت می‌شود.</p>
+      <h2 className="text-body-sm text-text-tertiary mb-1">دوره‌های پیشنهادی</h2>
+      <p className="mb-4 text-body-sm text-text-muted">ویدیوها سر جای خودشان می‌مانند. با باز کردن هر دوره، برای خودت علامت می‌گذاری که سراغش رفته‌ای.</p>
       <ul className="flex flex-col gap-3">
         {ORBIT_COURSES.map((course) => (
           <li key={course.key} className="flex flex-wrap items-center justify-between gap-3">
             <span className="text-body text-fg">
               {course.title}
-              {openedSet.has(course.key) && <span className="mr-2 text-body-sm text-success">باز شده</span>}
+              {openedSet.has(course.key) && <span className="mr-2 text-body-sm text-success">باز کردی</span>}
             </span>
             {available.has(course.lessonSlug) ? (
               <form action={openOrbitCourseAction}>
                 <input type="hidden" name="ideaId" value={ideaId} />
                 <input type="hidden" name="courseKey" value={course.key} />
                 <button type="submit" className={btnSecondary}>
-                  باز کردن درس
+                  مشاهده‌ی دوره
                 </button>
               </form>
             ) : (
-              <span className="text-body-sm text-text-muted">درس هنوز در فهرست نیست</span>
+              <span className="text-body-sm text-text-muted">لینک این دوره هنوز آماده نیست</span>
             )}
           </li>
         ))}

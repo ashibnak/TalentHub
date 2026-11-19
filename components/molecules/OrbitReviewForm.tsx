@@ -3,12 +3,12 @@ import { nextOrbitStage, ORBIT_STAGE_LABEL, type OrbitStage } from '@/lib/ideas/
 import { btnPrimary, btnSecondary, inputClass, labelClass } from '@/lib/ui';
 
 const SCORES: { name: string; label: string }[] = [
-  { name: 'problem', label: 'اهمیت مسئله' },
-  { name: 'agentFit', label: 'تناسب با عامل هوش مصنوعی' },
-  { name: 'prototype', label: 'امکان ساخت نمونه' },
-  { name: 'security', label: 'امنیت داده' },
-  { name: 'measurable', label: 'قابل سنجش بودن' },
-  { name: 'implement', label: 'امکان پیاده‌سازی' },
+  { name: 'problem', label: 'مسئله چقدر مهم است؟' },
+  { name: 'agentFit', label: 'چقدر به هوش مصنوعی می‌خورد؟' },
+  { name: 'prototype', label: 'می‌شود نمونه‌اش را ساخت؟' },
+  { name: 'security', label: 'داده امن می‌ماند؟' },
+  { name: 'measurable', label: 'نتیجه را می‌شود سنجید؟' },
+  { name: 'implement', label: 'در عمل شدنی است؟' },
 ];
 
 /**
@@ -20,17 +20,17 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
 
   return (
     <form action={reviewOrbitAction} className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-      <h2 className="text-h3 mb-1">بررسی Orbit</h2>
+      <h2 className="text-h3 mb-1">بررسی ایده</h2>
       <p className="mb-4 text-body-sm text-text-tertiary">
-        مرحله‌ی فعلی: {ORBIT_STAGE_LABEL[stage]}
-        {upcoming ? ` · مرحله‌ی بعد: ${ORBIT_STAGE_LABEL[upcoming]}` : ' · این آخرین مرحله است.'}
+        این ایده الان در مرحله‌ی {ORBIT_STAGE_LABEL[stage]} است.
+        {upcoming ? ` مرحله‌ی بعد ${ORBIT_STAGE_LABEL[upcoming]} است.` : ' این آخرین مرحله است.'}
       </p>
       <input type="hidden" name="ideaId" value={ideaId} />
       {upcoming && <input type="hidden" name="to" value={upcoming} />}
 
       {stage === 'screening' && (
         <fieldset className="mb-4 grid grid-cols-2 gap-3">
-          <legend className={`${labelClass} col-span-2`}>امتیاز ۱ تا ۵</legend>
+          <legend className={`${labelClass} col-span-2`}>از ۱ تا ۵ امتیاز بده. ۵ یعنی این بخش قوی است.</legend>
           {SCORES.map((score) => (
             <label key={score.name} className="text-body-sm text-text-tertiary">
               {score.label}
@@ -49,13 +49,13 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
 
       {stage === 'clinic' && (
         <fieldset className="mb-4 flex flex-col gap-3">
-          <legend className={labelClass}>کارگاه ارائه</legend>
+          <legend className={labelClass}>جلسه‌ی آماده‌سازی</legend>
           <label className="text-body-sm text-text-tertiary">
-            زمان کارگاه
+            زمان جلسه
             <input name="clinicAt" type="datetime-local" required className={`mt-1 w-full ${inputClass}`} />
           </label>
           <label className="text-body-sm text-text-tertiary">
-            یادداشت کارگاه
+            چه بازخوردی دادی؟
             <textarea name="clinicNote" required minLength={10} rows={3} className={`mt-1 w-full ${inputClass}`} />
           </label>
         </fieldset>
@@ -63,20 +63,20 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
 
       {stage === 'pitch' && (
         <label className={`${labelClass} mb-4 block`}>
-          لینک ارائه‌ی پنج‌اسلایدی
+          لینک ارائه، حداکثر پنج اسلاید
           <input name="pitchUrl" type="url" required dir="ltr" placeholder="https://" className={`mt-1 w-full ${inputClass}`} />
         </label>
       )}
 
       {stage === 'demo' && (
         <fieldset className="mb-4 grid grid-cols-2 gap-3">
-          <legend className={`${labelClass} col-span-2`}>داوری روز ارائه، ۱ تا ۵</legend>
+          <legend className={`${labelClass} col-span-2`}>نمایش کار را از ۱ تا ۵ بسنج</legend>
           {(
             [
-              ['function', 'کارکرد'],
-              ['value', 'ارزش کسب‌وکار'],
-              ['security', 'امنیت'],
-              ['readiness', 'آمادگی پایلوت'],
+              ['function', 'درست کار می‌کند؟'],
+              ['value', 'به درد کار می‌خورد؟'],
+              ['security', 'داده امن می‌ماند؟'],
+              ['readiness', 'برای پایلوت آماده است؟'],
             ] as const
           ).map(([name, label]) => (
             <label key={name} className="text-body-sm text-text-tertiary">
@@ -89,14 +89,14 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
 
       {(stage === 'demo' || stage === 'pilot') && (
         <fieldset className="mb-4 flex flex-col gap-3">
-          <legend className={labelClass}>منشور پایلوت</legend>
+          <legend className={labelClass}>برنامه‌ی پایلوت</legend>
           {(
             [
               ['pilotGoal', 'هدف'],
               ['pilotScope', 'محدوده'],
-              ['pilotUsers', 'کاربران'],
-              ['pilotMetrics', 'شاخص‌ها'],
-              ['pilotRisks', 'ریسک‌ها'],
+              ['pilotUsers', 'چه کسانی استفاده می‌کنند؟'],
+              ['pilotMetrics', 'با چه نشانه‌ای می‌سنجیم؟'],
+              ['pilotRisks', 'چه چیزی ممکن است درست پیش نرود؟'],
             ] as const
           ).map(([name, label]) => (
             <label key={name} className="text-body-sm text-text-tertiary">
@@ -107,33 +107,33 @@ export function OrbitReviewForm({ ideaId, stage }: { ideaId: string; stage: Orbi
           <label className="text-body-sm text-text-tertiary">
             ادامه یا توقف
             <select name="pilotDecision" className={`mt-1 w-full ${inputClass}`} defaultValue="">
-              <option value="">انتخاب نشده</option>
-              <option value="continue">ادامه</option>
-              <option value="stop">توقف</option>
+              <option value="">هنوز تصمیم گرفته نشده</option>
+              <option value="continue">ادامه می‌دهیم</option>
+              <option value="stop">متوقف می‌کنیم</option>
             </select>
           </label>
         </fieldset>
       )}
 
       <label className={`${labelClass} mb-4 block`}>
-        یادداشت برای صاحب ایده
+        یادداشت برای نویسنده‌ی ایده
         <textarea name="note" required minLength={10} maxLength={1000} rows={3} className={`mt-1 w-full ${inputClass}`} />
       </label>
 
       <div className="flex flex-wrap gap-3">
         {upcoming && (
           <button type="submit" name="decision" value="advance" className={btnPrimary}>
-            رفتن به {ORBIT_STAGE_LABEL[upcoming]}
+            انتقال به {ORBIT_STAGE_LABEL[upcoming]}
           </button>
         )}
         <button type="submit" name="decision" value="needs_work" className={btnSecondary}>
-          بازگرداندن برای اصلاح
+          برگردان برای اصلاح
         </button>
         <button type="submit" name="decision" value="approve" className={btnSecondary}>
           تأیید
         </button>
         <button type="submit" name="decision" value="reject" className="text-body-sm text-text-muted hover:text-state-error">
-          رد
+          رد کردن
         </button>
       </div>
     </form>

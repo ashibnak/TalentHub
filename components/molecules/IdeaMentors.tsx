@@ -18,7 +18,7 @@ export function IdeaMentors({
     <section className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
       <h2 className="text-body-sm text-text-tertiary mb-3">منتورها</h2>
       {mentors.length === 0 ? (
-        <p className="text-body-sm text-text-muted">هنوز منتوری به این ایده وصل نشده است.</p>
+        <p className="text-body-sm text-text-muted">اگر کسی در محصول، داده یا امنیت کنارت است، این‌جا اضافه‌اش کن.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {mentors.map((mentor) => (
@@ -43,7 +43,7 @@ export function IdeaMentors({
       {canManage && (
         <form action={assignIdeaMentorAction} className="mt-4 flex flex-wrap items-end gap-3">
           <label className={labelClass}>
-            نام کاربری
+            نام کاربری منتور
             <input name="username" required dir="ltr" autoComplete="off" className={`mt-1 ${inputClass}`} />
           </label>
           <label className={labelClass}>
@@ -58,7 +58,7 @@ export function IdeaMentors({
           </label>
           <input type="hidden" name="ideaId" value={ideaId} />
           <button type="submit" className={btnSecondary}>
-            افزودن منتور
+            منتور را اضافه کن
           </button>
         </form>
       )}

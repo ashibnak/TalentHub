@@ -16,9 +16,9 @@ export default async function AdminIdeasPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <h1 className="text-h1 mb-2">Orbit</h1>
-      <p className="mb-8 text-body-sm text-text-tertiary">ایده‌هایی که در مسیر ساخت قرار دارند. ردشده‌ها و آن‌هایی که به گام بعد رسیده‌اند اینجا نیستند.</p>
+      <p className="mb-8 text-body-sm text-text-tertiary">ایده‌هایی که در مسیر بررسی هستند. ردشده‌ها و آن‌هایی که به آخر مسیر رسیده‌اند این‌جا نیستند.</p>
       {queue.length === 0 ? (
-        <p className="text-body-sm text-text-muted">هنوز ایده‌ای وارد Orbit نشده است.</p>
+        <p className="text-body-sm text-text-muted">فعلاً ایده‌ای در این فهرست نیست.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {queue.map((idea) => (

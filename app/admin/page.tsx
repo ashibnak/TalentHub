@@ -19,7 +19,7 @@ const cards = [
     icon: ShieldCheck,
   },
   { href: '/dashboard', title: 'داشبورد سازمان', desc: 'متریک‌های کل سازمان', icon: LayoutDashboard },
-  { href: '/admin/ideas', title: 'Orbit', desc: 'مرحله‌ی ایده‌ها، ارزیابی و پایلوت', icon: Sparkles },
+  { href: '/admin/ideas', title: 'Orbit', desc: 'ایده‌ها را مرحله‌به‌مرحله بررسی کن', icon: Sparkles },
 ];
 
 const SPOTLIGHT_ERRORS: Record<string, string> = {

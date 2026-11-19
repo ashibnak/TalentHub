@@ -28,8 +28,7 @@ export default async function NewIdeaPage() {
       </Link>
       <h1 className="text-h1 mb-1 mt-3">ایده‌ی جدید</h1>
       <p className="text-body-sm text-text-tertiary mb-8 leading-relaxed">
-        لازم نیست برنامه‌نویس باشی. یک مسئله‌ی واقعی از کار روزمره‌ات را توضیح بده و بگو چطور می‌شود بهترش کرد — پنج
-        فیلد، نه بیشتر.
+        لازم نیست برنامه‌نویس باشی. یک مسئله‌ی واقعی از کارت را بنویس و بگو چطور می‌شود بهترش کرد. ایده می‌تواند مال یک نفر باشد.
       </p>
 
       <section className="rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">

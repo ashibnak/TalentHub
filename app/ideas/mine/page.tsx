@@ -33,7 +33,7 @@ export default async function MyIdeasPage({ searchParams }: { searchParams: Prom
         </Link>
       </div>
       <p className="text-body-sm text-text-tertiary mb-6 leading-relaxed">
-        پیش‌نویس‌ها و ایده‌های ثبت‌شده‌ات، همراه با وضعیت بررسی.
+        پیش‌نویس‌ها و ایده‌هایی که برای بررسی فرستاده‌ای، با وضعیت هر کدام.
       </p>
 
       {sp.deleted && <p className="mb-6 text-body-sm text-success">پیش‌نویس حذف شد.</p>}
@@ -50,8 +50,8 @@ export default async function MyIdeasPage({ searchParams }: { searchParams: Prom
       ) : (
         <EmptyState
           icon={Lightbulb}
-          title="هنوز ایده‌ای ثبت نکرده‌ای"
-          hint="یک مسئله‌ی واقعی از کار روزمره‌ات را بنویس — پنج فیلد، بدون نیاز به کدنویسی."
+          title="هنوز ایده‌ای این‌جا نیست"
+          hint="یک مسئله از کار روزمره‌ات کافی است. لازم نیست از قبل راه‌حل فنی داشته باشی."
         />
       )}
     </main>

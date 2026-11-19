@@ -16,27 +16,27 @@ export function ManagerPitch({
 }) {
   return (
     <section className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-      <h2 className="text-body-sm text-text-tertiary mb-2">ارائه به مدیران</h2>
+      <h2 className="text-body-sm text-text-tertiary mb-2">جلسه‌ی ارائه</h2>
       {at && audience ? (
         <p className="text-body text-fg">
-          {formatFaDate(at)} · {audience}
+          {formatFaDate(at)}، برای {audience}
         </p>
       ) : (
-        <p className="text-body-sm text-text-muted">هنوز ثبت نشده که این ایده برای چه کسانی ارائه شده است.</p>
+        <p className="text-body-sm text-text-muted">اگر این ایده را برای مدیران گفته‌ای، تاریخ و نام جمع را این‌جا بنویس.</p>
       )}
       {canEdit && (
         <form action={saveManagerPitchAction} className="mt-4 flex flex-wrap items-end gap-3">
           <label className={labelClass}>
-            زمان
+            زمان ارائه
             <input name="managerPitchAt" type="datetime-local" required className={`mt-1 ${inputClass}`} />
           </label>
           <label className={labelClass}>
-            شنوندگان
+            برای چه جمعی
             <input name="managerPitchTo" required minLength={2} maxLength={200} className={`mt-1 ${inputClass}`} />
           </label>
           <input type="hidden" name="ideaId" value={ideaId} />
           <button type="submit" className={btnSecondary}>
-            ثبت ارائه
+            ثبت جلسه
           </button>
         </form>
       )}

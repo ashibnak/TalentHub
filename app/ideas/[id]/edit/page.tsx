@@ -35,7 +35,7 @@ export default async function EditIdeaPage({ params }: { params: Promise<{ id: s
         → بازگشت به ایده
       </Link>
       <h1 className="text-h1 mb-1 mt-3">ویرایش ایده</h1>
-      <p className="text-body-sm text-text-tertiary mb-8">تا پیش از تصمیم نهایی، می‌توانی هر بخش را عوض کنی.</p>
+      <p className="text-body-sm text-text-tertiary mb-8">تا وقتی تصمیم نهایی گرفته نشده، می‌توانی هر بخش را روشن‌تر کنی.</p>
 
       <section className="rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
         <IdeaForm

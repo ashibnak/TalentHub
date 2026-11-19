@@ -11,14 +11,14 @@ export const ORBIT_STAGES = ['signal', 'screening', 'clinic', 'pitch', 'lab', 'd
 export type OrbitStage = (typeof ORBIT_STAGES)[number];
 
 export const ORBIT_STAGE_LABEL: Record<OrbitStage, string> = {
-  signal: 'ثبت مسئله',
-  screening: 'ارزیابی',
-  clinic: 'کارگاه ارائه',
-  pitch: 'ارائه و انتخاب',
-  lab: 'آزمایشگاه',
-  demo: 'روز ارائه',
+  signal: 'ثبت ایده',
+  screening: 'بررسی',
+  clinic: 'آماده‌سازی',
+  pitch: 'ارائه',
+  lab: 'ساخت',
+  demo: 'نمایش',
   pilot: 'پایلوت',
-  next: 'گام بعد',
+  next: 'قدم بعد',
 };
 
 export type OrbitScores = {

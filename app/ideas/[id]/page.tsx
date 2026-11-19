@@ -29,28 +29,28 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
-  not_found: 'این ایده پیدا نشد.',
-  not_owner: 'این ایده متعلق به تو نیست.',
-  not_draft: 'این ایده قبلاً ثبت شده است.',
-  locked: 'درباره‌ی این ایده تصمیم نهایی گرفته شده است.',
-  internal: 'مشکلی پیش آمد. دوباره تلاش کن.',
-  note: 'یادداشت بررسی باید دست‌کم ده کاراکتر باشد.',
-  not_next: 'فقط می‌توان به مرحله‌ی بعدی رفت.',
-  scores_required: 'هر شش امتیاز ارزیابی باید بین ۱ و ۵ باشد.',
-  pitch_required: 'لینک ارائه باید یک نشانی معتبر باشد.',
-  clinic_required: 'برای خروج از کارگاه، زمان و یادداشت کارگاه لازم است.',
-  demo_required: 'برای ورود به پایلوت، یک پروژه‌ی منتشرشده‌ی تیم را وصل کن.',
-  demo_scores_required: 'داوری روز ارائه باید چهار امتیاز بین ۱ و ۵ داشته باشد.',
-  pitch_audience: 'زمان ارائه و نام شنوندگان را وارد کن.',
-  not_at_next: 'ارائه به مدیران فقط وقتی ثبت می‌شود که ایده به گام بعد رسیده باشد.',
-  mentor: 'نام کاربری و نقش منتور لازم است.',
-  charter_required: 'منشور پایلوت را کامل کن.',
-  username: 'نام کاربری را وارد کن.',
-  self: 'نمی‌توانی خودت را به تیم اضافه کنی.',
-  project: 'این پروژه منتشرشده و متعلق به تیم نیست.',
-  continue_required: 'ورود به گام بعد فقط با تصمیم «ادامه» ممکن است.',
-  not_started: 'این ایده هنوز وارد Orbit نشده است.',
-  invalid: 'این تصمیم معتبر نیست.',
+  not_found: 'این ایده را پیدا نکردیم.',
+  not_owner: 'فقط نویسنده‌ی ایده می‌تواند این کار را بکند.',
+  not_draft: 'این ایده قبلاً برای بررسی فرستاده شده.',
+  locked: 'روی این ایده تصمیم نهایی گرفته شده.',
+  internal: 'انجام نشد. لطفاً یک بار دیگر امتحان کن.',
+  note: 'یادداشت را کمی بلندتر بنویس تا برای نویسنده مفید باشد.',
+  not_next: 'فقط می‌شود به مرحله‌ی بعدی رفت، نه چند مرحله با هم.',
+  scores_required: 'هر شش امتیاز باید عددی بین ۱ و ۵ باشد.',
+  pitch_required: 'لینک ارائه باید یک نشانی درست باشد.',
+  clinic_required: 'برای رفتن به مرحله‌ی بعد، زمان جلسه و بازخورد را بنویس.',
+  demo_required: 'اول یک پروژه‌ی منتشرشده از نویسنده یا تیم را به ایده وصل کن.',
+  demo_scores_required: 'چهار امتیاز نمایش کار را بین ۱ و ۵ بده.',
+  pitch_audience: 'تاریخ جلسه و نام جمع را بنویس.',
+  not_at_next: 'جلسه‌ی ارائه را وقتی ثبت کن که ایده به قدم بعد رسیده باشد.',
+  mentor: 'نام کاربری و نقش منتور را با هم وارد کن.',
+  charter_required: 'برنامه‌ی پایلوت هنوز کامل نیست.',
+  username: 'نام کاربری را بنویس.',
+  self: 'خودت از قبل نویسنده‌ی ایده‌ای. لازم نیست دوباره اضافه شوی.',
+  project: 'این پروژه یا منتشر نشده، یا مال نویسنده و تیم نیست.',
+  continue_required: 'برای رفتن به قدم بعد، تصمیم باید «ادامه می‌دهیم» باشد.',
+  not_started: 'این ایده هنوز وارد مسیر بررسی نشده.',
+  invalid: 'این تصمیم را نشناختیم.',
 };
 
 /** One labelled block of the idea. Section titles are Persian (design system §7.5). */
@@ -147,15 +147,15 @@ export default async function IdeaDetailPage({
       {sp.saved && <p className="mb-6 text-body-sm text-success">ایده ذخیره شد.</p>}
       {sp.submitted && (
         <p className="mb-6 text-body-sm text-success">
-          ایده ثبت شد و در نوبت بررسی قرار گرفت. تا وقتی تصمیم نهایی گرفته نشده، می‌توانی ویرایشش کنی.
+          ایده‌ات برای بررسی فرستاده شد. تا وقتی تصمیم نهایی گرفته نشده، می‌توانی ویرایشش کنی.
         </p>
       )}
-      {sp.orbit && <p className="mb-6 text-body-sm text-success">تصمیم Orbit ثبت شد.</p>}
+      {sp.orbit && <p className="mb-6 text-body-sm text-success">بررسی ثبت شد.</p>}
       {sp.team && <p className="mb-6 text-body-sm text-success">تیم به‌روز شد.</p>}
       {sp.mentor && <p className="mb-6 text-body-sm text-success">منتورها به‌روز شدند.</p>}
-      {sp.pitch && <p className="mb-6 text-body-sm text-success">ارائه به مدیران ثبت شد.</p>}
-      {sp.demo && <p className="mb-6 text-body-sm text-success">پروژه‌ی دمو ذخیره شد.</p>}
-      {sp.courseError && <p className="mb-6 text-body-sm text-state-error">این درس در فهرست موجود نیست.</p>}
+      {sp.pitch && <p className="mb-6 text-body-sm text-success">جلسه‌ی ارائه ثبت شد.</p>}
+      {sp.demo && <p className="mb-6 text-body-sm text-success">پروژه به ایده وصل شد.</p>}
+      {sp.courseError && <p className="mb-6 text-body-sm text-state-error">لینک این دوره هنوز آماده نیست.</p>}
       {(sp.error || sp.orbitError || sp.teamError) && (
         <p className="mb-6 text-body-sm text-state-error">
           {ERROR_MESSAGES[sp.orbitError ?? sp.teamError ?? sp.error ?? ''] ?? ERROR_MESSAGES.internal}
@@ -172,44 +172,44 @@ export default async function IdeaDetailPage({
         <Section title="مسئله چیست؟" body={idea.problemStatement} />
         <Section title="راه‌حل پیشنهادی" body={idea.proposedSolution} />
         <Section title="چه کسانی استفاده می‌کنند؟" body={idea.targetUsers} />
-        <Section title="از کجا بفهمیم موفق شده؟" body={idea.successCriteria} />
+        <Section title="از کجا می‌فهمیم جواب داده؟" body={idea.successCriteria} />
         {idea.currentWorkaround && <Section title="الان این کار چطور انجام می‌شود؟" body={idea.currentWorkaround} />}
-        {idea.whyAgent && <Section title="چرا به یک عامل هوش مصنوعی نیاز است؟" body={idea.whyAgent} />}
-        {idea.dataNeeded && <Section title="چه داده‌ای لازم است؟" body={idea.dataNeeded} />}
-        {idea.teamCapability && <Section title="تیم چه توانی دارد؟" body={idea.teamCapability} />}
-        {idea.feasibilityNote && <Section title="نکته‌ی اجرایی" body={idea.feasibilityNote} />}
-        {idea.clinicNote && <Section title="یادداشت کارگاه" body={idea.clinicNote} />}
+        {idea.whyAgent && <Section title="چرا هوش مصنوعی؟" body={idea.whyAgent} />}
+        {idea.dataNeeded && <Section title="چه اطلاعات یا دسترسی‌ای لازم است؟" body={idea.dataNeeded} />}
+        {idea.teamCapability && <Section title="وقت و توان تیم" body={idea.teamCapability} />}
+        {idea.feasibilityNote && <Section title="محدودیت یا ریسک" body={idea.feasibilityNote} />}
+        {idea.clinicNote && <Section title="بازخورد جلسه" body={idea.clinicNote} />}
         {idea.pitchUrl && <Section title="لینک ارائه" body={idea.pitchUrl} />}
         {idea.pilot.goal && <Section title="هدف پایلوت" body={idea.pilot.goal} />}
         {idea.pilot.scope && <Section title="محدوده‌ی پایلوت" body={idea.pilot.scope} />}
-        {idea.pilot.metrics && <Section title="شاخص‌های پایلوت" body={idea.pilot.metrics} />}
+        {idea.pilot.metrics && <Section title="نشانه‌ی سنجش" body={idea.pilot.metrics} />}
         {idea.pilot.decision && (
-          <Section title="تصمیم پایلوت" body={idea.pilot.decision === 'continue' ? 'ادامه' : 'توقف'} />
+          <Section title="تصمیم پایلوت" body={idea.pilot.decision === 'continue' ? 'ادامه می‌دهیم' : 'متوقف می‌کنیم'} />
         )}
       </div>
 
       {idea.scores.problem != null && (
         <div className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-          <h2 className="text-body-sm text-text-tertiary mb-3">امتیاز ارزیابی</h2>
+          <h2 className="text-body-sm text-text-tertiary mb-3">نتیجه‌ی بررسی</h2>
           <ul className="grid grid-cols-2 gap-2 text-body-sm text-fg">
             <li>اهمیت مسئله: {toFaDigits(idea.scores.problem ?? 0)}</li>
-            <li>تناسب عامل: {toFaDigits(idea.scores.agentFit ?? 0)}</li>
-            <li>امکان نمونه: {toFaDigits(idea.scores.prototype ?? 0)}</li>
+            <li>تناسب با هوش مصنوعی: {toFaDigits(idea.scores.agentFit ?? 0)}</li>
+            <li>امکان ساخت نمونه: {toFaDigits(idea.scores.prototype ?? 0)}</li>
             <li>امنیت داده: {toFaDigits(idea.scores.security ?? 0)}</li>
-            <li>قابل سنجش: {toFaDigits(idea.scores.measurable ?? 0)}</li>
-            <li>پیاده‌سازی: {toFaDigits(idea.scores.implement ?? 0)}</li>
+            <li>قابل سنجش بودن: {toFaDigits(idea.scores.measurable ?? 0)}</li>
+            <li>شدنی بودن: {toFaDigits(idea.scores.implement ?? 0)}</li>
           </ul>
         </div>
       )}
 
       {idea.demoScores.function != null && (
         <div className="mt-6 rounded-xl border border-border-subtle bg-surface p-6 shadow-sm">
-          <h2 className="text-body-sm text-text-tertiary mb-3">داوری روز ارائه</h2>
+          <h2 className="text-body-sm text-text-tertiary mb-3">نتیجه‌ی نمایش</h2>
           <ul className="grid grid-cols-2 gap-2 text-body-sm text-fg">
-            <li>کارکرد: {toFaDigits(idea.demoScores.function ?? 0)}</li>
-            <li>ارزش کسب‌وکار: {toFaDigits(idea.demoScores.value ?? 0)}</li>
-            <li>امنیت: {toFaDigits(idea.demoScores.security ?? 0)}</li>
-            <li>آمادگی پایلوت: {toFaDigits(idea.demoScores.readiness ?? 0)}</li>
+            <li>درست کار می‌کند: {toFaDigits(idea.demoScores.function ?? 0)}</li>
+            <li>به درد کار می‌خورد: {toFaDigits(idea.demoScores.value ?? 0)}</li>
+            <li>داده امن می‌ماند: {toFaDigits(idea.demoScores.security ?? 0)}</li>
+            <li>آماده‌ی پایلوت: {toFaDigits(idea.demoScores.readiness ?? 0)}</li>
           </ul>
         </div>
       )}
@@ -234,7 +234,7 @@ export default async function IdeaDetailPage({
             <form action={submitIdeaAction}>
               <input type="hidden" name="ideaId" value={idea.id} />
               <button type="submit" className={btnPrimary}>
-                ثبت نهایی برای بررسی
+                بفرست برای بررسی
               </button>
             </form>
           )}
@@ -253,7 +253,7 @@ export default async function IdeaDetailPage({
             </form>
           )}
           {submittable && (
-            <p className="text-body-sm text-text-muted">پس از ثبت نهایی، در نوبت بررسی قرار می‌گیرد.</p>
+            <p className="text-body-sm text-text-muted">بعد از فرستادن، در نوبت بررسی قرار می‌گیرد.</p>
           )}
         </div>
       )}
@@ -289,7 +289,7 @@ export default async function IdeaDetailPage({
         <OrbitReviewForm ideaId={idea.id} stage={idea.orbitStage} />
       )}
       {viewer?.isAdmin && idea.orbitStage === 'next' && (
-        <p className="mt-6 text-body-sm text-text-tertiary">این ایده به {ORBIT_STAGE_LABEL.next} رسیده است.</p>
+        <p className="mt-6 text-body-sm text-text-tertiary">این ایده به {ORBIT_STAGE_LABEL.next} رسیده و بررسی مرحله‌ای‌اش تمام شده.</p>
       )}
     </main>
   );

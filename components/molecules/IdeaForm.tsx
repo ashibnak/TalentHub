@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { IdeaField } from '@/components/molecules/IdeaField';
 import { inputClass, labelClass, btnPrimary } from '@/lib/ui';
 import { IDEA_LIMITS, type IdeaFieldErrors, type IdeaFormValues } from '@/lib/ideas/rules';
+import { toFaDigits } from '@/lib/format';
 import { IP_TERMS_LABEL_FA, IP_TERMS_VALUES } from '@/lib/submissions/rules';
 import type { IdeaFormState } from '@/lib/actions/ideas';
 import type { IdeaChallengeOption } from '@/lib/db/queries/ideas';
@@ -20,18 +21,18 @@ type Props = {
 // Per-field codes → Persian helper text. Limits are interpolated from the one
 // source of truth so the copy can never drift from the schema.
 const FIELD_MESSAGE: Record<string, (limit: { min: number; max: number }) => string> = {
-  required: () => 'این فیلد الزامی است.',
-  too_short: (l) => `دست‌کم ${l.min} کاراکتر بنویس.`,
-  too_long: (l) => `حداکثر ${l.max} کاراکتر مجاز است.`,
-  invalid: () => 'مقدار انتخاب‌شده معتبر نیست.',
+  required: () => 'این قسمت را خالی نگذار.',
+  too_short: (l) => `کمی بیشتر توضیح بده. حداقل ${toFaDigits(l.min)} کاراکتر.`,
+  too_long: (l) => `کمی خلاصه‌تر بنویس. حداکثر ${toFaDigits(l.max)} کاراکتر.`,
+  invalid: () => 'این انتخاب درست نیست. یکی دیگر را انتخاب کن.',
 };
 
 // Form-level codes (business rejections), shown above the fields.
 const FORM_MESSAGE: Record<string, string> = {
-  not_found: 'این ایده پیدا نشد.',
-  not_owner: 'این ایده متعلق به تو نیست.',
-  locked: 'درباره‌ی این ایده تصمیم نهایی گرفته شده و دیگر قابل ویرایش نیست.',
-  internal: 'مشکلی پیش آمد. دوباره تلاش کن.',
+  not_found: 'این ایده را پیدا نکردیم. شاید حذف شده باشد.',
+  not_owner: 'فقط کسی که ایده را نوشته می‌تواند آن را عوض کند.',
+  locked: 'روی این ایده تصمیم نهایی گرفته شده و دیگر قابل ویرایش نیست.',
+  internal: 'ذخیره نشد. لطفاً یک بار دیگر امتحان کن.',
 };
 
 function fieldError(errors: IdeaFieldErrors | undefined, field: keyof typeof IDEA_LIMITS): string | null {
@@ -72,8 +73,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
       <IdeaField
         name="title"
         label="عنوان ایده"
-        helper="در یک جمله بگو چه چیزی را می‌خواهی بهتر کنی."
-        placeholder="مثلاً: کوتاه کردن زمان پاسخ به درخواست‌های مرخصی"
+        helper="یک جمله‌ی روشن که بگوید دنبال بهتر کردن چه کاری هستی."
+        placeholder="مثلاً کوتاه کردن زمان تأیید مرخصی"
         max={IDEA_LIMITS.title.max}
         defaultValue={value('title')}
         error={fieldError(state.errors, 'title')}
@@ -82,8 +83,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
       <IdeaField
         name="problemStatement"
         label="مسئله چیست؟"
-        helper="مشکل امروز را با یک نمونه‌ی واقعی توضیح بده: چه اتفاقی می‌افتد، برای چه کسی، و چه هزینه‌ای دارد."
-        placeholder="امروز هر درخواست مرخصی از سه نفر امضا می‌گیرد و به‌طور میانگین دو روز طول می‌کشد…"
+        helper="از یک موقعیت واقعی در کارت بگو. چه کسی درگیر است و چرا این کار وقت یا انرژی می‌گیرد."
+        placeholder="هر درخواست مرخصی از سه نفر امضا می‌گیرد و معمولاً دو روز طول می‌کشد…"
         rows={6}
         min={IDEA_LIMITS.problemStatement.min}
         max={IDEA_LIMITS.problemStatement.max}
@@ -94,8 +95,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
       <IdeaField
         name="proposedSolution"
         label="راه‌حل پیشنهادی"
-        helper="لازم نیست فنی باشد — بنویس اگر این ساخته شود، کار کاربر چطور عوض می‌شود."
-        placeholder="یک دستیار که درخواست را می‌خواند، قوانین مرخصی را بررسی می‌کند و…"
+        helper="لازم نیست فنی باشد. بگو اگر این ساخته شود، کار آن آدم‌ها چه فرقی می‌کند."
+        placeholder="دستیاری که درخواست را می‌خواند، قوانین مرخصی را چک می‌کند و…"
         rows={8}
         min={IDEA_LIMITS.proposedSolution.min}
         max={IDEA_LIMITS.proposedSolution.max}
@@ -105,8 +106,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="targetUsers"
-        label="چه کسانی استفاده می‌کنند؟"
-        helper="نقش یا تیم مشخصی را نام ببر، نه «همه‌ی کارمندان»."
+        label="به چه کسانی کمک می‌کند؟"
+        helper="یک نقش یا تیم مشخص را نام ببر. نوشتن «همه» تصویر روشنی نمی‌دهد."
         placeholder="کارشناسان منابع انسانی و مدیران مستقیم"
         rows={2}
         max={IDEA_LIMITS.targetUsers.max}
@@ -116,8 +117,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="successCriteria"
-        label="از کجا بفهمیم موفق شده؟"
-        helper="یک نشانه‌ی قابل اندازه‌گیری بنویس — عددی که قرار است تغییر کند."
+        label="از کجا می‌فهمیم جواب داده؟"
+        helper="یک نشانه یا عدد که انتظار داری تغییر کند."
         placeholder="میانگین زمان تأیید مرخصی از دو روز به کمتر از چهار ساعت برسد."
         rows={3}
         max={IDEA_LIMITS.successCriteria.max}
@@ -128,7 +129,7 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
       <IdeaField
         name="currentWorkaround"
         label="الان این کار چطور انجام می‌شود؟"
-        helper="راه‌حل فعلی را بگو، حتی اگر دستی و کند باشد."
+        helper="حتی اگر امروز با ایمیل، اکسل یا پیگیری دستی انجام می‌شود، همان را بنویس."
         rows={3}
         min={IDEA_LIMITS.currentWorkaround.min}
         max={IDEA_LIMITS.currentWorkaround.max}
@@ -138,8 +139,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="whyAgent"
-        label="چرا به یک عامل هوش مصنوعی نیاز است؟"
-        helper="بگو کدام بخش تکراری، قاعده‌مند یا حجیم است که یک عامل می‌تواند انجام دهد."
+        label="چرا هوش مصنوعی؟"
+        helper="کدام بخش کار تکراری یا قاعده‌مند است و هوش مصنوعی واقعاً آن را سبک‌تر می‌کند؟"
         rows={3}
         min={IDEA_LIMITS.whyAgent.min}
         max={IDEA_LIMITS.whyAgent.max}
@@ -149,8 +150,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="dataNeeded"
-        label="چه داده‌ای لازم است؟"
-        helper="نام داده یا سامانه را بنویس. اگر هنوز دسترسی نداری، همان را بگو."
+        label="چه اطلاعات یا دسترسی‌ای لازم است؟"
+        helper="نام سامانه یا داده را بنویس. اگر هنوز دسترسی نداری، همان را صادقانه بگو."
         rows={2}
         min={IDEA_LIMITS.dataNeeded.min}
         max={IDEA_LIMITS.dataNeeded.max}
@@ -160,8 +161,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="teamCapability"
-        label="تیم چه توانی دارد؟"
-        helper="نقش‌ها و زمانی که در هفته می‌گذارید. ثبت فردی هم مجاز است."
+        label="خودت یا تیمت چقدر وقت دارید؟"
+        helper="نقش‌ها و حدود ساعت هفته را بنویس. تنها بودن هم اشکالی ندارد."
         rows={2}
         min={IDEA_LIMITS.teamCapability.min}
         max={IDEA_LIMITS.teamCapability.max}
@@ -171,8 +172,8 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
 
       <IdeaField
         name="feasibilityNote"
-        label="نکته‌ی اجرایی"
-        helper="اگر محدودیت، وابستگی یا ریسکی می‌شناسی اینجا بنویس؛ اگر نه، خالی بگذار."
+        label="محدودیت یا ریسک"
+        helper="اگر چیزی کار را سخت می‌کند این‌جا بگو. اگر نیست، خالی بگذار."
         placeholder="به دسترسی خواندنی به سامانه‌ی حضور و غیاب نیاز دارد."
         rows={3}
         max={IDEA_LIMITS.feasibilityNote.max}
@@ -186,7 +187,7 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
           چالش مرتبط<span className="text-text-muted"> (اختیاری)</span>
         </label>
         <p className="mt-1 text-body-sm text-text-muted leading-relaxed">
-          اگر ایده‌ات به یکی از چالش‌های سازمان مربوط است، انتخابش کن.
+          اگر این ایده به یکی از چالش‌های سازمان وصل است، همان را انتخاب کن.
         </p>
         <select
           id="challengeId"
@@ -195,22 +196,22 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
           aria-invalid={!!state.errors?.challengeId}
           className={`mt-1 w-full ${inputClass}`}
         >
-          <option value="">به چالش خاصی مربوط نیست</option>
+          <option value="">به چالش خاصی وصل نیست</option>
           {challenges.map((c) => (
             <option key={c.id} value={c.id}>
               {c.title}
             </option>
           ))}
         </select>
-        {state.errors?.challengeId && <p className="mt-1 text-body-sm text-state-error">چالش انتخاب‌شده معتبر نیست.</p>}
+        {state.errors?.challengeId && <p className="mt-1 text-body-sm text-state-error">این چالش را پیدا نکردیم. یکی دیگر را انتخاب کن.</p>}
       </div>
 
       <div>
         <label htmlFor="ipTerms" className={labelClass}>
-          مالکیت فکری ایده
+          مالکیت ایده
         </label>
         <p className="mt-1 text-body-sm text-text-muted leading-relaxed">
-          ممکن است بعداً کسی دیگر این ایده را بسازد؛ همین حالا روشن کن مالکیت با چه کسی است.
+          ممکن است بعداً کسی غیر از تو این ایده را بسازد. همین حالا بگو مالکیت با کیست.
         </p>
         <select id="ipTerms" name="ipTerms" defaultValue={value('ipTerms') || 'developer'} className={`mt-1 w-full ${inputClass}`}>
           {IP_TERMS_VALUES.map((t) => (
@@ -225,7 +226,7 @@ export function IdeaForm({ action, challenges, submitLabel, ideaId, initialValue
         <button type="submit" disabled={pending} className={`${btnPrimary} disabled:opacity-40`}>
           {pending ? 'در حال ذخیره…' : submitLabel}
         </button>
-        <p className="text-body-sm text-text-muted">به‌صورت پیش‌نویس ذخیره می‌شود؛ ثبت نهایی مرحله‌ی جداگانه‌ای است.</p>
+        <p className="text-body-sm text-text-muted">اول پیش‌نویس ذخیره می‌شود. ثبت برای بررسی، قدم جداگانه‌ای است.</p>
       </div>
     </form>
   );

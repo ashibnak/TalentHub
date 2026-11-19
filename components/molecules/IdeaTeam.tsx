@@ -25,7 +25,7 @@ export function IdeaTeam({
         <li className="flex items-center gap-3">
           <Avatar seed={author.username ?? author.name} size={32} />
           <span className="text-body text-fg">{author.name}</span>
-          <span className="text-body-sm text-text-muted">صاحب ایده</span>
+          <span className="text-body-sm text-text-muted">نویسنده‌ی ایده</span>
         </li>
         {members.map((member) => (
           <li key={member.id} className="flex items-center gap-3">
@@ -45,20 +45,20 @@ export function IdeaTeam({
       </ul>
       {canManage && suggestions.length > 0 && (
         <div className="mt-4">
-          <h3 className="text-body-sm text-text-tertiary mb-2">پیشنهاد از مهارت و حوزه</h3>
+          <h3 className="text-body-sm text-text-tertiary mb-2">همکارهایی با مهارت نزدیک</h3>
           <ul className="flex flex-col gap-2">
             {suggestions.map((person) => (
               <li key={person.id} className="flex flex-wrap items-center gap-3">
                 <Avatar seed={person.username} size={32} />
                 <span className="text-body text-fg">{person.name}</span>
                 <span className="text-body-sm text-text-muted">
-                  {toFaDigits(person.skills)} مهارت · {toFaDigits(person.domains)} حوزه
+                  {toFaDigits(person.skills)} مهارت مشترک · {toFaDigits(person.domains)} حوزه مشترک
                 </span>
                 <form action={addIdeaMemberAction}>
                   <input type="hidden" name="ideaId" value={ideaId} />
                   <input type="hidden" name="username" value={person.username} />
                   <button type="submit" className={btnSecondary}>
-                    افزودن
+                    دعوت کن
                   </button>
                 </form>
               </li>
@@ -74,7 +74,7 @@ export function IdeaTeam({
           </label>
           <input type="hidden" name="ideaId" value={ideaId} />
           <button type="submit" className={btnSecondary}>
-            افزودن
+            اضافه کن
           </button>
         </form>
       )}

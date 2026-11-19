@@ -3,12 +3,12 @@ export const MENTOR_ROLES = ['product', 'ai_architecture', 'engineering', 'data'
 export type MentorRole = (typeof MENTOR_ROLES)[number];
 
 export const MENTOR_ROLE_LABEL: Record<MentorRole, string> = {
-  product: 'محصول',
-  ai_architecture: 'معماری هوش مصنوعی',
-  engineering: 'مهندسی',
-  data: 'داده',
-  security: 'امنیت',
-  pilot: 'پایلوت',
+  product: 'منتور محصول',
+  ai_architecture: 'منتور معماری',
+  engineering: 'منتور مهندسی',
+  data: 'منتور داده',
+  security: 'منتور امنیت',
+  pilot: 'منتور پایلوت',
 };
 
 export function mentorRole(value: string): MentorRole | null {
