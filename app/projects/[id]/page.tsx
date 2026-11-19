@@ -35,7 +35,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
       {/* owner */}
       <Link href={`/u/${project.owner.username}`} className="group inline-flex items-center gap-2 mb-6">
-        <Avatar name={project.owner.name} size={32} />
+        <Avatar seed={project.owner.username ?? project.owner.name} size={32} />
         <span className="text-body text-fg group-hover:text-info transition-colors">{project.owner.name}</span>
         {project.owner.roleTitle && <span className="text-body-sm text-text-tertiary">· {project.owner.roleTitle}</span>}
       </Link>

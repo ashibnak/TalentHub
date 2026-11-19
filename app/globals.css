@@ -6,10 +6,11 @@
    #222121 canvas · #2A2A2A surface · #FAFCFC text/action · #E5E4E3 hover
    · #4CD1D6 teal accent · #FFAB00 amber micro-accent (spotlight).
    White primary buttons with near-black text (Vercel/Linear dark).
-   Fonts unchanged (Vazirmatn).
+   Vazirmatn for Persian body. Geist for Latin chips via font-latin.
    ───────────────────────────────────────────────────────────── */
 @theme {
   --font-sans: var(--font-vazirmatn), system-ui, sans-serif;
+  --font-latin: var(--font-geist), var(--font-vazirmatn), system-ui, sans-serif;
 
   /* Surfaces — charcoal ladder */
   --color-canvas: #222121;

@@ -384,9 +384,9 @@ Three categories that look distinct:
   Python
 </span>
 
-// AI tool tag — has check-circle icon (different from shield)
-<span className="bg-info-muted text-white text-micro px-2 py-0.5 rounded-sm inline-flex items-center gap-1">
-  <CircleCheck size={11} className="text-info" />
+// AI tool tag — plain Latin label. A check on every tool read as a hollow dot
+// and did not mean "verified". Only a verified skill carries an icon.
+<span className="bg-info-muted text-white text-micro px-2 py-0.5 rounded-sm">
   Claude Code
 </span>
 ```
@@ -453,17 +453,9 @@ This applies to: profile skill tags, profile domain expertise tags, project skil
 
 ### 5.5 Avatar
 
-Auto-generated with initials. Background color picked from 4-color rotation based on name hash.
+A geometric mark seeded by the user's username (`components/atoms/Avatar.tsx`). The same person always gets the same arc and dot. Persian initials are not used — first letters collide, and the name is already printed beside the mark.
 
-```tsx
-const avatarColors = ['#00314a', '#669bbc', '#C01221', '#770201'];
-const textColors = ['#FFFFFF', '#00314a', '#FFFFFF', '#FFFFFF'];
-
-function pickAvatarColor(name: string) {
-  const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  return hash % avatarColors.length;
-}
-```
+Colors come from the app palette only: charcoal ground, teal / amber / emerald stroke and dot.
 
 Sizes:
 - `xs` 24px (inline mentions, dense lists)
@@ -472,7 +464,7 @@ Sizes:
 - `lg` 56px (profile page header)
 - `xl` 80px (only for own-profile-edit page)
 
-Always `rounded-full`. Always initials in `font-semibold`. Font size: ~40% of avatar size.
+Always a circle. Always `aria-hidden` — the adjacent name is the accessible label.
 
 ### 5.6 Card
 

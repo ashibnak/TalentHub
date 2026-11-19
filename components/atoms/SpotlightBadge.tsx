@@ -3,7 +3,7 @@
 // v4: wears the amber micro-accent (--color-highlight) — the one loud color.
 export function SpotlightBadge() {
   return (
-    <span className="bg-highlight text-on-action text-micro font-medium uppercase tracking-wider px-2 py-0.5 rounded-sm">
+    <span className="bg-highlight font-latin text-on-action text-micro font-medium uppercase tracking-wider px-2 py-0.5 rounded-sm">
       Spotlight
     </span>
   );

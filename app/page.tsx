@@ -87,7 +87,7 @@ export default async function Home() {
               <div className="flex">
                 {people.slice(0, 6).map((p, i) => (
                   <div key={p.username} className="rounded-full ring-2 ring-canvas" style={{ marginInlineStart: i > 0 ? -10 : 0 }}>
-                    <Avatar name={p.name} size={32} />
+                    <Avatar seed={p.username} size={32} />
                   </div>
                 ))}
               </div>

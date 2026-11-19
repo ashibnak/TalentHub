@@ -66,7 +66,7 @@ export default async function ChallengeDetailPage({ params }: { params: Promise<
                 href={`/u/${e.username}`}
                 className="flex items-center gap-3 bg-surface border border-border-subtle rounded-lg p-4 hover:bg-surface-elevated transition-colors"
               >
-                <Avatar name={e.name} size={40} />
+                <Avatar seed={e.username} size={40} />
                 <div className="min-w-0">
                   <div className="text-body text-fg truncate">{e.name}</div>
                   {e.roleTitle && <div className="text-body-sm text-text-tertiary truncate">{e.roleTitle}</div>}

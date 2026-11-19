@@ -16,7 +16,7 @@ export function StageBadge({ stage }: { stage: ProjectStage }) {
   const { label, className, Icon } = STAGE_CONFIG[stage];
   return (
     <span
-      className={`inline-flex items-center gap-1 ${className} text-micro px-2 py-0.5 rounded-sm shrink-0 whitespace-nowrap`}
+      className={`inline-flex items-center gap-1 ${className} font-latin text-micro px-2 py-0.5 rounded-sm shrink-0 whitespace-nowrap`}
     >
       <Icon size={14} strokeWidth={1.5} />
       {label}

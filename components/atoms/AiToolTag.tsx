@@ -1,12 +1,10 @@
-import { CircleCheck } from 'lucide-react';
 import { aiToolLabel } from '@/lib/ai-tools';
 
-// AI-tool tag (design system §5.4) — CircleCheck icon (distinct from the skill
-// shield). Tool names stay English (§7.5).
+// AI-tool tag. Plain Latin label — a leading check on every tool read as a
+// hollow dot and did not mean "verified". Verification stays on skill tags.
 export function AiToolTag({ slug }: { slug: string }) {
   return (
-    <span className="inline-flex items-center gap-1 bg-info-subtle text-fg text-micro px-2 py-0.5 rounded-sm">
-      <CircleCheck size={11} className="text-info" strokeWidth={1.5} />
+    <span className="inline-flex items-center bg-info-subtle font-latin text-fg text-micro px-2 py-0.5 rounded-sm">
       {aiToolLabel(slug)}
     </span>
   );

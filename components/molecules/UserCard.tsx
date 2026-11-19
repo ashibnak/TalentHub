@@ -13,7 +13,7 @@ export function UserCard({ user }: { user: DirectoryUser }) {
       className="block bg-surface border border-border-subtle rounded-lg p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-center gap-3 mb-3">
-        <Avatar name={user.name} size={40} />
+        <Avatar seed={user.username} size={40} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h2 className="text-body font-semibold text-fg truncate">{user.name}</h2>

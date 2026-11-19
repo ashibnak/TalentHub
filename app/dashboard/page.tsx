@@ -87,7 +87,7 @@ export default async function DashboardPage() {
                 className={`flex items-center gap-3 px-4 py-3 transition-colors hover:bg-canvas ${i > 0 ? 'border-t border-border-subtle' : ''}`}
               >
                 <span className="w-5 text-body-sm text-text-muted tabular-nums">{toFaDigits(i + 1)}</span>
-                <Avatar name={b.name} size={32} />
+                <Avatar seed={b.username} size={32} />
                 <span className="flex-1 truncate text-body text-fg">{b.name}</span>
                 <span className="text-body-sm text-text-tertiary">{toFaDigits(b.projectCount)} پروژه</span>
               </Link>

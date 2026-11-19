@@ -42,7 +42,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
       <div className="mx-auto max-w-2xl px-4 py-12">
         {/* ── Header ── */}
         <div className="flex items-center gap-4 mb-6">
-          <Avatar name={profile.name} size={64} />
+          <Avatar seed={profile.username} size={64} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <h1 className="text-h2 leading-tight">{profile.name}</h1>

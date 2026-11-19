@@ -1,36 +1,57 @@
-// On-theme avatar palette (v4 dark): mid-dark grays + deep teal, all a step
-// lighter than the charcoal surfaces so avatars read on cards, and all dark
-// enough for white text. Background from the name hash; text always white.
-const AVATAR_COLORS = ['#3f3f46', '#52525b', '#0f766e', '#4a4a4a', '#134e4a', '#5f5f66'];
+// Geometric profile mark. Seeded by a stable id (username), so the same person
+// always gets the same mark and two people almost never share one. Persian
+// first letters collide too often to use as avatars; the name is already
+// written beside the mark.
+//
+// Palette is the app's own: charcoal ground, teal / amber / emerald marks.
+// No photos and no extra icon set.
 
-function pickAvatarColorIndex(name: string) {
-  const hash = name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  return hash % AVATAR_COLORS.length;
+const GROUNDS = ['#3a3939', '#333232', '#2c3a3a'];
+const ACCENTS = ['#4cd1d6', '#ffab00', '#34d399'];
+
+function hashSeed(seed: string) {
+  let h = 2166136261;
+  for (const ch of seed) {
+    h ^= ch.codePointAt(0) ?? 0;
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
 }
 
-// A SINGLE monogram letter. Two-letter initials look broken for Persian names
-// (adjacent letters render in wrong/isolated joining forms), so we use the first
-// character of the name — clean in both Persian and Latin scripts.
-function getInitials(name: string) {
-  return [...name.trim()][0] ?? '';
+function point(cx: number, cy: number, r: number, deg: number) {
+  const rad = (deg * Math.PI) / 180;
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)] as const;
 }
 
-export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
-  const idx = pickAvatarColorIndex(name);
+export function Avatar({ seed, size = 40 }: { seed: string; size?: number }) {
+  const h = hashSeed(seed || 'aigraph');
+  const ground = GROUNDS[h % GROUNDS.length];
+  const arc = ACCENTS[h % ACCENTS.length];
+  const dot = ACCENTS[(h >>> 3) % ACCENTS.length];
+  const start = h % 360;
+  const sweep = 80 + ((h >>> 8) % 150);
+  const [x1, y1] = point(20, 20, 12, start);
+  const [x2, y2] = point(20, 20, 12, start + sweep);
+  const [dx, dy] = point(20, 20, 12, start + 200);
+  const dotR = 2.5 + ((h >>> 16) % 3);
+
   return (
-    // Decorative: the user's name is always shown as adjacent text (h1 / card
-    // label), so the initials are hidden from assistive tech to avoid double-reading.
-    <div
+    <svg
       aria-hidden="true"
-      className="rounded-full flex items-center justify-center font-semibold shrink-0 text-white"
-      style={{
-        width: size,
-        height: size,
-        backgroundColor: AVATAR_COLORS[idx],
-        fontSize: size * 0.44,
-      }}
+      width={size}
+      height={size}
+      viewBox="0 0 40 40"
+      className="shrink-0"
     >
-      {getInitials(name)}
-    </div>
+      <circle cx="20" cy="20" r="20" fill={ground} />
+      <path
+        d={`M ${x1.toFixed(2)} ${y1.toFixed(2)} A 12 12 0 ${sweep > 180 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`}
+        fill="none"
+        stroke={arc}
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      <circle cx={dx.toFixed(2)} cy={dy.toFixed(2)} r={dotR} fill={dot} />
+    </svg>
   );
 }
